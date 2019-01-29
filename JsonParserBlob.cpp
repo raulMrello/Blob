@@ -310,6 +310,7 @@ char* ParseJson(char* topic, void* data, int data_len, bool debug){
 		return result;
 	}
 
+	DEBUG_TRACE_W(_EXPR_, _MODULE_, "ERR_DECODE Topic=%s no coincide con ninguna opción", topic);
 	return NULL;
 }
 
