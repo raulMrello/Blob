@@ -97,6 +97,7 @@ struct ErrorData_t{
 template <typename T>
 struct SetRequest_t{
 	uint32_t idTrans;
+	uint32_t keys;
 	T data;
 	Blob::ErrorData_t _error;
 };
@@ -107,8 +108,8 @@ struct SetRequest_t{
 struct GetRequest_t{
 	uint32_t idTrans;
 	Blob::ErrorData_t _error;
-	GetRequest_t(){
-		idTrans = 0;
+	GetRequest_t(uint32_t x_id=0){
+		idTrans = x_id;
 		_error.code = ErrOK;
 		_error.descr[0] = 0;
 	}

@@ -14,46 +14,39 @@
 #include "mbed.h"
 #include "Blob.h"
 #include "cJSON.h"
-#include "AMManagerBlob.h"
-#include "AstCalendarBlob.h"
-#include "LightManagerBlob.h"
-#include "SysManagerBlob.h"
-
   
 
-namespace Blob {
-
-//---------------------------------------------------------------------------------
-//- Errores -----------------------------------------------------------------------
-//---------------------------------------------------------------------------------
+namespace JSON {
 
 
-//---------------------------------------------------------------------------------
-//- Definiciones comunes ----------------------------------------------------------
-//---------------------------------------------------------------------------------
-
-/** Decodifica un mensaje JSON en funciï¿½n del topic al que va dirigido y de su contenido
- * 	para formar un objeto Blob del tipo que corresponda.
- * 	@param topic Topic
- * 	@param json_data Mensaje json
- * 	@param data_len Tamaï¿½o del objeto construido por el decodificador o 0 en caso de error
- * 	@param debug Flag para habilitar la depuraciï¿½n
- * 	@return Puntero al objeto Blob creado o NULL en caso de error
+/**
+ * Decodifica un objeto JSON tipo GetRequest
+ * @param req Objeto decodificado en binario
+ * @param json_data Objeto JSON a decodificar
+ * @return True si el objeto se decodifica correctamente
  */
-void* DecodeJson(char* topic, char* json_data, int* data_len, bool debug = false);
+bool decodeGetRequest(Blob::GetRequest_t& req, char* json_data);
 
-/** Parsea un objeto Blob en un mensaje JSON en funciï¿½n del topic al que va dirigido y de su contenido
- * 	@param topic Topic
- * 	@param data Objeto Blob
- * 	@param data_len Tamaï¿½o del objeto blob
- * 	@param header Cabecera a incluir en el objeto
- * 	@param debug Flag para habilitar la depuraciï¿½n
- * 	@return Puntero al mensaje json creado o NULL en caso de error
+
+/** Parsea un objeto Blob::GetRequest en un mensaje JSON
+ * 	@param req Objeto a parsear
+ * 	@return Objeto JSON generado
  */
-char* ParseJson(char* topic, void* data, int data_len, bool debug = false);
+cJSON* parseGetRequest(const Blob::GetRequest_t& req);
 
 
-}	/** End of namespace Blob */
+/** Parsea un objeto Blob::SetRequest_t<Blob::AstCalCfgData_t> en un mensaje JSON
+ *  @param idTrans Identificador de la transaccción
+ * 	@param key Nombre del objeto a insertar
+ * 	@param item Objeto JSON a insertar
+ * 	@param data_keys Flags de datos actualizados para el SetRequest
+ * 	@return Objeto JSON generado
+ */
+cJSON* parseSetRequest(uint32_t idTrans, const char* key, cJSON* item, uint32_t data_keys=0);
+
+
+
+}	/** End of namespace JSON */
 
 
 
