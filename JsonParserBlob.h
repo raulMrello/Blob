@@ -56,11 +56,10 @@ cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name)
 
 /** Parsea un objeto Blob::Response_t<T> en un mensaje JSON
  *  @param resp Respuresta a convertir a json
- * 	@param name Nombre del objeto json a insertar en el Response
  * 	@return Objeto JSON generado
  */
 template <typename T>
-cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, const char* name){
+cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp){
 	// keys: root, idtrans, header, error
 	cJSON *header = NULL;
 	cJSON *error = NULL;
@@ -107,7 +106,7 @@ cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, const char* name){
 		cJSON_Delete(root);
 		return NULL;
 	}
-	cJSON_AddItemToObject(root, name, obj);
+	cJSON_AddItemToObject(root, keys[p_DATA], obj);
 	return root;
 }
 
@@ -162,7 +161,15 @@ cJSON* getJsonFromObj(const T& obj){
  * @param json Objeto JSON a decodificar
  * @return keys Parámetros decodificados o 0 en caso de error
  */
-uint32_t getGetRequestFromJson(Blob::GetRequest_t &req,cJSON* json);
+bool getGetRequestFromJson(Blob::GetRequest_t &req, cJSON* json);
+
+
+/** Decodifica el mensaje JSON en un objeto Blob::GetRequest_t
+ * @param req Recibe el objeto decodificado
+ * @param json String JSON a decodificar
+ * @return keys Parámetros decodificados o 0 en caso de error
+ */
+bool getGetRequestFromJson(Blob::GetRequest_t &req, char* json);
 
 
 /** Decodifica el mensaje JSON en un objeto Blob::SetRequest_t<T>
@@ -171,28 +178,44 @@ uint32_t getGetRequestFromJson(Blob::GetRequest_t &req,cJSON* json);
  * @return keys Parámetros decodificados o 0 en caso de error
  */
 template <typename T>
-uint32_t getSetRequestFromJson(Blob::SetRequest_t<T> &req, cJSON* json){
+bool getSetRequestFromJson(Blob::SetRequest_t<T> &req, cJSON* json){
 	cJSON *obj = NULL;
 	req.keys = 0;
 	req._error.code = Blob::ErrOK;
 	strcpy(req._error.descr, Blob::errList[req._error.code]);
 
 	if(json == NULL){
-		return 0;
+		return false;
 	}
 
 	// key: idTrans
 	if((obj = cJSON_GetObjectItem(json, keys[p_IDTRANS])) == NULL){
-		return 0;
+		return false;
 	}
 	req.idTrans = obj->valueint;
 
 	// key:obj
 	if((obj = cJSON_GetObjectItem(json, keys[p_DATA])) == NULL){
-		return 0;
+		return false;
 	}
 	req.keys = getObjFromJson<T>(req.data, obj);
-	return req.keys;
+	return (req.keys)? true : false;
+}
+
+
+/** Decodifica el mensaje JSON en un objeto Blob::SetRequest_t<T>
+ *  @param req Recibe el objeto decodificado
+ * @param json String JSON a decodificar
+ * @return keys Parámetros decodificados o 0 en caso de error
+ */
+template <typename T>
+bool getSetRequestFromJson(Blob::SetRequest_t<T> &req, char* json){
+	cJSON *json_obj = cJSON_Parse(json);
+	if(json_obj == NULL)
+		return false;
+	bool result = getGetRequestFromJson(req, json_obj);
+	cJSON_Delete(json_obj);
+	return result;
 }
 
 
@@ -202,7 +225,7 @@ uint32_t getSetRequestFromJson(Blob::SetRequest_t<T> &req, cJSON* json){
  * @return keys Parámetros decodificados o 0 en caso de error
  */
 template <typename T>
-uint32_t getResponseFromJson(Blob::Response_t<T> &resp, cJSON* json){
+bool getResponseFromJson(Blob::Response_t<T> &resp, cJSON* json){
 	cJSON *obj = NULL;
 	cJSON *value = NULL;
 	cJSON *root = NULL;
@@ -210,22 +233,22 @@ uint32_t getResponseFromJson(Blob::Response_t<T> &resp, cJSON* json){
 	strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 
 	if(json == NULL){
-		return 0;
+		return false;
 	}
 
 	// key: idTrans
 	if((obj = cJSON_GetObjectItem(json, keys[p_IDTRANS])) != NULL){
-		return 0;
+		return false;
 	}
 	resp.idTrans = obj->valueint;
 
 	// key: header
 	if((obj = cJSON_GetObjectItem(json, keys[p_HEADER])) == NULL){
-		return 0;
+		return false;
 	}
 	// key: timestamp
 	if((value = cJSON_GetObjectItem(obj, keys[p_TIMESTAMP])) == NULL){
-		return 0;
+		return false;
 	}
 	resp.header.timestamp = (time_t)obj->valuedouble;
 
@@ -233,21 +256,37 @@ uint32_t getResponseFromJson(Blob::Response_t<T> &resp, cJSON* json){
 	if((obj = cJSON_GetObjectItem(json, keys[p_ERROR])) != NULL){
 		// key: code
 		if((value = cJSON_GetObjectItem(obj, keys[p_CODE])) == NULL){
-			return 0;
+			return false;
 		}
 		resp.error.code = obj->valueint;
 		// key: descr
 		if((value = cJSON_GetObjectItem(obj, keys[p_DESCR])) == NULL){
-			return 0;
+			return false;
 		}
 		strncpy(resp.error.descr, obj->valuestring, Blob::DefaultErrDescrLen);
 	}
 
 	// key:obj
 	if((obj = cJSON_GetObjectItem(json, keys[p_DATA])) == NULL){
-		return 0;
+		return false;
 	}
-	return getObjFromJson<T>(resp.data, obj);
+	return (getObjFromJson<T>(resp.data, obj))? true : false;
+}
+
+
+/** Decodifica el mensaje JSON en un objeto Blob::SetRequest_t<T>
+ *  @param req Recibe el objeto decodificado
+ * @param String Objeto JSON a decodificar
+ * @return keys Parámetros decodificados o 0 en caso de error
+ */
+template <typename T>
+bool getResponseFromJson(Blob::Response_t<T> &resp, char* json){
+	cJSON *json_obj = cJSON_Parse(json);
+	if(json_obj == NULL)
+		return false;
+	bool result = getResponseFromJson(resp, json_obj);
+	cJSON_Delete(json_obj);
+	return result;
 }
 
 
@@ -262,7 +301,7 @@ uint32_t getObjFromJson(T &obj, cJSON* json){
 	uint32_t result = 0;
 	// decodifica objeto de configuración
 	if (Blob::is_same<T, Blob::GetRequest_t>::value){
-		return getGetRequestFromJson(obj, json);
+		return (uint32_t)getGetRequestFromJson(obj, json);
 	}
 	//----
 	// decodifica objeto de configuración
@@ -304,6 +343,23 @@ uint32_t getObjFromJson(T &obj, cJSON* json){
 		return getLightBootFromJson(obj, json);
 	}
 }
+
+
+/**
+ * Decodifica el mensaje JSON en un objeto
+ * @param obj Recibe el objeto decodificado
+ * @param String Objeto JSON a decodificar
+ * @return keys Parámetros decodificados o 0 en caso de error
+ */
+template <typename T>
+uint32_t getObjFromJson(T &obj, char* json){
+	cJSON *json_obj = cJSON_Parse(json);
+	if(json_obj == NULL)
+		return 0;
+	uint32_t result = getObjFromJson(obj, json_obj);
+	cJSON_Delete(json_obj);
+	return result;
+
 
 
 }	/** End of namespace JSON */
