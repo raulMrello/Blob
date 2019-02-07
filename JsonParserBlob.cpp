@@ -36,6 +36,9 @@ enum ParamKeys{
 	p_CODE,
 	p_DESCR,
 	p_KEYS,
+	p_TIMESTAMP,
+	p_HEADER,
+	p_DATA,
 	MaxNumParamKeys
 };
 
@@ -45,7 +48,10 @@ static const char *keys[] = {
 	"error",
 	"code",
 	"descr",
-	"keys"
+	"keys",
+	"timestamp",
+	"header",
+	"data",
 };
 
 
@@ -56,37 +62,26 @@ static const char *keys[] = {
 
 
 //------------------------------------------------------------------------------------
-bool decodeGetRequest(Blob::GetRequest_t &req, char* json_data){
-	cJSON *root = NULL;
-	req.idTrans = 0;
-	req._error.code = Blob::ErrJsonMalformed;
+uint32_t getGetRequestFromJson(Blob::GetRequest_t &req, cJSON* json){
+	cJSON* cfg = NULL;
+	cJSON* stat = NULL;
 
-	// json_data = {"idTrans": xxx}
-	if((root = cJSON_Parse(json_data)) != NULL){
-		cJSON *idtrans = NULL;
-		if((idtrans = cJSON_GetObjectItem(root, keys[p_IDTRANS])) != NULL){
-			req.idTrans = idtrans->valueint;
-			req._error.code = Blob::ErrOK;
-			goto _decodeGetRequest_Exit;
-		}
-		req._error.code = Blob::ErrIdTransInvalid;
+	if(json == NULL){
+		return 0;
 	}
-_decodeGetRequest_Exit:
+	cJSON *idtrans = NULL;
+	if((idtrans = cJSON_GetObjectItem(json, keys[p_IDTRANS])) == NULL){
+		return 0;
+	}
+	req.idTrans = idtrans->valueint;
+	req._error.code = Blob::ErrOK;
 	strcpy(req._error.descr, Blob::errList[req._error.code]);
-	if(root){
-		cJSON_Delete(root);
-	}
-	if(req._error.code == Blob::ErrOK){
-		DEBUG_TRACE_D(_EXPR_, _MODULE_, "Procesado GetRequest con idTrans=%d", req.idTrans);
-		return true;
-	}
-	DEBUG_TRACE_W(_EXPR_, _MODULE_, "Error procesando GetRequest: %s", req._error.descr);
-	return false;
+	return 1;
 }
 
 
 //------------------------------------------------------------------------------------
-cJSON* parseGetRequest(const Blob::GetRequest_t& req){
+cJSON* getJsonFromGetRequest(const Blob::GetRequest_t& req){
 	cJSON* root = NULL;
 	cJSON* error = NULL;
 	cJSON* item = NULL;
@@ -112,29 +107,6 @@ __parseGetRequest_Err:
 	return NULL;
 }
 
-
-//------------------------------------------------------------------------------------
-cJSON* parseSetRequest(uint32_t idTrans, const char* key, cJSON* item, uint32_t data_keys){
-	cJSON *root = cJSON_CreateObject();
-
-	if(!root){
-		return NULL;
-	}
-
-	// key: idTrans
-	cJSON_AddNumberToObject(root, keys[p_IDTRANS], idTrans);
-	cJSON_AddNumberToObject(root, keys[p_KEYS], data_keys);
-
-	// key: item
-	cJSON_AddItemToObject(root, key, item);
-	return root;
-}
-
-
-
-//------------------------------------------------------------------------------------
-//-- STATIC METHODS IMPLEMENTATION ---------------------------------------------------
-//------------------------------------------------------------------------------------
 
 
 
