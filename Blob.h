@@ -28,6 +28,8 @@ enum ErrorCode{
 	ErrOK,
 	ErrJsonMalformed,
 	ErrIdTransInvalid,
+	ErrStringFormat,
+	ErrSysMissing,
 	ErrAstCalMissing,
 	ErrSeasonCfgFormat,
 	ErrEnergyMissing,
@@ -41,6 +43,8 @@ static const char* errList[] = {
 	"", 					//ErrOk
 	"json: malformed",		//ErrJsonMalformed
 	"idTrans: missing", 	//ErrIdTransInvalid
+	"string malformed",		//ErrStringFormat
+	"sys: missing",			//ErrSysMissing
 	"astcal: missing",		//ErrAstCalMissing
 	"seasonCfg: malformed",	//ErrSeasonCfgFormat
 	"energy: missing",		//ErrEnergyMissing
