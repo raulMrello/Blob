@@ -32,10 +32,9 @@ public:
 	static const char*	p_active;
 	static const char*	p_alsData;
 	static const char*	p_aPow;
+	static const char*	p_ast;
 	static const char*	p_astcal;
-	static const char*	p_astCfg;
 	static const char*	p_astCorr;
-	static const char*	p_astData;
 	static const char*	p_calibData;
 	static const char*	p_cfg;
 	static const char*	p_channel;
@@ -45,6 +44,7 @@ public:
 	static const char*	p_data;
 	static const char*	p_date;
 	static const char*	p_descr;
+	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
 	static const char*	p_error;
@@ -81,6 +81,7 @@ public:
 	static const char*	p_outData;
 	static const char*	p_outValue;
 	static const char*	p_period;
+	static const char*	p_periods;
 	static const char*	p_pfactor;
 	static const char*	p_phase;
 	static const char*	p_reactive;
@@ -89,6 +90,7 @@ public:
 	static const char*	p_rPow;
 	static const char*	p_samples;
 	static const char*	p_seasonCfg;
+	static const char*	p_since;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
 	static const char*	p_stat;
@@ -96,6 +98,7 @@ public:
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
+	static const char*	p_until;
 	static const char*	p_updFlags;
 	static const char*	p_voltage;
 	static const char*	p_wdowDawnStart;
@@ -299,11 +302,15 @@ public:
 		}
 
 		if(json_obj == NULL){
+			req._error.code = Blob::ErrJsonMalformed;
+			strcpy(req._error.descr, Blob::errList[req._error.code]);
 			return false;
 		}
 
 		cJSON *idtrans = NULL;
 		if((idtrans = cJSON_GetObjectItem(json_obj, p_idTrans)) == NULL){
+			req._error.code = Blob::ErrIdTransInvalid;
+			strcpy(req._error.descr, Blob::errList[req._error.code]);
 			goto _getGetRequestFromJson_Exit;
 		}
 		req.idTrans = idtrans->valueint;
@@ -342,17 +349,23 @@ public:
 		}
 
 		if(json_obj == NULL){
+			req._error.code = Blob::ErrJsonMalformed;
+			strcpy(req._error.descr, Blob::errList[req._error.code]);
 			return false;
 		}
 
 		// key: idTrans
 		if((obj = cJSON_GetObjectItem(json_obj, p_idTrans)) == NULL){
+			req._error.code = Blob::ErrIdTransInvalid;
+			strcpy(req._error.descr, Blob::errList[req._error.code]);
 			goto _getSetRequestFromJson_Exit;
 		}
 		req.idTrans = obj->valueint;
 
 		// key:obj
 		if((obj = cJSON_GetObjectItem(json_obj, p_data)) == NULL){
+			req._error.code = Blob::ErrEmptyContent;
+			strcpy(req._error.descr, Blob::errList[req._error.code]);
 			goto _getSetRequestFromJson_Exit;
 		}
 		req.keys = getObjFromJson(req.data, obj);
@@ -390,21 +403,29 @@ public:
 		}
 
 		if(json_obj == NULL){
+			resp._error.code = Blob::ErrJsonMalformed;
+			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 			return false;
 		}
 
 		// key: idTrans
 		if((obj = cJSON_GetObjectItem(json_obj, p_idTrans)) != NULL){
+			resp._error.code = Blob::ErrIdTransInvalid;
+			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 		resp.idTrans = obj->valueint;
 
 		// key: header
 		if((obj = cJSON_GetObjectItem(json_obj, p_header)) == NULL){
+			resp._error.code = Blob::ErrEmptyContent;
+			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 		// key: timestamp
 		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
+			resp._error.code = Blob::ErrEmptyContent;
+			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 		resp.header.timestamp = (time_t)obj->valuedouble;
@@ -413,11 +434,15 @@ public:
 		if((obj = cJSON_GetObjectItem(json_obj, p_error)) != NULL){
 			// key: code
 			if((value = cJSON_GetObjectItem(obj, p_code)) == NULL){
+				resp._error.code = Blob::ErrEmptyContent;
+				strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 				goto _getResponseFromJson_Exit;
 			}
 			resp.error.code = obj->valueint;
 			// key: descr
 			if((value = cJSON_GetObjectItem(obj, p_descr)) == NULL){
+				resp._error.code = Blob::ErrEmptyContent;
+				strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 				goto _getResponseFromJson_Exit;
 			}
 			strncpy(resp.error.descr, obj->valuestring, Blob::DefaultErrDescrLen);
@@ -425,6 +450,8 @@ public:
 
 		// key:obj
 		if((obj = cJSON_GetObjectItem(json_obj, p_data)) == NULL){
+			resp._error.code = Blob::ErrEmptyContent;
+			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 

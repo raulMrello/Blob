@@ -25,33 +25,25 @@ namespace Blob {
 
 /** Lista de errores comunes */
 enum ErrorCode{
-	ErrOK,
-	ErrJsonMalformed,
-	ErrIdTransInvalid,
-	ErrStringFormat,
-	ErrSysMissing,
-	ErrAstCalMissing,
-	ErrSeasonCfgFormat,
-	ErrEnergyMissing,
-	ErrLightMissing,
-	ErrOutValueMissing,
-	ErrEmptyContent,
-	ErrRangeValue,
+	ErrOK,				//!< Sin errores
+	ErrJsonMalformed,	//!< Objeto json incorrecto
+	ErrIdTransInvalid,	//!< Identificación de transacción inválida
+	ErrStringFormat,	//!< Cadena de texto con formato incorrecto
+	ErrEmptyContent,	//!< Contenido vacío
+	ErrRangeValue,		//!< Rango incorrecto
+	ErrAllocJson,		//!< No se permite la creación del objeto
+	ErrJsonUnhandled,	//!< Objeto Json sin maneajador
 	MaxNumErrorCodes
 };
 static const char* errList[] = {
 	"", 					//ErrOk
-	"json: malformed",		//ErrJsonMalformed
-	"idTrans: missing", 	//ErrIdTransInvalid
+	"json malformed",		//ErrJsonMalformed
+	"idTrans missing", 		//ErrIdTransInvalid
 	"string malformed",		//ErrStringFormat
-	"sys: missing",			//ErrSysMissing
-	"astcal: missing",		//ErrAstCalMissing
-	"seasonCfg: malformed",	//ErrSeasonCfgFormat
-	"energy: missing",		//ErrEnergyMissing
-	"light: missing",		//ErrLightMissing
-	"outValue: missing",	//ErrOutValueMissing
-	"json: empty content",	//ErrEmptyContent
-	"value: out of range"	//ErrRangeValue
+	"json is empty",		//ErrEmptyContent
+	"value out of range",	//ErrRangeValue
+	"json alloc failed",	//ErrAllocJson
+	"json unhandled",		//ErrJsonUnhandled
 };
 
 /** Tamaño máximo de un objeto BLOB. En este caso viene determinado por el tamaño de
