@@ -20,6 +20,7 @@
 #include "AMManagerBlob.h"
 #include "LightManagerBlob.h"
 #include "SysManagerBlob.h"
+#include "FwUpdaterBlob.h"
 
 #include <type_traits>
 
@@ -44,6 +45,8 @@ public:
 	static const char*	p_data;
 	static const char*	p_date;
 	static const char*	p_descr;
+	static const char*	p_devCount;
+	static const char*	p_devList;
 	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
@@ -51,12 +54,16 @@ public:
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
 	static const char*	p_freq;
+	static const char*	p_fwSize;
+	static const char*	p_fwUrl;
 	static const char*	p_fwv;
 	static const char*	p_groupMask;
 	static const char*	p_header;
 	static const char*	p_hwv;
 	static const char*	p_id;
 	static const char*	p_idTrans;
+	static const char*	p_job;
+	static const char*	p_jobId;
 	static const char*	p_keys;
 	static const char*	p_latitude;
 	static const char*	p_light;
@@ -269,6 +276,19 @@ public:
 		}
 		if (std::is_same<T, Blob::LightTimeData_t>::value){
 			return JSON::getJsonFromLightTime((const Blob::LightTimeData_t&)obj);
+		}
+		//----- FwUpdater delegation
+		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
+			return JSON::getJsonFromFwUpdCfg((const Blob::FwUpdCfgData_t&)obj);
+		}
+		if (std::is_same<T, Blob::FwUpdStatData_t>::value){
+			return JSON::getJsonFromFwUpdStat((const Blob::FwUpdStatData_t&)obj);
+		}
+		if (std::is_same<T, Blob::FwUpdBootData_t>::value){
+			return JSON::getJsonFromFwUpdBoot((const Blob::FwUpdBootData_t&)obj);
+		}
+		if (std::is_same<T, Blob::FwUpdJob_t>::value){
+			return JSON::getJsonFromFwUpdJob((const Blob::FwUpdJob_t&)obj);
 		}
 		//----- SysManager delegation
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
@@ -553,6 +573,27 @@ public:
 		// decodifica objeto de evento temporal
 		if (std::is_same<T, Blob::LightTimeData_t>::value){
 			result = JSON::getLightTimeFromJson((Blob::LightTimeData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//----
+		// decodifica objeto de configuración
+		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
+			result = JSON::getFwUpdCfgFromJson((Blob::FwUpdCfgData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto de estado
+		if (std::is_same<T, Blob::FwUpdStatData_t>::value){
+			result = JSON::getFwUpdStatFromJson((Blob::FwUpdStatData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto de arranque
+		if (std::is_same<T, Blob::FwUpdBootData_t>::value){
+			result = JSON::getFwUpdBootFromJson((Blob::FwUpdBootData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto de configuración ALS
+		if (std::is_same<T, Blob::FwUpdJob_t>::value){
+			result = JSON::getFwUpdJobFromJson((Blob::FwUpdJob_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//----
