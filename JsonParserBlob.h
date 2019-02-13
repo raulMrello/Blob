@@ -36,6 +36,7 @@ public:
 	static const char*	p_ast;
 	static const char*	p_astcal;
 	static const char*	p_astCorr;
+	static const char*	p_bootCondition;
 	static const char*	p_calibData;
 	static const char*	p_cfg;
 	static const char*	p_channel;
@@ -83,6 +84,7 @@ public:
 	static const char*	p_mode;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
+	static const char*	p_netReady;
 	static const char*	p_now;
 	static const char*	p_numActions;
 	static const char*	p_outData;
@@ -101,7 +103,6 @@ public:
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
 	static const char*	p_stat;
-	static const char*	p_sys;
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
@@ -293,6 +294,9 @@ public:
 		//----- SysManager delegation
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
 			return JSON::getJsonFromSysCfg((const Blob::SysCfgData_t&)obj);
+		}
+		if (std::is_same<T, Blob::SysStatData_t>::value){
+			return JSON::getJsonFromSysStat((const Blob::SysStatData_t&)obj);
 		}
 		if (std::is_same<T, Blob::SysBootData_t>::value){
 			return JSON::getJsonFromSysBoot((const Blob::SysBootData_t&)obj);
@@ -603,6 +607,11 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		// decodifica objeto de estado
+		if (std::is_same<T, Blob::SysStatData_t>::value){
+			result = JSON::getSysStatFromJson((Blob::SysStatData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto de arranque
 		if (std::is_same<T, Blob::SysBootData_t>::value){
 			result = JSON::getSysBootFromJson((Blob::SysBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
