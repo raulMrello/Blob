@@ -82,6 +82,8 @@ public:
 	static const char*	p_min;
 	static const char*	p_minmaxData;
 	static const char*	p_mode;
+	static const char * p_mqttPort;
+	static const char * p_mqttUrl;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
@@ -98,6 +100,7 @@ public:
 	static const char*	p_reductionStop;
 	static const char*	p_rPow;
 	static const char*	p_samples;
+	static const char*	p_serial;
 	static const char*	p_seasonCfg;
 	static const char*	p_since;
 	static const char*	p_staEssid;
