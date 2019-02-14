@@ -134,6 +134,16 @@ struct NotificationData_t{
 };
 
 
+/** Estructura de datos de un mensaje NetworkManager y MQTTClient */
+struct BaseMsg_t
+{
+    char* topic;
+    void *data;
+    uint16_t topic_len;
+    uint16_t data_len;
+};
+
+
 static uint32_t getCRC32(void* data, uint32_t size){
     uint32_t crc = 0;
     uint8_t* udata = (uint8_t*)data;
