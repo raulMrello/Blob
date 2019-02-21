@@ -15,12 +15,13 @@
 #include "Blob.h"
 #include "cJSON.h"
 
-/** Cabeceras de los módulos integrados en el namespace JSON */
+/** Cabeceras de los mï¿½dulos integrados en el namespace JSON */
 #include "AstCalendarBlob.h"
 #include "AMManagerBlob.h"
 #include "LightManagerBlob.h"
 #include "SysManagerBlob.h"
 #include "FwUpdaterBlob.h"
+#include "MQTTClientBlob.h"
 
 #include <type_traits>
 
@@ -193,7 +194,7 @@ public:
 			return NULL;
 		}
 
-		// key: idTrans sólo se envía si está en uso
+		// key: idTrans sï¿½lo se envï¿½a si estï¿½ en uso
 		if(resp.idTrans != Blob::UnusedIdTrans){
 			cJSON_AddNumberToObject(root, p_idTrans, resp.idTrans);
 		}
@@ -206,7 +207,7 @@ public:
 		cJSON_AddNumberToObject(header, p_timestamp, resp.header.timestamp);
 		cJSON_AddItemToObject(root, p_header, header);
 
-		// key: error sólo se envía si el error es distinto de Blob::ErrOK
+		// key: error sï¿½lo se envï¿½a si el error es distinto de Blob::ErrOK
 		if(resp.error.code != Blob::ErrOK){
 			if((error=cJSON_CreateObject()) == NULL){
 				cJSON_Delete(root);
@@ -219,7 +220,7 @@ public:
 				return NULL;
 			}
 			cJSON_AddItemToObject(error, p_descr, value);
-			// añade objeto
+			// aï¿½ade objeto
 			cJSON_AddItemToObject(root, p_error, error);
 		}
 
@@ -235,9 +236,9 @@ public:
 
 
 	/**
-	 * Codifica la configuración actual en un objeto JSON. Dependiendo del tipo de dato, delega
-	 * al módulo correspondiente.
-	 * @param cfg Configuración
+	 * Codifica la configuraciï¿½n actual en un objeto JSON. Dependiendo del tipo de dato, delega
+	 * al mï¿½dulo correspondiente.
+	 * @param cfg Configuraciï¿½n
 	 * @return Objeto JSON o NULL en caso de error
 	 */
 	template <typename T>
@@ -304,6 +305,10 @@ public:
 		if (std::is_same<T, Blob::SysBootData_t>::value){
 			return JSON::getJsonFromSysBoot((const Blob::SysBootData_t&)obj);
 		}
+		//----- MQTTClient delegation
+		if (std::is_same<T, Blob::MqttStatusFlags>::value){
+			return JSON::getJsonFromMQTTCliStat((const Blob::MqttStatusFlags&)obj);
+		}
 		return NULL;
 	}
 
@@ -311,7 +316,7 @@ public:
 	/** Decodifica el mensaje JSON en un objeto Blob::GetRequest_t
 	 * @param req Recibe el objeto decodificado
 	 * @param json Objeto JSON a decodificar
-	 * @return keys Parámetros decodificados o 0 en caso de error
+	 * @return keys Parï¿½metros decodificados o 0 en caso de error
 	 */
 	template <typename U>
 	static bool getGetRequestFromJson(Blob::GetRequest_t &req, U* json){
@@ -319,7 +324,7 @@ public:
 		cJSON* stat = NULL;
 		bool result = false;
 
-		// obtengo objeto json en función del tipo
+		// obtengo objeto json en funciï¿½n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
 			json_obj = (cJSON*)json;
@@ -357,7 +362,7 @@ public:
 	/** Decodifica el mensaje JSON en un objeto Blob::SetRequest_t<T>
 	 *  @param req Recibe el objeto decodificado
 	 * @param json Objeto JSON a decodificar (cJSON* o char*)
-	 * @return keys Parámetros decodificados o 0 en caso de error
+	 * @return keys Parï¿½metros decodificados o 0 en caso de error
 	 */
 	template <typename T, typename U>
 	static bool getSetRequestFromJson(Blob::SetRequest_t<T> &req, U* json){
@@ -366,7 +371,7 @@ public:
 		req._error.code = Blob::ErrOK;
 		strcpy(req._error.descr, Blob::errList[req._error.code]);
 
-		// obtengo objeto json en función del tipo
+		// obtengo objeto json en funciï¿½n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
 			json_obj = (cJSON*)json;
@@ -409,7 +414,7 @@ public:
 	/** Decodifica el mensaje JSON en un objeto Blob::SetRequest_t<T>
 	 *  @param req Recibe el objeto decodificado
 	 * @param json Objeto JSON a decodificar
-	 * @return keys Parámetros decodificados o 0 en caso de error
+	 * @return keys Parï¿½metros decodificados o 0 en caso de error
 	 */
 	template <typename T, typename U>
 	static bool getResponseFromJson(Blob::Response_t<T> &resp, U* json){
@@ -420,7 +425,7 @@ public:
 		resp._error.code = Blob::ErrOK;
 		strcpy(resp._error.descr, Blob::errList[resp._error.code]);
 
-		// obtengo objeto json en función del tipo
+		// obtengo objeto json en funciï¿½n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
 			json_obj = (cJSON*)json;
@@ -496,13 +501,13 @@ public:
 	 * Decodifica el mensaje JSON en un objeto
 	 * @param obj Recibe el objeto decodificado
 	 * @param json Objeto JSON a decodificar
-	 * @return keys Parámetros decodificados o 0 en caso de error
+	 * @return keys Parï¿½metros decodificados o 0 en caso de error
 	 */
 	template <typename T, typename U>
 	static uint32_t getObjFromJson(T &obj, U* json){
 		uint32_t result = 0;
 
-		// obtengo objeto json en función del tipo
+		// obtengo objeto json en funciï¿½n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
 			json_obj = (cJSON*)json;
@@ -514,13 +519,13 @@ public:
 		if(json_obj == NULL){
 			return false;
 		}
-		// decodifica objeto de configuración
+		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			result = (uint32_t)getGetRequestFromJson((Blob::GetRequest_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		// decodifica objeto de configuración
+		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::AstCalCfgData_t>::value){
 			result = JSON::getAstCalCfgFromJson((Blob::AstCalCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -536,7 +541,7 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		// decodifica objeto de configuración
+		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::AMCfgData_t>::value){
 			result = JSON::getAMCfgFromJson((Blob::AMCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -551,13 +556,13 @@ public:
 			result = JSON::getAMBootFromJson((Blob::AMBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
-		// decodifica objeto de % de activación
+		// decodifica objeto de % de activaciï¿½n
 		if (std::is_same<T, Blob::AMLoadData_t>::value){
 			result = JSON::getAMLoadFromJson((Blob::AMLoadData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		// decodifica objeto de configuración
+		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
 			result = JSON::getLightCfgFromJson((Blob::LightCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -572,7 +577,7 @@ public:
 			result = JSON::getLightBootFromJson((Blob::LightBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
-		// decodifica objeto de configuración ALS
+		// decodifica objeto de configuraciï¿½n ALS
 		if (std::is_same<T, Blob::LightLuxLevel>::value){
 			result = JSON::getLightLuxFromJson((Blob::LightLuxLevel&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -583,7 +588,7 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		// decodifica objeto de configuración
+		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
 			result = JSON::getFwUpdCfgFromJson((Blob::FwUpdCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -598,13 +603,13 @@ public:
 			result = JSON::getFwUpdBootFromJson((Blob::FwUpdBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
-		// decodifica objeto de configuración ALS
+		// decodifica objeto de configuraciï¿½n ALS
 		if (std::is_same<T, Blob::FwUpdJob_t>::value){
 			result = JSON::getFwUpdJobFromJson((Blob::FwUpdJob_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		// decodifica objeto de configuración
+		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
 			result = JSON::getSysCfgFromJson((Blob::SysCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -617,6 +622,11 @@ public:
 		// decodifica objeto de arranque
 		if (std::is_same<T, Blob::SysBootData_t>::value){
 			result = JSON::getSysBootFromJson((Blob::SysBootData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto de estado
+		if (std::is_same<T, Blob::MqttStatusFlags>::value){
+			result = JSON::getMQTTCliStatFromJson((Blob::MqttStatusFlags&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 
