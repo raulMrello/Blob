@@ -120,6 +120,7 @@ struct Response_t{
 	Blob::HeaderData_t header;
 	Blob::ErrorData_t error;
 	T data;
+	Response_t() : idTrans(0) { header.timestamp = time(NULL); }
 	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat) : idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); }
 };
 
@@ -130,6 +131,7 @@ template <typename T>
 struct NotificationData_t{
 	Blob::HeaderData_t header;
 	T data;
+	NotificationData_t() { header.timestamp = time(NULL); }
 	NotificationData_t(const T& dat) : data(dat) { header.timestamp = time(NULL); }
 };
 
