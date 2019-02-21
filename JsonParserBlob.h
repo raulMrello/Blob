@@ -22,6 +22,7 @@
 #include "SysManagerBlob.h"
 #include "FwUpdaterBlob.h"
 #include "MQTTClientBlob.h"
+#include "HMIManagerBlob.h"
 
 #include <type_traits>
 
@@ -37,6 +38,8 @@ public:
 	static const char*	p_ast;
 	static const char*	p_astcal;
 	static const char*	p_astCorr;
+	static const char*	p_blinkOn;
+	static const char*	p_blinkOff;
 	static const char*	p_bootCondition;
 	static const char*	p_calibData;
 	static const char*	p_cfg;
@@ -156,7 +159,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name){
+	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data){
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
@@ -191,6 +194,7 @@ public:
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: creando root");
 			return NULL;
 		}
 
@@ -202,6 +206,7 @@ public:
 		// key: header
 		if((header=cJSON_CreateObject()) == NULL){
 			cJSON_Delete(root);
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: creando header");
 			return NULL;
 		}
 		cJSON_AddNumberToObject(header, p_timestamp, resp.header.timestamp);
@@ -211,12 +216,14 @@ public:
 		if(resp.error.code != Blob::ErrOK){
 			if((error=cJSON_CreateObject()) == NULL){
 				cJSON_Delete(root);
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: creando error");
 				return NULL;
 			}
 			cJSON_AddNumberToObject(error, p_code, resp.error.code);
 			if((value=cJSON_CreateString(resp.error.descr)) == NULL){
 				cJSON_Delete(error);
 				cJSON_Delete(root);
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: creando error.descr");
 				return NULL;
 			}
 			cJSON_AddItemToObject(error, p_descr, value);
@@ -226,6 +233,40 @@ public:
 
 		// key: object
 		cJSON* obj = getJsonFromObj(resp.data);
+		if(!obj){
+			cJSON_Delete(root);
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: data=NULL");
+			return NULL;
+		}
+		cJSON_AddItemToObject(root, p_data, obj);
+		return root;
+	}
+
+
+	/** Parsea un objeto Blob::NotificationData_t<T> en un mensaje JSON
+	 *  @param resp Respuresta a convertir a json
+	 * 	@return Objeto JSON generado
+	 */
+	template <typename T>
+	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif){
+		// keys: root, idtrans, header, error
+		cJSON *header = NULL;
+		cJSON *root = cJSON_CreateObject();
+
+		if(!root){
+			return NULL;
+		}
+
+		// key: header
+		if((header=cJSON_CreateObject()) == NULL){
+			cJSON_Delete(root);
+			return NULL;
+		}
+		cJSON_AddNumberToObject(header, p_timestamp, notif.header.timestamp);
+		cJSON_AddItemToObject(root, p_header, header);
+
+		// key: object
+		cJSON* obj = getJsonFromObj(notif.data);
 		if(!obj){
 			cJSON_Delete(root);
 			return NULL;
@@ -265,6 +306,9 @@ public:
 		}
 		if (std::is_same<T, Blob::AMBootData_t>::value){
 			return JSON::getJsonFromAMBoot((const Blob::AMBootData_t&)obj);
+		}
+		if (std::is_same<T, Blob::AMLoadData_t>::value){
+			return JSON::getJsonFromAMLoad((const Blob::AMLoadData_t&)obj);
 		}
 		//----- LightManager delegation
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
@@ -308,6 +352,13 @@ public:
 		//----- MQTTClient delegation
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
 			return JSON::getJsonFromMQTTCliStat((const Blob::MqttStatusFlags&)obj);
+		}
+		//----- HMIManager delegation
+		if (std::is_same<T, Blob::HmiLedData_t>::value){
+			return JSON::getJsonFromHMILed((const Blob::HmiLedData_t&)obj);
+		}
+		if (std::is_same<T, Blob::HmiEvtFlags>::value){
+			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
 		}
 		return NULL;
 	}
@@ -357,6 +408,56 @@ public:
 		return result;
 	}
 
+
+
+	/** Decodifica el mensaje JSON en un objeto Blob::NotificationData_t<T>
+	 *  @param req Recibe el objeto decodificado
+	 * @param json Objeto JSON a decodificar (cJSON* o char*)
+	 * @return keys Par�metros decodificados o 0 en caso de error
+	 */
+	template <typename T, typename U>
+	static bool getNotificationFromJson(Blob::NotificationData_t<T> &notif, U* json){
+		cJSON *obj = NULL;
+		cJSON *value = NULL;
+		cJSON *root = NULL;
+		bool result = false;
+
+		// obtengo objeto json en funci�n del tipo
+		cJSON *json_obj = NULL;
+		if(std::is_same<U,cJSON>::value){
+			json_obj = (cJSON*)json;
+		}
+		if(std::is_same<U,char>::value){
+			json_obj = cJSON_Parse((char*)json);
+		}
+
+		if(json_obj == NULL){
+			return false;
+		}
+
+		// key: header
+		if((obj = cJSON_GetObjectItem(json_obj, p_header)) == NULL){
+			goto _getNotificationFromJson_Exit;
+		}
+		// key: timestamp
+		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
+			goto _getNotificationFromJson_Exit;
+		}
+		notif.header.timestamp = (time_t)obj->valuedouble;
+
+		// key:obj
+		if((obj = cJSON_GetObjectItem(json_obj, p_data)) == NULL){
+			goto _getNotificationFromJson_Exit;
+		}
+
+		result = (getObjFromJson(notif.data, obj))? true : false;
+
+	_getNotificationFromJson_Exit:
+		if(std::is_same<U,char>::value){
+			cJSON_Delete(json_obj);
+		}
+		return result;
+	}
 
 
 	/** Decodifica el mensaje JSON en un objeto Blob::SetRequest_t<T>
@@ -420,10 +521,9 @@ public:
 	static bool getResponseFromJson(Blob::Response_t<T> &resp, U* json){
 		cJSON *obj = NULL;
 		cJSON *value = NULL;
-		cJSON *root = NULL;
 		bool result = false;
-		resp._error.code = Blob::ErrOK;
-		strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+		resp.error.code = Blob::ErrOK;
+		strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
@@ -435,29 +535,26 @@ public:
 		}
 
 		if(json_obj == NULL){
-			resp._error.code = Blob::ErrJsonMalformed;
-			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+			resp.error.code = Blob::ErrJsonMalformed;
+			strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 			return false;
 		}
 
-		// key: idTrans
+		// key: idTrans [opcional]
 		if((obj = cJSON_GetObjectItem(json_obj, p_idTrans)) != NULL){
-			resp._error.code = Blob::ErrIdTransInvalid;
-			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
-			goto _getResponseFromJson_Exit;
+			resp.idTrans = obj->valueint;
 		}
-		resp.idTrans = obj->valueint;
 
 		// key: header
 		if((obj = cJSON_GetObjectItem(json_obj, p_header)) == NULL){
-			resp._error.code = Blob::ErrEmptyContent;
-			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+			resp.error.code = Blob::ErrEmptyContent;
+			strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 		// key: timestamp
 		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
-			resp._error.code = Blob::ErrEmptyContent;
-			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+			resp.error.code = Blob::ErrEmptyContent;
+			strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 		resp.header.timestamp = (time_t)obj->valuedouble;
@@ -466,15 +563,15 @@ public:
 		if((obj = cJSON_GetObjectItem(json_obj, p_error)) != NULL){
 			// key: code
 			if((value = cJSON_GetObjectItem(obj, p_code)) == NULL){
-				resp._error.code = Blob::ErrEmptyContent;
-				strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+				resp.error.code = Blob::ErrEmptyContent;
+				strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 				goto _getResponseFromJson_Exit;
 			}
 			resp.error.code = obj->valueint;
 			// key: descr
 			if((value = cJSON_GetObjectItem(obj, p_descr)) == NULL){
-				resp._error.code = Blob::ErrEmptyContent;
-				strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+				resp.error.code = Blob::ErrEmptyContent;
+				strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 				goto _getResponseFromJson_Exit;
 			}
 			strncpy(resp.error.descr, obj->valuestring, Blob::DefaultErrDescrLen);
@@ -482,8 +579,8 @@ public:
 
 		// key:obj
 		if((obj = cJSON_GetObjectItem(json_obj, p_data)) == NULL){
-			resp._error.code = Blob::ErrEmptyContent;
-			strcpy(resp._error.descr, Blob::errList[resp._error.code]);
+			resp.error.code = Blob::ErrEmptyContent;
+			strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 			goto _getResponseFromJson_Exit;
 		}
 
@@ -627,6 +724,17 @@ public:
 		// decodifica objeto de estado
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
 			result = JSON::getMQTTCliStatFromJson((Blob::MqttStatusFlags&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//----
+		// decodifica objeto
+		if (std::is_same<T, Blob::HmiLedData_t>::value){
+			result = JSON::getHMILedFromJson((Blob::HmiLedData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto
+		if (std::is_same<T, Blob::HmiEvtFlags>::value){
+			result = JSON::getHMIEventFromJson((Blob::HmiEvtFlags&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 
