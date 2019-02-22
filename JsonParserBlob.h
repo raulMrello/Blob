@@ -349,6 +349,9 @@ public:
 		if (std::is_same<T, Blob::SysBootData_t>::value){
 			return JSON::getJsonFromSysBoot((const Blob::SysBootData_t&)obj);
 		}
+		if (std::is_same<T, Blob::SysNullData_t>::value){
+			return JSON::getJsonFromSysNull((const Blob::SysNullData_t&)obj);
+		}
 		//----- MQTTClient delegation
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
 			return JSON::getJsonFromMQTTCliStat((const Blob::MqttStatusFlags&)obj);
@@ -721,6 +724,12 @@ public:
 			result = JSON::getSysBootFromJson((Blob::SysBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		// decodifica objeto de solicitud de arranque
+		if (std::is_same<T, Blob::SysNullData_t>::value){
+			result = JSON::getSysNullFromJson((Blob::SysNullData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//----
 		// decodifica objeto de estado
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
 			result = JSON::getMQTTCliStatFromJson((Blob::MqttStatusFlags&)obj, json_obj);
