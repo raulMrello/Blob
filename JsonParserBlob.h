@@ -254,11 +254,13 @@ public:
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando root");
 			return NULL;
 		}
 
 		// key: header
 		if((header=cJSON_CreateObject()) == NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando header");
 			cJSON_Delete(root);
 			return NULL;
 		}
@@ -268,6 +270,7 @@ public:
 		// key: object
 		cJSON* obj = getJsonFromObj(notif.data);
 		if(!obj){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando data");
 			cJSON_Delete(root);
 			return NULL;
 		}
@@ -363,6 +366,7 @@ public:
 		if (std::is_same<T, Blob::HmiEvtFlags>::value){
 			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
 		}
+		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
 
@@ -435,21 +439,25 @@ public:
 		}
 
 		if(json_obj == NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: json_obj is NULL");
 			return false;
 		}
 
 		// key: header
 		if((obj = cJSON_GetObjectItem(json_obj, p_header)) == NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: header is NULL");
 			goto _getNotificationFromJson_Exit;
 		}
 		// key: timestamp
 		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: timestamp is NULL");
 			goto _getNotificationFromJson_Exit;
 		}
 		notif.header.timestamp = (time_t)obj->valuedouble;
 
 		// key:obj
 		if((obj = cJSON_GetObjectItem(json_obj, p_data)) == NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: data is NULL");
 			goto _getNotificationFromJson_Exit;
 		}
 
