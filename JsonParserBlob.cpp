@@ -113,6 +113,7 @@ const char * JsonParser::p_time			= "time";
 const char * JsonParser::p_timestamp	= "timestamp";
 const char * JsonParser::p_until		= "until";
 const char * JsonParser::p_updFlags		= "updFlags";
+const char * JsonParser::p_verbosity	= "verbosity";
 const char * JsonParser::p_voltage		= "voltage";
 const char * JsonParser::p_wdowDawnStart= "wdowDawnStart";
 const char * JsonParser::p_wdowDawnStop	= "wdowDawnStop";
