@@ -116,6 +116,7 @@ public:
 	static const char*	p_timestamp;
 	static const char*	p_until;
 	static const char*	p_updFlags;
+	static const char*	p_verbosity;
 	static const char*	p_voltage;
 	static const char*	p_wdowDawnStart;
 	static const char*	p_wdowDawnStop;
