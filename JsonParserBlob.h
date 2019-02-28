@@ -41,6 +41,7 @@ public:
 	static const char*	p_blinkOn;
 	static const char*	p_blinkOff;
 	static const char*	p_bootCondition;
+	static const char*	p_bootVers;
 	static const char*	p_calibData;
 	static const char*	p_cfg;
 	static const char*	p_channel;
