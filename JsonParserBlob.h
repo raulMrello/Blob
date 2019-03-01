@@ -68,6 +68,7 @@ public:
 	static const char*	p_hwv;
 	static const char*	p_id;
 	static const char*	p_idTrans;
+	static const char*	p_isRoot;
 	static const char*	p_job;
 	static const char*	p_jobId;
 	static const char*	p_keys;

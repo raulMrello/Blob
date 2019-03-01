@@ -65,6 +65,7 @@ const char * JsonParser::p_header		= "header";
 const char * JsonParser::p_hwv			= "hwv";
 const char * JsonParser::p_id			= "id";
 const char * JsonParser::p_idTrans		= "idTrans";
+const char * JsonParser::p_isRoot		= "isRoot";
 const char * JsonParser::p_job			= "job";
 const char * JsonParser::p_jobId		= "jobId";
 const char * JsonParser::p_keys			= "keys";
