@@ -68,6 +68,7 @@ const char * JsonParser::p_idTrans		= "idTrans";
 const char * JsonParser::p_isRoot		= "isRoot";
 const char * JsonParser::p_job			= "job";
 const char * JsonParser::p_jobId		= "jobId";
+const char * JsonParser::p_keepAlive	= "keepAlive";
 const char * JsonParser::p_keys			= "keys";
 const char * JsonParser::p_latitude		= "latitude";
 const char * JsonParser::p_light		= "light";

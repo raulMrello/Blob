@@ -71,6 +71,7 @@ public:
 	static const char*	p_isRoot;
 	static const char*	p_job;
 	static const char*	p_jobId;
+	static const char*	p_keepAlive;
 	static const char*	p_keys;
 	static const char*	p_latitude;
 	static const char*	p_light;
@@ -364,6 +365,9 @@ public:
 		//----- MQTTClient delegation
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
 			return JSON::getJsonFromMQTTCliStat((const Blob::MqttStatusFlags&)obj);
+		}
+		if (std::is_same<T, Blob::MQTTCfgData_t>::value){
+			return JSON::getJsonFromMQTTCliCfg((const Blob::MQTTCfgData_t&)obj);
 		}
 		//----- HMIManager delegation
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
@@ -747,6 +751,10 @@ public:
 		// decodifica objeto de estado
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
 			result = JSON::getMQTTCliStatFromJson((Blob::MqttStatusFlags&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, Blob::MQTTCfgData_t>::value){
+			result = JSON::getMQTTCliCfgFromJson((Blob::MQTTCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//----
