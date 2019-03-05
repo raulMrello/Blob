@@ -97,10 +97,12 @@ public:
 	static const char*	p_numActions;
 	static const char*	p_outData;
 	static const char*	p_outValue;
+	static const char*	p_passwd;
 	static const char*	p_period;
 	static const char*	p_periods;
 	static const char*	p_pfactor;
 	static const char*	p_phase;
+	static const char*	p_qos;
 	static const char*	p_reactive;
 	static const char*	p_reductionStart;
 	static const char*	p_reductionStop;
@@ -117,6 +119,7 @@ public:
 	static const char*	p_timestamp;
 	static const char*	p_until;
 	static const char*	p_updFlags;
+	static const char*	p_username;
 	static const char*	p_verbosity;
 	static const char*	p_voltage;
 	static const char*	p_wdowDawnStart;
