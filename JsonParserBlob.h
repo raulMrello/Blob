@@ -23,6 +23,8 @@
 #include "FwUpdaterBlob.h"
 #include "MQTTClientBlob.h"
 #include "HMIManagerBlob.h"
+#include "BlufiManagerBlob.h"
+
 
 #include <type_traits>
 
@@ -115,6 +117,8 @@ public:
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
 	static const char*	p_stat;
+	static const char*	p_thdA;
+	static const char*	p_thdV;
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
@@ -376,6 +380,10 @@ public:
 		if (std::is_same<T, Blob::HmiEvtFlags>::value){
 			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
 		}
+		//----- BlufiManager delegation
+		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
+			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
+		}
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -438,7 +446,7 @@ public:
 		cJSON *value = NULL;
 		cJSON *root = NULL;
 		bool result = false;
-
+		
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
@@ -458,6 +466,7 @@ public:
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: header is NULL");
 			goto _getNotificationFromJson_Exit;
 		}
+
 		// key: timestamp
 		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: timestamp is NULL");
@@ -477,6 +486,7 @@ public:
 		if(std::is_same<U,char>::value){
 			cJSON_Delete(json_obj);
 		}
+
 		return result;
 	}
 
@@ -766,6 +776,11 @@ public:
 		// decodifica objeto
 		if (std::is_same<T, Blob::HmiEvtFlags>::value){
 			result = JSON::getHMIEventFromJson((Blob::HmiEvtFlags&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//decodifica objeto blufiMan
+		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
+			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 
