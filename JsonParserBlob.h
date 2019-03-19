@@ -117,6 +117,8 @@ public:
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
 	static const char*	p_stat;
+	static const char*	p_thdA;
+	static const char*	p_thdV;
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
