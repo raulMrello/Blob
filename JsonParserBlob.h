@@ -126,6 +126,7 @@ public:
 	static const char*	p_updFlags;
 	static const char*	p_username;
 	static const char*	p_verbosity;
+	static const char*	p_version;
 	static const char*	p_voltage;
 	static const char*	p_wdowDawnStart;
 	static const char*	p_wdowDawnStop;
