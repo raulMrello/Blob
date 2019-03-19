@@ -121,6 +121,7 @@ const char * JsonParser::p_until		= "until";
 const char * JsonParser::p_updFlags		= "updFlags";
 const char * JsonParser::p_username		= "username";
 const char * JsonParser::p_verbosity	= "verbosity";
+const char * JsonParser::p_version		= "version";
 const char * JsonParser::p_voltage		= "voltage";
 const char * JsonParser::p_wdowDawnStart= "wdowDawnStart";
 const char * JsonParser::p_wdowDawnStop	= "wdowDawnStop";
