@@ -25,6 +25,10 @@
 #include "HMIManagerBlob.h"
 #include "BlufiManagerBlob.h"
 
+/** Definiciones de los Modelos de datos */
+#include "common_objects.h"
+#include "ppl_energy_objects.h"
+
 
 #include <type_traits>
 
@@ -386,6 +390,42 @@ public:
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
 		}
+		//----- Objetos ppl:energy
+		if (std::is_same<T, ppl_energy>::value){
+			return JSON::getJsonFromPplEnergy((const ppl_energy&)obj);
+		}
+		if (std::is_same<T, ppl_energy_cfg>::value){
+			return JSON::getJsonFromPplEnergyCfg((const ppl_energy_cfg&)obj);
+		}
+		if (std::is_same<T, ppl_energy_stat>::value){
+			return JSON::getJsonFromPplEnergyStat((const ppl_energy_stat&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer>::value){
+			return JSON::getJsonFromPplEnergyAnalyzer((const ppl_energy_analyzer&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer_cfg>::value){
+			return JSON::getJsonFromPplEnergyAnalyzerCfg((const ppl_energy_analyzer_cfg&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer_cfg_minmax>::value){
+			return JSON::getJsonFromPplEnergyAnalyzerCfgMinMax((const ppl_energy_analyzer_cfg_minmax&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer_cfg_calib>::value){
+			return JSON::getJsonFromPplEnergyAnalyzerCfgCalib((const ppl_energy_analyzer_cfg_calib&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer_stat>::value){
+			return JSON::getJsonFromPplEnergyAnalyzerStat((const ppl_energy_analyzer_stat&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer_stat_totals>::value){
+			return JSON::getJsonFromPplEnergyAnalyzerStatTotals((const ppl_energy_analyzer_stat_totals&)obj);
+		}
+		if (std::is_same<T, ppl_energy_analyzer_stat_measure>::value){
+			return JSON::getJsonFromPplEnergyAnalyzerStatMeasure((const ppl_energy_analyzer_stat_measure&)obj);
+		}
+		//----- Objetos externos de propósito general
+		if (std::is_same<T, range_minmaxthres_double>::value){
+			return JSON::getJsonFromRangeMinMaxThresDouble((const range_minmaxthres_double&)obj);
+		}
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -783,6 +823,52 @@ public:
 		//decodifica objeto blufiMan
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos ppl:energy
+		if (std::is_same<T, ppl_energy>::value){
+			result = JSON::getPplEnergyFromJson((ppl_energy&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_cfg>::value){
+			result = JSON::getPplEnergyCfgFromJson((ppl_energy_cfg&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_stat>::value){
+			result = JSON::getPplEnergyStatFromJson((ppl_energy_stat&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer>::value){
+			result = JSON::getPplEnergyAnalyzerFromJson((ppl_energy_analyzer&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer_cfg>::value){
+			result = JSON::getPplEnergyAnalyzerCfgFromJson((ppl_energy_analyzer_cfg&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer_cfg_minmax>::value){
+			result = JSON::getPplEnergyAnalyzerCfgMinMaxFromJson((ppl_energy_analyzer_cfg_minmax&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer_cfg_calib>::value){
+			result = JSON::getPplEnergyAnalyzerCfgCalibFromJson((ppl_energy_analyzer_cfg_calib&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer_stat>::value){
+			result = JSON::getPplEnergyAnalyzerStatFromJson((ppl_energy_analyzer_stat&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer_stat_totals>::value){
+			result = JSON::getPplEnergyAnalyzerStatTotalsFromJson((ppl_energy_analyzer_stat_totals&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		if (std::is_same<T, ppl_energy_analyzer_stat_measure>::value){
+			result = JSON::getPplEnergyAnalyzerStatMeasureFromJson((ppl_energy_analyzer_stat_measure&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos comunes de propósito general
+		if (std::is_same<T, range_minmaxthres_double>::value){
+			result = JSON::getRangeMinMaxThresDoubleFromJson((range_minmaxthres_double&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 
