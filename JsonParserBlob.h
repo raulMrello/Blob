@@ -122,6 +122,7 @@ public:
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
+	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
 	static const char*	p_username;
