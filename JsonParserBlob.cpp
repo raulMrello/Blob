@@ -117,6 +117,7 @@ const char * JsonParser::p_thdV			= "thdV";
 const char * JsonParser::p_thres		= "thres";
 const char * JsonParser::p_time			= "time";
 const char * JsonParser::p_timestamp	= "timestamp";
+const char * JsonParser::p_uid			= "uid";
 const char * JsonParser::p_until		= "until";
 const char * JsonParser::p_updFlags		= "updFlags";
 const char * JsonParser::p_username		= "username";
