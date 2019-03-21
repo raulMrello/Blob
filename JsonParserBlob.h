@@ -27,7 +27,7 @@
 
 /** Definiciones de los Modelos de datos */
 #include "common_objects.h"
-#include "ppl_energy_objects.h"
+#include "metering_objects.h"
 
 
 #include <type_traits>
@@ -40,6 +40,7 @@ public:
 	static const char*	p_actions;
 	static const char*	p_active;
 	static const char*	p_alsData;
+	static const char*	p_analyzers;
 	static const char*	p_aPow;
 	static const char*	p_ast;
 	static const char*	p_astcal;
@@ -139,6 +140,16 @@ public:
 	static const char*	p_wdowDuskStop;
 
 
+	/** Tipos de secciones de datos que se pueden leer-escribir en los objetos
+	 *
+	 */
+	enum DataType {
+		All,   //!< All Todo el contenido del objeto
+		Status,//!< Status Únicamente el estado del objeto
+		Config //!< Config Únicamente la configuración del objeto
+	};
+
+
 	/** Parsea un objeto Blob::GetRequest_t en un mensaje JSON
 	 *  @param req Solicitud a convertir a json
 	 * 	@return Objeto JSON generado
@@ -176,7 +187,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data){
+	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data, DataType type = All){
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
@@ -188,7 +199,7 @@ public:
 		cJSON_AddNumberToObject(root, p_keys, req.keys);
 
 		// key: object
-		cJSON* obj = getJsonFromObj(req.data);
+		cJSON* obj = getJsonFromObj(req.data, type);
 		if(!obj){
 			cJSON_Delete(root);
 			return NULL;
@@ -203,7 +214,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp){
+	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, DataType type = All){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *error = NULL;
@@ -249,7 +260,7 @@ public:
 		}
 
 		// key: object
-		cJSON* obj = getJsonFromObj(resp.data);
+		cJSON* obj = getJsonFromObj(resp.data, type);
 		if(!obj){
 			cJSON_Delete(root);
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: data=NULL");
@@ -265,7 +276,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif){
+	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif, DataType type = All){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *root = cJSON_CreateObject();
@@ -285,7 +296,7 @@ public:
 		cJSON_AddItemToObject(root, p_header, header);
 
 		// key: object
-		cJSON* obj = getJsonFromObj(notif.data);
+		cJSON* obj = getJsonFromObj(notif.data, type);
 		if(!obj){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando data");
 			cJSON_Delete(root);
@@ -303,7 +314,7 @@ public:
 	 * @return Objeto JSON o NULL en caso de error
 	 */
 	template <typename T>
-	static cJSON* getJsonFromObj(const T& obj){
+	static cJSON* getJsonFromObj(const T& obj, DataType type = All){
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
@@ -316,19 +327,6 @@ public:
 		}
 		if (std::is_same<T, Blob::AstCalBootData_t>::value){
 			return JSON::getJsonFromAstCalBoot((const Blob::AstCalBootData_t&)obj);
-		}
-		//----- AMManager delegation
-		if (std::is_same<T, Blob::AMCfgData_t>::value){
-			return JSON::getJsonFromAMCfg((const Blob::AMCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AMStatData_t>::value){
-			return JSON::getJsonFromAMStat((const Blob::AMStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AMBootData_t>::value){
-			return JSON::getJsonFromAMBoot((const Blob::AMBootData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AMLoadData_t>::value){
-			return JSON::getJsonFromAMLoad((const Blob::AMLoadData_t&)obj);
 		}
 		//----- LightManager delegation
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
@@ -390,40 +388,15 @@ public:
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
 		}
-		//----- Objetos ppl:energy
-		if (std::is_same<T, ppl_energy>::value){
-			return JSON::getJsonFromPplEnergy((const ppl_energy&)obj);
+		//----- Objetos metering
+		cJSON* result = NULL;
+		if((result = JSON::getJsonFromMetering(obj, type)) != NULL){
+			return result;
 		}
-		if (std::is_same<T, ppl_energy_cfg>::value){
-			return JSON::getJsonFromPplEnergyCfg((const ppl_energy_cfg&)obj);
-		}
-		if (std::is_same<T, ppl_energy_stat>::value){
-			return JSON::getJsonFromPplEnergyStat((const ppl_energy_stat&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer>::value){
-			return JSON::getJsonFromPplEnergyAnalyzer((const ppl_energy_analyzer&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer_cfg>::value){
-			return JSON::getJsonFromPplEnergyAnalyzerCfg((const ppl_energy_analyzer_cfg&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer_cfg_minmax>::value){
-			return JSON::getJsonFromPplEnergyAnalyzerCfgMinMax((const ppl_energy_analyzer_cfg_minmax&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer_cfg_calib>::value){
-			return JSON::getJsonFromPplEnergyAnalyzerCfgCalib((const ppl_energy_analyzer_cfg_calib&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer_stat>::value){
-			return JSON::getJsonFromPplEnergyAnalyzerStat((const ppl_energy_analyzer_stat&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer_stat_totals>::value){
-			return JSON::getJsonFromPplEnergyAnalyzerStatTotals((const ppl_energy_analyzer_stat_totals&)obj);
-		}
-		if (std::is_same<T, ppl_energy_analyzer_stat_measure>::value){
-			return JSON::getJsonFromPplEnergyAnalyzerStatMeasure((const ppl_energy_analyzer_stat_measure&)obj);
-		}
+
 		//----- Objetos externos de propósito general
-		if (std::is_same<T, range_minmaxthres_double>::value){
-			return JSON::getJsonFromRangeMinMaxThresDouble((const range_minmaxthres_double&)obj);
+		if (std::is_same<T, common_range_minmaxthres_double>::value){
+			return JSON::getJsonFromRangeMinMaxThresDouble((const common_range_minmaxthres_double&)obj);
 		}
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
@@ -712,27 +685,6 @@ public:
 		}
 		//----
 		// decodifica objeto de configuraciï¿½n
-		if (std::is_same<T, Blob::AMCfgData_t>::value){
-			result = JSON::getAMCfgFromJson((Blob::AMCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::AMStatData_t>::value){
-			result = JSON::getAMStatFromJson((Blob::AMStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::AMBootData_t>::value){
-			result = JSON::getAMBootFromJson((Blob::AMBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de % de activaciï¿½n
-		if (std::is_same<T, Blob::AMLoadData_t>::value){
-			result = JSON::getAMLoadFromJson((Blob::AMLoadData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
 			result = JSON::getLightCfgFromJson((Blob::LightCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -825,50 +777,14 @@ public:
 			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
-		//---- Decodifica Objetos ppl:energy
-		if (std::is_same<T, ppl_energy>::value){
-			result = JSON::getPplEnergyFromJson((ppl_energy&)obj, json_obj);
+		//---- Decodifica Objetos metering
+		if((result = JSON::getMeteringObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
-		if (std::is_same<T, ppl_energy_cfg>::value){
-			result = JSON::getPplEnergyCfgFromJson((ppl_energy_cfg&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_stat>::value){
-			result = JSON::getPplEnergyStatFromJson((ppl_energy_stat&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer>::value){
-			result = JSON::getPplEnergyAnalyzerFromJson((ppl_energy_analyzer&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer_cfg>::value){
-			result = JSON::getPplEnergyAnalyzerCfgFromJson((ppl_energy_analyzer_cfg&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer_cfg_minmax>::value){
-			result = JSON::getPplEnergyAnalyzerCfgMinMaxFromJson((ppl_energy_analyzer_cfg_minmax&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer_cfg_calib>::value){
-			result = JSON::getPplEnergyAnalyzerCfgCalibFromJson((ppl_energy_analyzer_cfg_calib&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer_stat>::value){
-			result = JSON::getPplEnergyAnalyzerStatFromJson((ppl_energy_analyzer_stat&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer_stat_totals>::value){
-			result = JSON::getPplEnergyAnalyzerStatTotalsFromJson((ppl_energy_analyzer_stat_totals&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, ppl_energy_analyzer_stat_measure>::value){
-			result = JSON::getPplEnergyAnalyzerStatMeasureFromJson((ppl_energy_analyzer_stat_measure&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
+
 		//---- Decodifica Objetos comunes de propósito general
-		if (std::is_same<T, range_minmaxthres_double>::value){
-			result = JSON::getRangeMinMaxThresDoubleFromJson((range_minmaxthres_double&)obj, json_obj);
+		if (std::is_same<T, common_range_minmaxthres_double>::value){
+			result = JSON::getRangeMinMaxThresDoubleFromJson((common_range_minmaxthres_double&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 

@@ -31,6 +31,7 @@ static const char* _MODULE_ = "[JSON]..........";
 const char * JsonParser::p_actions		= "actions";
 const char * JsonParser::p_active		= "active";
 const char * JsonParser::p_alsData		= "alsData";
+const char * JsonParser::p_analyzers	= "analyzers";
 const char * JsonParser::p_aPow			= "aPow";
 const char * JsonParser::p_ast			= "ast";
 const char * JsonParser::p_astcal		= "astcal";

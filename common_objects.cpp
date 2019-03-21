@@ -21,7 +21,7 @@ namespace JSON{
 
 
 //------------------------------------------------------------------------------------
-cJSON* getJsonFromRangeMinMaxThresDouble(const range_minmaxthres_double& obj){
+cJSON* getJsonFromRangeMinMaxThresDouble(const common_range_minmaxthres_double& obj){
 	cJSON* json = NULL;
 
 	if((json=cJSON_CreateObject()) == NULL){
@@ -37,7 +37,7 @@ cJSON* getJsonFromRangeMinMaxThresDouble(const range_minmaxthres_double& obj){
 
 
 //------------------------------------------------------------------------------------
-uint32_t getRangeMinMaxThresDoubleFromJson(range_minmaxthres_double &obj, cJSON* json){
+uint32_t getRangeMinMaxThresDoubleFromJson(common_range_minmaxthres_double &obj, cJSON* json){
 	cJSON* value = NULL;
 	uint32_t keys = 0;
 	if(json == NULL){

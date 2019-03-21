@@ -13,8 +13,13 @@
 #include <cstdint>
 
 
-/**Objeto range:minmaxthres:double */
-struct range_minmaxthres_double{
+/** UIDs */
+#define UID_COMMON_RANGE_MINMAXTHRES_DOUBLE(vers)	(uint32_t)(0x00010000 | ((uint32_t)vers << 20))
+
+
+
+/** Objeto range:minmaxthres:double */
+struct common_range_minmaxthres_double{
 	uint32_t uid;
 	double min;
 	double max;
@@ -29,7 +34,7 @@ namespace JSON {
  * @param obj Objeto
  * @return JSON resultante o NULL en caso de error
  */
-cJSON* getJsonFromRangeMinMaxThresDouble(const range_minmaxthres_double& obj);
+cJSON* getJsonFromRangeMinMaxThresDouble(const common_range_minmaxthres_double& obj);
 
 
 /**
@@ -38,7 +43,7 @@ cJSON* getJsonFromRangeMinMaxThresDouble(const range_minmaxthres_double& obj);
  * @param json Objeto JSON a decodificar
  * @return keys Parámetros decodificados o 0 en caso de error
  */
-uint32_t getRangeMinMaxThresDoubleFromJson(range_minmaxthres_double &obj, cJSON* json);
+uint32_t getRangeMinMaxThresDoubleFromJson(common_range_minmaxthres_double &obj, cJSON* json);
 
 
 }	// end namespace JSON

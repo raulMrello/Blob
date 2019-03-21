@@ -33,6 +33,7 @@ enum ErrorCode{
 	ErrRangeValue,		//!< Rango incorrecto
 	ErrAllocJson,		//!< No se permite la creación del objeto
 	ErrJsonUnhandled,	//!< Objeto Json sin maneajador
+	ErrUidInvalid,		//!< UID Inválido
 	MaxNumErrorCodes
 };
 static const char* errList[] = {
