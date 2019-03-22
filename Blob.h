@@ -36,6 +36,8 @@ enum ErrorCode{
 	ErrUidInvalid,		//!< UID Inválido
 	MaxNumErrorCodes
 };
+
+
 static const char* errList[] = {
 	"", 					//ErrOk
 	"json malformed",		//ErrJsonMalformed
@@ -46,6 +48,8 @@ static const char* errList[] = {
 	"json alloc failed",	//ErrAllocJson
 	"json unhandled",		//ErrJsonUnhandled
 };
+
+
 
 /** Tamaño máximo de un objeto BLOB. En este caso viene determinado por el tamaño de
  * 	los datos de usuario que viajan por el paquete MQNet_Message_t eliminando el tamaño

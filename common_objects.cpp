@@ -49,15 +49,15 @@ uint32_t getRangeMinMaxThresDoubleFromJson(common_range_minmaxthres_double &obj,
 		keys |= (1<<0);
 	}
 	if((value = cJSON_GetObjectItem(json,JsonParser::p_min)) != NULL){
-		obj.min = value->valueint;
+		obj.min = value->valuedouble;
 		keys |= (1<<1);
 	}
 	if((value = cJSON_GetObjectItem(json,JsonParser::p_max)) != NULL){
-		obj.max = value->valueint;
+		obj.max = value->valuedouble;
 		keys |= (1<<2);
 	}
 	if((value = cJSON_GetObjectItem(json,JsonParser::p_thres)) != NULL){
-		obj.thres = value->valueint;
+		obj.thres = value->valuedouble;
 		keys |= (1<<3);
 	}
 	return keys;
