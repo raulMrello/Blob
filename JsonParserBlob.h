@@ -82,6 +82,7 @@ public:
 	static const char*	p_keys;
 	static const char*	p_latitude;
 	static const char*	p_light;
+	static const char*	p_loadPercent;
 	static const char*	p_longitude;
 	static const char*	p_lux;
 	static const char*	p_luxLevel;
