@@ -29,7 +29,6 @@
 #include "common_objects.h"
 #include "metering_objects.h"
 
-
 #include <type_traits>
 
 
@@ -141,16 +140,6 @@ public:
 	static const char*	p_wdowDuskStop;
 
 
-	/** Tipos de secciones de datos que se pueden leer-escribir en los objetos
-	 *
-	 */
-	enum DataType {
-		All,   //!< All Todo el contenido del objeto
-		Status,//!< Status Únicamente el estado del objeto
-		Config //!< Config Únicamente la configuración del objeto
-	};
-
-
 	/** Parsea un objeto Blob::GetRequest_t en un mensaje JSON
 	 *  @param req Solicitud a convertir a json
 	 * 	@return Objeto JSON generado
@@ -188,7 +177,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data, DataType type = All){
+	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data, ObjDataSelection type = ObjSelectAll){
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
@@ -215,7 +204,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, DataType type = All){
+	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, ObjDataSelection type = ObjSelectAll){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *error = NULL;
@@ -277,7 +266,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif, DataType type = All){
+	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif, ObjDataSelection type = ObjSelectAll){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *root = cJSON_CreateObject();
@@ -315,7 +304,7 @@ public:
 	 * @return Objeto JSON o NULL en caso de error
 	 */
 	template <typename T>
-	static cJSON* getJsonFromObj(const T& obj, DataType type = All){
+	static cJSON* getJsonFromObj(const T& obj, ObjDataSelection type = ObjSelectAll){
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
@@ -391,7 +380,7 @@ public:
 		}
 		//----- Objetos metering
 		cJSON* result = NULL;
-		if((result = JSON::getJsonFromMetering(obj, type)) != NULL){
+		if((result = JSON::getJsonFromMetering((const T&)obj, type)) != NULL){
 			return result;
 		}
 

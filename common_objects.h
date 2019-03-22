@@ -11,6 +11,18 @@
 #define COMMON_OBJECTS_
 
 #include <cstdint>
+#include <type_traits>
+#include "cJSON.h"
+
+
+/** Tipos de secciones de datos que se pueden leer-escribir en los objetos
+ *
+ */
+enum ObjDataSelection {
+	ObjSelectAll,   //!< ObjSelectAll 	Todo el contenido del objeto
+	ObjSelectState,	//!< ObjSelectState Únicamente el estado del objeto
+	ObjSelectCfg 	//!< ObjSelectCfg 	Únicamente la configuración del objeto
+};
 
 
 /** UIDs */
