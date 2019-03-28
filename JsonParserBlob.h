@@ -28,6 +28,7 @@
 /** Definiciones de los Modelos de datos */
 #include "common_objects.h"
 #include "metering_objects.h"
+#include "calendar_objects.h"
 
 #include <type_traits>
 
@@ -51,14 +52,18 @@ public:
 	static const char*	p_calibData;
 	static const char*	p_cfg;
 	static const char*	p_channel;
+	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*	p_coords;
 	static const char*	p_current;
 	static const char*	p_curve;
 	static const char*	p_data;
 	static const char*	p_date;
+	static const char*	p_dawn;
 	static const char*	p_descr;
 	static const char*	p_devCount;
 	static const char*	p_devList;
+	static const char*	p_dusk;
 	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
@@ -69,6 +74,7 @@ public:
 	static const char*	p_fwSize;
 	static const char*	p_fwUrl;
 	static const char*	p_fwv;
+	static const char*	p_geoloc;
 	static const char*	p_groupMask;
 	static const char*	p_header;
 	static const char*	p_hwv;
@@ -82,6 +88,7 @@ public:
 	static const char*	p_latitude;
 	static const char*	p_light;
 	static const char*	p_loadPercent;
+	static const char*	p_localtime;
 	static const char*	p_longitude;
 	static const char*	p_lux;
 	static const char*	p_luxLevel;
@@ -127,6 +134,7 @@ public:
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
+	static const char*	p_timezone;
 	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
@@ -383,6 +391,10 @@ public:
 		if((result = JSON::getJsonFromMetering((const T&)obj, type)) != NULL){
 			return result;
 		}
+		//----- Objetos calendar
+		if((result = JSON::getJsonFromCalendar((const T&)obj, type)) != NULL){
+			return result;
+		}
 
 		//----- Objetos externos de propósito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -401,8 +413,6 @@ public:
 	 */
 	template <typename U>
 	static bool getGetRequestFromJson(Blob::GetRequest_t &req, U* json){
-		cJSON* cfg = NULL;
-		cJSON* stat = NULL;
 		bool result = false;
 
 		// obtengo objeto json en funciï¿½n del tipo
@@ -769,6 +779,10 @@ public:
 		}
 		//---- Decodifica Objetos metering
 		if((result = JSON::getMeteringObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos calendar
+		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 

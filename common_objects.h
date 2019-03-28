@@ -26,7 +26,7 @@ enum ObjDataSelection {
 
 
 /** UIDs */
-#define UID_COMMON_RANGE_MINMAXTHRES_DOUBLE(vers)	(uint32_t)(0x00010000 | ((uint32_t)vers << 20))
+#define UID_COMMON_RANGE_MINMAXTHRES_DOUBLE(vers)	(uint32_t)(0x000F0000 | ((uint32_t)vers << 20))
 
 
 
