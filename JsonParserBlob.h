@@ -316,16 +316,6 @@ public:
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
-		//----- AstCal delegation
-		if (std::is_same<T, Blob::AstCalCfgData_t>::value){
-			return JSON::getJsonFromAstCalCfg((const Blob::AstCalCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AstCalStatData_t>::value){
-			return JSON::getJsonFromAstCalStat((const Blob::AstCalStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AstCalBootData_t>::value){
-			return JSON::getJsonFromAstCalBoot((const Blob::AstCalBootData_t&)obj);
-		}
 		//----- LightManager delegation
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
 			return JSON::getJsonFromLightCfg((const Blob::LightCfgData_t&)obj);
@@ -665,22 +655,6 @@ public:
 		// decodifica objeto de configuraci�n
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			result = (uint32_t)getGetRequestFromJson((Blob::GetRequest_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::AstCalCfgData_t>::value){
-			result = JSON::getAstCalCfgFromJson((Blob::AstCalCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::AstCalStatData_t>::value){
-			result = JSON::getAstCalStatFromJson((Blob::AstCalStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::AstCalBootData_t>::value){
-			result = JSON::getAstCalBootFromJson((Blob::AstCalBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//----
