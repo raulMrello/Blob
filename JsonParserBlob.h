@@ -23,6 +23,12 @@
 #include "FwUpdaterBlob.h"
 #include "MQTTClientBlob.h"
 #include "HMIManagerBlob.h"
+#include "BlufiManagerBlob.h"
+
+/** Definiciones de los Modelos de datos */
+#include "common_objects.h"
+#include "metering_objects.h"
+#include "calendar_objects.h"
 
 #include <type_traits>
 
@@ -34,6 +40,7 @@ public:
 	static const char*	p_actions;
 	static const char*	p_active;
 	static const char*	p_alsData;
+	static const char*	p_analyzers;
 	static const char*	p_aPow;
 	static const char*	p_ast;
 	static const char*	p_astcal;
@@ -45,14 +52,18 @@ public:
 	static const char*	p_calibData;
 	static const char*	p_cfg;
 	static const char*	p_channel;
+	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*	p_coords;
 	static const char*	p_current;
 	static const char*	p_curve;
 	static const char*	p_data;
 	static const char*	p_date;
+	static const char*	p_dawn;
 	static const char*	p_descr;
 	static const char*	p_devCount;
 	static const char*	p_devList;
+	static const char*	p_dusk;
 	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
@@ -63,6 +74,7 @@ public:
 	static const char*	p_fwSize;
 	static const char*	p_fwUrl;
 	static const char*	p_fwv;
+	static const char*	p_geoloc;
 	static const char*	p_groupMask;
 	static const char*	p_header;
 	static const char*	p_hwv;
@@ -75,6 +87,8 @@ public:
 	static const char*	p_keys;
 	static const char*	p_latitude;
 	static const char*	p_light;
+	static const char*	p_loadPercent;
+	static const char*	p_localtime;
 	static const char*	p_longitude;
 	static const char*	p_lux;
 	static const char*	p_luxLevel;
@@ -91,6 +105,8 @@ public:
 	static const char*	p_mode;
 	static const char * p_mqttPort;
 	static const char * p_mqttUrl;
+	static const char * p_mqttUser;
+	static const char * p_mqttPass;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
@@ -115,13 +131,18 @@ public:
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
 	static const char*	p_stat;
+	static const char*	p_thdA;
+	static const char*	p_thdV;
 	static const char*	p_thres;
 	static const char*	p_time;
 	static const char*	p_timestamp;
+	static const char*	p_timezone;
+	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
 	static const char*	p_username;
 	static const char*	p_verbosity;
+	static const char*	p_version;
 	static const char*	p_voltage;
 	static const char*	p_wdowDawnStart;
 	static const char*	p_wdowDawnStop;
@@ -166,7 +187,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data){
+	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data, ObjDataSelection type = ObjSelectAll){
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
@@ -178,7 +199,7 @@ public:
 		cJSON_AddNumberToObject(root, p_keys, req.keys);
 
 		// key: object
-		cJSON* obj = getJsonFromObj(req.data);
+		cJSON* obj = getJsonFromObj(req.data, type);
 		if(!obj){
 			cJSON_Delete(root);
 			return NULL;
@@ -193,7 +214,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp){
+	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, ObjDataSelection type = ObjSelectAll){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *error = NULL;
@@ -239,7 +260,7 @@ public:
 		}
 
 		// key: object
-		cJSON* obj = getJsonFromObj(resp.data);
+		cJSON* obj = getJsonFromObj(resp.data, type);
 		if(!obj){
 			cJSON_Delete(root);
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: data=NULL");
@@ -255,7 +276,7 @@ public:
 	 * 	@return Objeto JSON generado
 	 */
 	template <typename T>
-	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif){
+	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif, ObjDataSelection type = ObjSelectAll){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *root = cJSON_CreateObject();
@@ -275,7 +296,7 @@ public:
 		cJSON_AddItemToObject(root, p_header, header);
 
 		// key: object
-		cJSON* obj = getJsonFromObj(notif.data);
+		cJSON* obj = getJsonFromObj(notif.data, type);
 		if(!obj){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando data");
 			cJSON_Delete(root);
@@ -293,32 +314,9 @@ public:
 	 * @return Objeto JSON o NULL en caso de error
 	 */
 	template <typename T>
-	static cJSON* getJsonFromObj(const T& obj){
+	static cJSON* getJsonFromObj(const T& obj, ObjDataSelection type = ObjSelectAll){
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
-		}
-		//----- AstCal delegation
-		if (std::is_same<T, Blob::AstCalCfgData_t>::value){
-			return JSON::getJsonFromAstCalCfg((const Blob::AstCalCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AstCalStatData_t>::value){
-			return JSON::getJsonFromAstCalStat((const Blob::AstCalStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AstCalBootData_t>::value){
-			return JSON::getJsonFromAstCalBoot((const Blob::AstCalBootData_t&)obj);
-		}
-		//----- AMManager delegation
-		if (std::is_same<T, Blob::AMCfgData_t>::value){
-			return JSON::getJsonFromAMCfg((const Blob::AMCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AMStatData_t>::value){
-			return JSON::getJsonFromAMStat((const Blob::AMStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AMBootData_t>::value){
-			return JSON::getJsonFromAMBoot((const Blob::AMBootData_t&)obj);
-		}
-		if (std::is_same<T, Blob::AMLoadData_t>::value){
-			return JSON::getJsonFromAMLoad((const Blob::AMLoadData_t&)obj);
 		}
 		//----- LightManager delegation
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
@@ -376,6 +374,25 @@ public:
 		if (std::is_same<T, Blob::HmiEvtFlags>::value){
 			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
 		}
+		//----- BlufiManager delegation
+		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
+			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
+		}
+		//----- Objetos metering
+		cJSON* result = NULL;
+		if((result = JSON::getJsonFromMetering((const T&)obj, type)) != NULL){
+			return result;
+		}
+		//----- Objetos calendar
+		if((result = JSON::getJsonFromCalendar((const T&)obj, type)) != NULL){
+			return result;
+		}
+
+		//----- Objetos externos de prop�sito general
+		if (std::is_same<T, common_range_minmaxthres_double>::value){
+			return JSON::getJsonFromRangeMinMaxThresDouble((const common_range_minmaxthres_double&)obj);
+		}
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -388,8 +405,6 @@ public:
 	 */
 	template <typename U>
 	static bool getGetRequestFromJson(Blob::GetRequest_t &req, U* json){
-		cJSON* cfg = NULL;
-		cJSON* stat = NULL;
 		bool result = false;
 
 		// obtengo objeto json en funci�n del tipo
@@ -438,7 +453,7 @@ public:
 		cJSON *value = NULL;
 		cJSON *root = NULL;
 		bool result = false;
-
+		
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
@@ -458,6 +473,7 @@ public:
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: header is NULL");
 			goto _getNotificationFromJson_Exit;
 		}
+
 		// key: timestamp
 		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: timestamp is NULL");
@@ -477,6 +493,7 @@ public:
 		if(std::is_same<U,char>::value){
 			cJSON_Delete(json_obj);
 		}
+
 		return result;
 	}
 
@@ -644,43 +661,6 @@ public:
 		}
 		//----
 		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::AstCalCfgData_t>::value){
-			result = JSON::getAstCalCfgFromJson((Blob::AstCalCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::AstCalStatData_t>::value){
-			result = JSON::getAstCalStatFromJson((Blob::AstCalStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::AstCalBootData_t>::value){
-			result = JSON::getAstCalBootFromJson((Blob::AstCalBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::AMCfgData_t>::value){
-			result = JSON::getAMCfgFromJson((Blob::AMCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::AMStatData_t>::value){
-			result = JSON::getAMStatFromJson((Blob::AMStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::AMBootData_t>::value){
-			result = JSON::getAMBootFromJson((Blob::AMBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de % de activaci�n
-		if (std::is_same<T, Blob::AMLoadData_t>::value){
-			result = JSON::getAMLoadFromJson((Blob::AMLoadData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraci�n
 		if (std::is_same<T, Blob::LightCfgData_t>::value){
 			result = JSON::getLightCfgFromJson((Blob::LightCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -766,6 +746,25 @@ public:
 		// decodifica objeto
 		if (std::is_same<T, Blob::HmiEvtFlags>::value){
 			result = JSON::getHMIEventFromJson((Blob::HmiEvtFlags&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//decodifica objeto blufiMan
+		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
+			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos metering
+		if((result = JSON::getMeteringObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos calendar
+		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+
+		//---- Decodifica Objetos comunes de prop�sito general
+		if (std::is_same<T, common_range_minmaxthres_double>::value){
+			result = JSON::getRangeMinMaxThresDoubleFromJson((common_range_minmaxthres_double&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 
