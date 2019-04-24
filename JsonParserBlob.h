@@ -105,6 +105,8 @@ public:
 	static const char*	p_mode;
 	static const char * p_mqttPort;
 	static const char * p_mqttUrl;
+	static const char * p_mqttUser;
+	static const char * p_mqttPass;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
@@ -386,7 +388,7 @@ public:
 			return result;
 		}
 
-		//----- Objetos externos de propósito general
+		//----- Objetos externos de propï¿½sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
 			return JSON::getJsonFromRangeMinMaxThresDouble((const common_range_minmaxthres_double&)obj);
 		}
@@ -760,7 +762,7 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 
-		//---- Decodifica Objetos comunes de propósito general
+		//---- Decodifica Objetos comunes de propï¿½sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
 			result = JSON::getRangeMinMaxThresDoubleFromJson((common_range_minmaxthres_double&)obj, json_obj);
 			goto _getObjFromJson_Exit;
