@@ -24,6 +24,8 @@
 #include "MQTTClientBlob.h"
 #include "HMIManagerBlob.h"
 #include "BlufiManagerBlob.h"
+#include "SoftAPBlob.h"
+#include "ServerSocketBlob.h"
 
 /** Definiciones de los Modelos de datos */
 #include "common_objects.h"
@@ -377,6 +379,17 @@ public:
 		//----- BlufiManager delegation
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
+		}
+		//----- SoftAP delegation
+		if (std::is_same<T, Blob::SoftAPCfgData_t>::value){
+			return JSON::getJsonFromSoftAPCfg((const Blob::SoftAPCfgData_t&)obj);
+		}
+		//----- Socket delegation
+		if (std::is_same<T, Blob::ServerSocketCfgData_t>::value){
+			return JSON::getJsonFromServerSocketCfg((const Blob::ServerSocketCfgData_t&)obj);
+		}
+		if (std::is_same<T, Blob::SocketEvtFlags>::value){
+			return JSON::getJsonFromSocketEvent((const Blob::SocketEvtFlags&)obj);
 		}
 		//----- Objetos metering
 		cJSON* result = NULL;
@@ -751,6 +764,21 @@ public:
 		//decodifica objeto blufiMan
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//decodifica objeto softAP
+		if (std::is_same<T, Blob::SoftAPCfgData_t>::value){
+			result = JSON::getSoftAPCfgFromJson((Blob::SoftAPCfgData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		//decodifica objeto serverSocket
+		if (std::is_same<T, Blob::ServerSocketCfgData_t>::value){
+			result = JSON::getServerSocketCfgFromJson((Blob::ServerSocketCfgData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
+		// decodifica objeto
+		if (std::is_same<T, Blob::SocketEvtFlags>::value){
+			result = JSON::getSocketEventFromJson((Blob::SocketEvtFlags&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//---- Decodifica Objetos metering
