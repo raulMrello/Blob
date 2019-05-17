@@ -24,7 +24,6 @@
 #include "MQTTClientBlob.h"
 #include "HMIManagerBlob.h"
 #include "BlufiManagerBlob.h"
-#include "SoftAPBlob.h"
 #include "ServerSocketBlob.h"
 
 /** Definiciones de los Modelos de datos */
@@ -379,10 +378,6 @@ public:
 		//----- BlufiManager delegation
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
-		}
-		//----- SoftAP delegation
-		if (std::is_same<T, Blob::SoftAPCfgData_t>::value){
-			return JSON::getJsonFromSoftAPCfg((const Blob::SoftAPCfgData_t&)obj);
 		}
 		//----- Socket delegation
 		if (std::is_same<T, Blob::ServerSocketCfgData_t>::value){
@@ -764,11 +759,6 @@ public:
 		//decodifica objeto blufiMan
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//decodifica objeto softAP
-		if (std::is_same<T, Blob::SoftAPCfgData_t>::value){
-			result = JSON::getSoftAPCfgFromJson((Blob::SoftAPCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
 		//decodifica objeto serverSocket
