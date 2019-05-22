@@ -469,7 +469,6 @@ public:
 		}
 		if(std::is_same<U,char>::value){
 			json_obj = cJSON_Parse((char*)json);
-			DEBUG_TRACE_E(true, "[JsonParser]....", "ERROR cJSON_Parse: json_obj is NULL");
 		}
 
 		if(json_obj == NULL){
