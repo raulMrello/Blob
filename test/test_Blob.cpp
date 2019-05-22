@@ -82,7 +82,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	Blob::GetRequest_t req;
 	json = JsonParser::getJsonFromObj(req);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -95,7 +95,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAstCalStat... ");
 	json = JsonParser::getJsonFromObj(astcal_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -108,7 +108,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAstCalCfg... ");
 	json = JsonParser::getJsonFromObj(astcal_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -120,7 +120,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAstCalBoot... ");
 	json = JsonParser::getJsonFromObj(astcal_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -133,7 +133,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMStat... ");
 	json = JsonParser::getJsonFromObj(am_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -146,7 +146,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMCfg... ");
 	json = JsonParser::getJsonFromObj(am_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -158,7 +158,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMBoot... ");
 	json = JsonParser::getJsonFromObj(am_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -170,7 +170,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMLoad... ");
 	json = JsonParser::getJsonFromObj(am_load);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -183,7 +183,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightStat... ");
 	json = JsonParser::getJsonFromObj(light_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -196,7 +196,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightCfg... ");
 	json = JsonParser::getJsonFromObj(light_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -208,7 +208,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightBoot... ");
 	json = JsonParser::getJsonFromObj(light_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -220,7 +220,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightLux... ");
 	json = JsonParser::getJsonFromObj(light_lux);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -232,7 +232,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightTime... ");
 	json = JsonParser::getJsonFromObj(light_time);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -245,7 +245,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdStat... ");
 	json = JsonParser::getJsonFromObj(fwupd_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -258,7 +258,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdCfg... ");
 	json = JsonParser::getJsonFromObj(fwupd_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -270,7 +270,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdBoot... ");
 	json = JsonParser::getJsonFromObj(fwupd_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -282,7 +282,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdJob... ");
 	json = JsonParser::getJsonFromObj(fwupd_job);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -295,7 +295,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromHMILed... ");
 	json = JsonParser::getJsonFromObj(hmi_led);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -307,7 +307,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromHMIEvent... ");
 	json = JsonParser::getJsonFromObj(hmi_flags);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -320,7 +320,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromMqttStat... ");
 	json = JsonParser::getJsonFromObj(mqtt_stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -352,7 +352,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	Blob::GetRequest_t req;
 	json = JsonParser::getJsonFromObj(req);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -365,7 +365,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAstCalStat... ");
 	json = JsonParser::getJsonFromObj(astcal_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -378,7 +378,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAstCalCfg... ");
 	json = JsonParser::getJsonFromObj(astcal_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -390,7 +390,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAstCalBoot... ");
 	json = JsonParser::getJsonFromObj(astcal_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -403,7 +403,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMStat... ");
 	json = JsonParser::getJsonFromObj(am_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -416,7 +416,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMCfg... ");
 	json = JsonParser::getJsonFromObj(am_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -428,7 +428,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMBoot... ");
 	json = JsonParser::getJsonFromObj(am_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -440,7 +440,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromAMLoad... ");
 	json = JsonParser::getJsonFromObj(am_load);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -453,7 +453,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightStat... ");
 	json = JsonParser::getJsonFromObj(light_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -466,7 +466,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightCfg... ");
 	json = JsonParser::getJsonFromObj(light_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -478,7 +478,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightBoot... ");
 	json = JsonParser::getJsonFromObj(light_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -490,7 +490,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightLux... ");
 	json = JsonParser::getJsonFromObj(light_lux);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -502,7 +502,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromLightTime... ");
 	json = JsonParser::getJsonFromObj(light_time);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -515,7 +515,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdStat... ");
 	json = JsonParser::getJsonFromObj(fwupd_boot.stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -528,7 +528,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdCfg... ");
 	json = JsonParser::getJsonFromObj(fwupd_boot.cfg);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -540,7 +540,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdBoot... ");
 	json = JsonParser::getJsonFromObj(fwupd_boot);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -552,7 +552,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromFwUpdJob... ");
 	json = JsonParser::getJsonFromObj(fwupd_job);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -565,7 +565,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromHMILed... ");
 	json = JsonParser::getJsonFromObj(hmi_led);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -577,7 +577,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromHMIEvent... ");
 	json = JsonParser::getJsonFromObj(hmi_flags);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -590,7 +590,7 @@ TEST_CASE("Get Json <--> Objects with null arrays ..", "[Blob]") {
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromMqttStat... ");
 	json = JsonParser::getJsonFromObj(mqtt_stat);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -621,7 +621,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	Blob::SetRequest_t<Blob::AstCalStatData_t> sr;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromSetRequestAstCalStat... ");
@@ -637,7 +637,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	Blob::SetRequest_t<Blob::AstCalCfgData_t> sr;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -652,7 +652,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	Blob::SetRequest_t<Blob::AstCalBootData_t> sr;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -667,7 +667,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMStatData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -681,7 +681,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMCfgData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -695,7 +695,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMBootData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -709,7 +709,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMLoadData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -724,7 +724,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::LightStatData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -743,7 +743,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -761,7 +761,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	sr.data.cfg.outData.curve.samples = Blob::LightCurveSampleCount;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -775,7 +775,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::LightLuxLevel> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -789,7 +789,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::LightTimeData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -807,7 +807,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	sr.data.job.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -821,7 +821,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::FwUpdCfgData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -838,7 +838,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	sr.data.stat.job.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -855,7 +855,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	sr.data.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -870,7 +870,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::HmiLedData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -884,7 +884,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::HmiEvtFlags> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -899,7 +899,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::MqttStatusFlags> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -931,7 +931,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	Blob::SetRequest_t<Blob::AstCalStatData_t> sr;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromSetRequestAstCalStat... ");
@@ -947,7 +947,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	Blob::SetRequest_t<Blob::AstCalCfgData_t> sr;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -962,7 +962,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	Blob::SetRequest_t<Blob::AstCalBootData_t> sr;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -977,7 +977,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMStatData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -991,7 +991,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMCfgData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1005,7 +1005,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMBootData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1019,7 +1019,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::AMLoadData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1034,7 +1034,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::LightStatData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1053,7 +1053,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1071,7 +1071,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	sr.data.cfg.outData.curve.samples = 0;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1085,7 +1085,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::LightLuxLevel> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1099,7 +1099,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::LightTimeData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1117,7 +1117,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	sr.data.job.devCount = 0;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1131,7 +1131,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::FwUpdCfgData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1148,7 +1148,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	sr.data.stat.job.devCount = 0;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1165,7 +1165,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	sr.data.devCount = 0;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1180,7 +1180,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::HmiLedData_t> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1194,7 +1194,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::HmiEvtFlags> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1209,7 +1209,7 @@ TEST_CASE("Get Json <--> SetRequest null arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::MqttStatusFlags> sr;	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1242,7 +1242,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	Blob::NotificationData_t<Blob::AstCalStatData_t> notif;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromNotificationAstCalStat... ");
@@ -1258,7 +1258,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	Blob::NotificationData_t<Blob::AstCalCfgData_t> notif;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1273,7 +1273,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	Blob::NotificationData_t<Blob::AstCalBootData_t> notif;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1288,7 +1288,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMStatData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1302,7 +1302,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMCfgData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1316,7 +1316,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMBootData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1330,7 +1330,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMLoadData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1345,7 +1345,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::LightStatData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1364,7 +1364,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1382,7 +1382,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	notif.data.cfg.outData.curve.samples = Blob::LightCurveSampleCount;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1396,7 +1396,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::LightLuxLevel> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1410,7 +1410,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::LightTimeData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1428,7 +1428,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	notif.data.job.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1442,7 +1442,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::FwUpdCfgData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1459,7 +1459,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	notif.data.stat.job.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1476,7 +1476,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	notif.data.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1491,7 +1491,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::HmiLedData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1505,7 +1505,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::HmiEvtFlags> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1520,7 +1520,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::MqttStatusFlags> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1552,7 +1552,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	Blob::NotificationData_t<Blob::AstCalStatData_t> notif;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromNotificationAstCalStat... ");
@@ -1568,7 +1568,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	Blob::NotificationData_t<Blob::AstCalCfgData_t> notif;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1583,7 +1583,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	Blob::NotificationData_t<Blob::AstCalBootData_t> notif;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1598,7 +1598,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMStatData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1612,7 +1612,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMCfgData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1626,7 +1626,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMBootData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1640,7 +1640,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::AMLoadData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1655,7 +1655,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::LightStatData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1674,7 +1674,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1692,7 +1692,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	notif.data.cfg.outData.curve.samples = 0;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1706,7 +1706,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::LightLuxLevel> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1720,7 +1720,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::LightTimeData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1738,7 +1738,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	notif.data.job.devCount = 0;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1752,7 +1752,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::FwUpdCfgData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1769,7 +1769,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	notif.data.stat.job.devCount = 0;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1786,7 +1786,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	notif.data.devCount = 0;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1801,7 +1801,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::HmiLedData_t> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1815,7 +1815,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::HmiEvtFlags> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1830,7 +1830,7 @@ TEST_CASE("Get Json <--> Notification null arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::MqttStatusFlags> notif;	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1865,7 +1865,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	Blob::Response_t<Blob::AstCalStatData_t> resp;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1880,7 +1880,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	Blob::Response_t<Blob::AstCalCfgData_t> resp;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1895,7 +1895,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	Blob::Response_t<Blob::AstCalBootData_t> resp;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1910,7 +1910,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMStatData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1924,7 +1924,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMCfgData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1938,7 +1938,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMBootData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1952,7 +1952,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMLoadData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1967,7 +1967,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::LightStatData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -1986,7 +1986,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2004,7 +2004,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	resp.data.cfg.outData.curve.samples = Blob::LightCurveSampleCount;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2018,7 +2018,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::LightLuxLevel> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2032,7 +2032,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::LightTimeData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2050,7 +2050,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	resp.data.job.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2064,7 +2064,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::FwUpdCfgData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2081,7 +2081,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	resp.data.stat.job.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2098,7 +2098,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	resp.data.devCount = Blob::MaxDevicesPerJob;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2113,7 +2113,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::HmiLedData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2127,7 +2127,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::HmiEvtFlags> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2142,7 +2142,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::MqttStatusFlags> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2174,7 +2174,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	Blob::Response_t<Blob::AstCalStatData_t> resp;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromResponseAstCalStat... ");
@@ -2190,7 +2190,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	Blob::Response_t<Blob::AstCalCfgData_t> resp;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2205,7 +2205,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	Blob::Response_t<Blob::AstCalBootData_t> resp;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2220,7 +2220,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMStatData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2234,7 +2234,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMCfgData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2248,7 +2248,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMBootData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2262,7 +2262,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::AMLoadData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2277,7 +2277,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::LightStatData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2296,7 +2296,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2314,7 +2314,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	resp.data.cfg.outData.curve.samples = 0;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2328,7 +2328,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::LightLuxLevel> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2342,7 +2342,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::LightTimeData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2360,7 +2360,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	resp.data.job.devCount = 0;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2374,7 +2374,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::FwUpdCfgData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2391,7 +2391,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	resp.data.stat.job.devCount = 0;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2408,7 +2408,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	resp.data.devCount = 0;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2423,7 +2423,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::HmiLedData_t> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2437,7 +2437,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::HmiEvtFlags> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
@@ -2452,7 +2452,7 @@ TEST_CASE("Get Json <--> Response null arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::MqttStatusFlags> resp;	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
-	msg = cJSON_Print(json);
+	msg = cJSON_PrintUnformatted(json);
 	TEST_ASSERT_NOT_NULL(msg);
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "%s\r\n", msg);
 	Heap::memFree(msg);
