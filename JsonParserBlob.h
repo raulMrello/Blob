@@ -151,6 +151,10 @@ public:
 	static const char*	p_wdowDuskStop;
 
 
+	static inline bool isTokenInTopic(const char* topic, const char* token){
+    	return ((strstr(topic, token) != NULL)? true : false);
+    }
+
 	/** Parsea un objeto Blob::GetRequest_t en un mensaje JSON
 	 *  @param req Solicitud a convertir a json
 	 * 	@return Objeto JSON generado
@@ -791,6 +795,99 @@ public:
 			cJSON_Delete(json_obj);
 		}
 		return result;
+	}
+
+
+	template <typename U>
+	static void* getObjFromDataTopic(char* topic, U* json, uint16_t *size){
+		void* obj = NULL;
+
+		// obtengo objeto json en funci�n del tipo
+		cJSON *json_obj = NULL;
+		if(std::is_same<U,cJSON>::value){
+			json_obj = (cJSON*)json;
+		}
+		if(std::is_same<U,char>::value){
+			json_obj = cJSON_Parse((char*)json);
+		}
+
+		if(json_obj != NULL)
+		{
+			if(isTokenInTopic(topic, "/get/"))
+			{
+				if(isTokenInTopic(topic, "/cfg/")){
+					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+					MBED_ASSERT(obj);
+					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj))
+						*size = sizeof(Blob::GetRequest_t);				
+				}
+			}
+			else if(isTokenInTopic(topic, "/set/")){
+				if(isTokenInTopic(topic, "/astcal")){
+					obj = (Blob::SetRequest_t<calendar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<calendar_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<calendar_manager>*) (obj), json_obj))
+						*size = sizeof(Blob::SetRequest_t<calendar_manager>);
+				}
+				else if(isTokenInTopic(topic, "/sys")){
+					obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj))
+						*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic no controlado");
+			}
+		}
+
+		if(std::is_same<U,char>::value){
+			cJSON_Delete(json_obj);
+		}
+		return obj;
+	}
+
+
+
+	static cJSON* getDataFromObjTopic(char* topic, void* data, uint16_t size){
+		// obtengo objeto json en funci�n del tipo
+		cJSON *json_obj = NULL;
+		
+		if(isTokenInTopic(topic, "/astcal")){
+			if(size == sizeof(Blob::Response_t<calendar_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<calendar_manager>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+			}
+		}
+
+		else if(isTokenInTopic(topic, "/sys")){
+			if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootData_t>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootData_t>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysBootData_t>*)data);
+			}
+			if(size == sizeof(Blob::Response_t<Blob::SysCfgData_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysCfgData_t>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<Blob::SysCfgData_t>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysCfgData_t>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+			}
+		}
+
+		else{
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
+		}
+		
+		return json_obj;
 	}
 
 };	// end class Parser
