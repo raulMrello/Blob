@@ -835,6 +835,24 @@ public:
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj))
 						*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
 				}
+				else if(isTokenInTopic(topic, "/energy")){
+					obj = (Blob::SetRequest_t<metering_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<metering_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<metering_manager>*) (obj), json_obj))
+						*size = sizeof(Blob::SetRequest_t<metering_manager>);
+				}
+				else if(isTokenInTopic(topic, "start/fwupd")){
+					obj = (Blob::SetRequest_t<Blob::FwUpdJob_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::FwUpdJob_t>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdJob_t>*) (obj), json_obj))
+						*size = sizeof(Blob::SetRequest_t<Blob::FwUpdJob_t>);
+				}
+				else if(isTokenInTopic(topic, "/fwupd")){
+					obj = (Blob::SetRequest_t<Blob::FwUpdCfgData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::FwUpdCfgData_t>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdCfgData_t>*) (obj), json_obj))
+						*size = sizeof(Blob::SetRequest_t<Blob::FwUpdCfgData_t>);
+				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic no controlado");
@@ -864,7 +882,6 @@ public:
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
 			}
 		}
-
 		else if(isTokenInTopic(topic, "/sys")){
 			if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootData_t>*)data);
@@ -872,11 +889,22 @@ public:
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootData_t>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysBootData_t>*)data);
 			}
-			if(size == sizeof(Blob::Response_t<Blob::SysCfgData_t>)){
+			else if(size == sizeof(Blob::Response_t<Blob::SysCfgData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysCfgData_t>*)data);
 			}
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysCfgData_t>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysCfgData_t>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+			}
+		}
+		else if(isTokenInTopic(topic, "/energy")){
+			if(size == sizeof(Blob::Response_t<metering_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<metering_manager>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
