@@ -4,9 +4,9 @@
  *  Created on: Ene 2018
  *      Author: raulMrello
  *
- *	Blob es un módulo que agrupa todos los objetos de datos (estructuras, enumeraciones, etc...) utilizadas de forma
- *	general en una aplicación y que son reutilizados por múltiples módulos. De esta forma, el acceso a todos estos
- *	datos es sencilla mediante la importación de la librería <blob.h>, en lugar de ir incluyendo todos los módulos
+ *	Blob es un mï¿½dulo que agrupa todos los objetos de datos (estructuras, enumeraciones, etc...) utilizadas de forma
+ *	general en una aplicaciï¿½n y que son reutilizados por mï¿½ltiples mï¿½dulos. De esta forma, el acceso a todos estos
+ *	datos es sencilla mediante la importaciï¿½n de la librerï¿½a <blob.h>, en lugar de ir incluyendo todos los mï¿½dulos
  *	que definen cada uno de los datos.
  */
  
@@ -27,13 +27,13 @@ namespace Blob {
 enum ErrorCode{
 	ErrOK,				//!< Sin errores
 	ErrJsonMalformed,	//!< Objeto json incorrecto
-	ErrIdTransInvalid,	//!< Identificación de transacción inválida
+	ErrIdTransInvalid,	//!< Identificaciï¿½n de transacciï¿½n invï¿½lida
 	ErrStringFormat,	//!< Cadena de texto con formato incorrecto
-	ErrEmptyContent,	//!< Contenido vacío
+	ErrEmptyContent,	//!< Contenido vacï¿½o
 	ErrRangeValue,		//!< Rango incorrecto
-	ErrAllocJson,		//!< No se permite la creación del objeto
+	ErrAllocJson,		//!< No se permite la creaciï¿½n del objeto
 	ErrJsonUnhandled,	//!< Objeto Json sin maneajador
-	ErrUidInvalid,		//!< UID Inválido
+	ErrUidInvalid,		//!< UID Invï¿½lido
 	MaxNumErrorCodes
 };
 
@@ -47,41 +47,42 @@ static const char* errList[] = {
 	"value out of range",	//ErrRangeValue
 	"json alloc failed",	//ErrAllocJson
 	"json unhandled",		//ErrJsonUnhandled
+	"uid invalid"
 };
 
 
 
-/** Tamaño máximo de un objeto BLOB. En este caso viene determinado por el tamaño de
- * 	los datos de usuario que viajan por el paquete MQNet_Message_t eliminando el tamaño
+/** Tamaï¿½o mï¿½ximo de un objeto BLOB. En este caso viene determinado por el tamaï¿½o de
+ * 	los datos de usuario que viajan por el paquete MQNet_Message_t eliminando el tamaï¿½o
  * 	del topic_id.
  */
 static const uint32_t MaxBlobSize = 224;
 
-/** Tamaño por defecto de los textos de descripción de errores */
+/** Tamaï¿½o por defecto de los textos de descripciï¿½n de errores */
 static const uint16_t DefaultErrDescrLen = 64;
 
 /** Define un valor idtrans sin uso */
 static const uint32_t UnusedIdTrans = 0;
 
-/** Tamaño máximo del timestamp en segundos para calcular una fecha y una hora concreta
- *  de un año. Se considera que todos los años tiene 366 días y siempre existe el 29 de
+/** Tamaï¿½o mï¿½ximo del timestamp en segundos para calcular una fecha y una hora concreta
+ *  de un aï¿½o. Se considera que todos los aï¿½os tiene 366 dï¿½as y siempre existe el 29 de
  *  febrero.
  */
 static const uint32_t TimestampSecondsYearLimit = (366 * 24 * 3600);
 
-/** Tamaño máximo del timestamp en minutos para calcular una hora concreta
- *  de un día.
+/** Tamaï¿½o mï¿½ximo del timestamp en minutos para calcular una hora concreta
+ *  de un dï¿½a.
  */
 static const uint16_t TimestampMinutesDayLimit = (24 * 60);
 
-/** Estructura de datos para envío de cabecera incluyendo el tiemstamp, etc...
+/** Estructura de datos para envï¿½o de cabecera incluyendo el tiemstamp, etc...
  */
 struct HeaderData_t{
 	time_t timestamp;
 };
 
 
-/** Estructura de datos para envío de errores
+/** Estructura de datos para envï¿½o de errores
  */
 struct ErrorData_t{
 	uint32_t code;
@@ -93,7 +94,7 @@ struct ErrorData_t{
 };
 
 
-/** Estructura de datos relativa a una operación SetRequest
+/** Estructura de datos relativa a una operaciï¿½n SetRequest
  */
 template <typename T>
 struct SetRequest_t{
@@ -104,7 +105,7 @@ struct SetRequest_t{
 };
 
 
-/** Estructura de datos relativa a una operación GetRequest
+/** Estructura de datos relativa a una operaciï¿½n GetRequest
  */
 struct GetRequest_t{
 	uint32_t idTrans;
@@ -117,7 +118,7 @@ struct GetRequest_t{
 };
 
 
-/** Estructura de datos relativa a una operación Response sin errores
+/** Estructura de datos relativa a una operaciï¿½n Response sin errores
  */
 template <typename T>
 struct Response_t{
@@ -130,7 +131,7 @@ struct Response_t{
 };
 
 
-/** Estructura de datos relativa a una operación Notification
+/** Estructura de datos relativa a una operaciï¿½n Notification
  */
 template <typename T>
 struct NotificationData_t{
