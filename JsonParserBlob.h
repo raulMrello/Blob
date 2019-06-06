@@ -108,6 +108,7 @@ public:
 	static const char * p_mqttUrl;
 	static const char * p_mqttUser;
 	static const char * p_mqttPass;
+	static const char*	p_mqttData;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
@@ -813,7 +814,7 @@ public:
 
 		if(json_obj != NULL)
 		{
-			if(isTokenInTopic(topic, "/get/"))
+			if(isTokenInTopic(topic, "get/"))
 			{
 				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
@@ -822,7 +823,7 @@ public:
 						*size = sizeof(Blob::GetRequest_t);				
 				}
 			}
-			else if(isTokenInTopic(topic, "/set/")){
+			else if(isTokenInTopic(topic, "set/")){
 				if(isTokenInTopic(topic, "/energy")){
 					obj = (Blob::SetRequest_t<metering_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<metering_manager>));
 					MBED_ASSERT(obj);
@@ -981,9 +982,9 @@ public:
 		cJSON *json_obj = getDataFromObjTopic(topic, data, size);
 
 		if(json_obj != NULL){
-			DEBUG_TRACE_I(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, cJSON_Print(json_obj));
-			cJSON_Delete(json_obj);
+			DEBUG_TRACE_I(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, cJSON_PrintUnformatted(json_obj));
 		}
+		cJSON_Delete(json_obj);
 	}
 
 };	// end class Parser
