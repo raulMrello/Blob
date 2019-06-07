@@ -61,6 +61,7 @@ public:
 	static const char*	p_data;
 	static const char*	p_date;
 	static const char*	p_dawn;
+	static const char*	p_delay;
 	static const char*	p_descr;
 	static const char*	p_devCount;
 	static const char*	p_devList;
@@ -365,6 +366,9 @@ public:
 		}
 		if (std::is_same<T, Blob::SysNullData_t>::value){
 			return JSON::getJsonFromSysNull((const Blob::SysNullData_t&)obj);
+		}
+		if (std::is_same<T, Blob::SysRestartData_t>::value){
+			return JSON::getJsonFromSysRestart((const Blob::SysRestartData_t&)obj);
 		}
 		//----- MQTTClient delegation
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
@@ -740,6 +744,11 @@ public:
 			result = JSON::getSysNullFromJson((Blob::SysNullData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		// decodifica objeto de solicitud de reset
+		if (std::is_same<T, Blob::SysRestartData_t>::value){
+			result = JSON::getSysRestartFromJson((Blob::SysRestartData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
 		//----
 		// decodifica objeto de estado
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
@@ -837,10 +846,18 @@ public:
 						*size = sizeof(Blob::SetRequest_t<calendar_manager>);
 				}
 				else if(isTokenInTopic(topic, "/sys")){
-					obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj))
-						*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
+					if(isTokenInTopic(topic, "/restart")){
+						obj = (Blob::SetRequest_t<Blob::SysRestartData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysRestartData_t>*) (obj), json_obj))
+							*size = sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>);
+					}
+					else{
+						obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj))
+							*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
+					}
 				}
 				else if(isTokenInTopic(topic, "/light")){
 					if(isTokenInTopic(topic, "/cfg/")){
@@ -922,7 +939,10 @@ public:
 		}
 
 		else if(isTokenInTopic(topic, "/sys")){
-			if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
+			if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysRestartData_t>*)data);
+			}
+			else if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootData_t>*)data);
 			}
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootData_t>)){
