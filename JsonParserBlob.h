@@ -964,6 +964,9 @@ public:
 			else if(size == sizeof(Blob::Response_t<Blob::FwUpdStatData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::FwUpdStatData_t>*)data);
 			}
+			else if(size == sizeof(Blob::NotificationData_t<Blob::FwUpdStatData_t>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::FwUpdStatData_t>*)data);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
 			}
