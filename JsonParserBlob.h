@@ -61,6 +61,7 @@ public:
 	static const char*	p_data;
 	static const char*	p_date;
 	static const char*	p_dawn;
+	static const char*	p_delay;
 	static const char*	p_descr;
 	static const char*	p_devCount;
 	static const char*	p_devList;
@@ -365,6 +366,9 @@ public:
 		}
 		if (std::is_same<T, Blob::SysNullData_t>::value){
 			return JSON::getJsonFromSysNull((const Blob::SysNullData_t&)obj);
+		}
+		if (std::is_same<T, Blob::SysRestartData_t>::value){
+			return JSON::getJsonFromSysRestart((const Blob::SysRestartData_t&)obj);
 		}
 		//----- MQTTClient delegation
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
@@ -740,6 +744,11 @@ public:
 			result = JSON::getSysNullFromJson((Blob::SysNullData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		// decodifica objeto de solicitud de reset
+		if (std::is_same<T, Blob::SysRestartData_t>::value){
+			result = JSON::getSysRestartFromJson((Blob::SysRestartData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
 		//----
 		// decodifica objeto de estado
 		if (std::is_same<T, Blob::MqttStatusFlags>::value){
@@ -819,64 +828,119 @@ public:
 				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
-					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj))
+					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
 						*size = sizeof(Blob::GetRequest_t);				
+					}
+					else{
+						*size = 0;
+						obj = NULL;
+					}
 				}
 			}
 			else if(isTokenInTopic(topic, "set/")){
 				if(isTokenInTopic(topic, "/energy")){
 					obj = (Blob::SetRequest_t<metering_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<metering_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<metering_manager>*) (obj), json_obj))
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<metering_manager>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<metering_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
 				}
 				else if(isTokenInTopic(topic, "/astcal")){
 					obj = (Blob::SetRequest_t<calendar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<calendar_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<calendar_manager>*) (obj), json_obj))
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<calendar_manager>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<calendar_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
 				}
 				else if(isTokenInTopic(topic, "/sys")){
-					obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj))
-						*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
+					if(isTokenInTopic(topic, "/restart")){
+						obj = (Blob::SetRequest_t<Blob::SysRestartData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysRestartData_t>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else{
+						obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
 				}
 				else if(isTokenInTopic(topic, "/light")){
 					if(isTokenInTopic(topic, "/cfg/")){
-						DEBUG_TRACE_E(true, "[JsonParser]....", "lalalalalala 1");
 						obj = (Blob::SetRequest_t<Blob::LightCfgData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::LightCfgData_t>));
 						MBED_ASSERT(obj);
-						DEBUG_TRACE_E(true, "[JsonParser]....", "lalalalalala 2");
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::LightCfgData_t>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<Blob::LightCfgData_t>);
-							DEBUG_TRACE_E(true, "[JsonParser]....", "lalalalalala 3");
 						}
-						DEBUG_TRACE_E(true, "[JsonParser]....", "lalalalalala 4");
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					else if(isTokenInTopic(topic, "/value/")){
 						obj = (Blob::SetRequest_t<Blob::LightStatData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::LightStatData_t>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::LightStatData_t>*) (obj), json_obj))
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::LightStatData_t>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<Blob::LightStatData_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
-					else
-					{
-						DEBUG_TRACE_E(true, "[JsonParser]....", "lalalalalala");
+					else {
+						DEBUG_TRACE_E(true, "[JsonParser]....", "Objeto set/light no identificado");
 					}
 				}
 				else if(isTokenInTopic(topic, "/fwupd")){
 					if(isTokenInTopic(topic, "/start")){
 						obj = (Blob::SetRequest_t<Blob::FwUpdJob_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::FwUpdJob_t>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdJob_t>*) (obj), json_obj))
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdJob_t>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<Blob::FwUpdJob_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					else if(isTokenInTopic(topic, "/cfg/")){
 						obj = (Blob::SetRequest_t<Blob::FwUpdCfgData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::FwUpdCfgData_t>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdCfgData_t>*) (obj), json_obj))
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdCfgData_t>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<Blob::FwUpdCfgData_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 				}
 			}
@@ -922,7 +986,10 @@ public:
 		}
 
 		else if(isTokenInTopic(topic, "/sys")){
-			if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
+			if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysRestartData_t>*)data);
+			}
+			else if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootData_t>*)data);
 			}
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootData_t>)){
