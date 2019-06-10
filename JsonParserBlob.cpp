@@ -51,6 +51,7 @@ const char * JsonParser::p_curve		= "curve";
 const char * JsonParser::p_data			= "data";
 const char * JsonParser::p_date			= "date";
 const char * JsonParser::p_dawn			= "dawn";
+const char * JsonParser::p_delay		= "delay";
 const char * JsonParser::p_descr		= "descr";
 const char * JsonParser::p_devCount		= "devCount";
 const char * JsonParser::p_devList		= "devList";
