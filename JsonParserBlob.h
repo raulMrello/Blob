@@ -325,22 +325,6 @@ public:
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
-		//----- LightManager delegation
-		if (std::is_same<T, Blob::LightCfgData_t>::value){
-			return JSON::getJsonFromLightCfg((const Blob::LightCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::LightStatData_t>::value){
-			return JSON::getJsonFromLightStat((const Blob::LightStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::LightBootData_t>::value){
-			return JSON::getJsonFromLightBoot((const Blob::LightBootData_t&)obj);
-		}
-		if (std::is_same<T, Blob::LightLuxLevel>::value){
-			return JSON::getJsonFromLightLux((const Blob::LightLuxLevel&)obj);
-		}
-		if (std::is_same<T, Blob::LightTimeData_t>::value){
-			return JSON::getJsonFromLightTime((const Blob::LightTimeData_t&)obj);
-		}
 		//----- FwUpdater delegation
 		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
 			return JSON::getJsonFromFwUpdCfg((const Blob::FwUpdCfgData_t&)obj);
@@ -402,6 +386,10 @@ public:
 		}
 		//----- Objetos calendar
 		if((result = JSON::getJsonFromCalendar((const T&)obj, type)) != NULL){
+			return result;
+		}
+		//----- Objetos light
+		if((result = JSON::getJsonFromLight((const T&)obj, type)) != NULL){
 			return result;
 		}
 
@@ -678,32 +666,6 @@ public:
 		}
 		//----
 		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::LightCfgData_t>::value){
-			result = JSON::getLightCfgFromJson((Blob::LightCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::LightStatData_t>::value){
-			result = JSON::getLightStatFromJson((Blob::LightStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::LightBootData_t>::value){
-			result = JSON::getLightBootFromJson((Blob::LightBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de configuraci�n ALS
-		if (std::is_same<T, Blob::LightLuxLevel>::value){
-			result = JSON::getLightLuxFromJson((Blob::LightLuxLevel&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de evento temporal
-		if (std::is_same<T, Blob::LightTimeData_t>::value){
-			result = JSON::getLightTimeFromJson((Blob::LightTimeData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraci�n
 		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
 			result = JSON::getFwUpdCfgFromJson((Blob::FwUpdCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -791,6 +753,10 @@ public:
 		}
 		//---- Decodifica Objetos calendar
 		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos light
+		if((result = JSON::getLightObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 
