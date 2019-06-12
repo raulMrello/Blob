@@ -27,7 +27,6 @@ cJSON* getJsonFromRangeMinMaxThresDouble(const common_range_minmaxthres_double& 
 	if((json=cJSON_CreateObject()) == NULL){
 		return NULL;
 	}
-	cJSON_AddNumberToObject(json, JsonParser::p_uid, obj.uid);
 	cJSON_AddNumberToObject(json, JsonParser::p_min, obj.min);
 	cJSON_AddNumberToObject(json, JsonParser::p_max, obj.max);
 	cJSON_AddNumberToObject(json, JsonParser::p_thres, obj.thres);
@@ -44,21 +43,17 @@ uint32_t getRangeMinMaxThresDoubleFromJson(common_range_minmaxthres_double &obj,
 		return 0;
 	}
 
-	if((value = cJSON_GetObjectItem(json,JsonParser::p_uid)) == NULL){
-		obj.uid = value->valueint;
-		keys |= (1<<0);
-	}
 	if((value = cJSON_GetObjectItem(json,JsonParser::p_min)) != NULL){
 		obj.min = value->valuedouble;
-		keys |= (1<<1);
+		keys |= (1<<0);
 	}
 	if((value = cJSON_GetObjectItem(json,JsonParser::p_max)) != NULL){
 		obj.max = value->valuedouble;
-		keys |= (1<<2);
+		keys |= (1<<1);
 	}
 	if((value = cJSON_GetObjectItem(json,JsonParser::p_thres)) != NULL){
 		obj.thres = value->valuedouble;
-		keys |= (1<<3);
+		keys |= (1<<2);
 	}
 	return keys;
 }
