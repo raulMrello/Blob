@@ -25,14 +25,8 @@ enum ObjDataSelection {
 };
 
 
-/** UIDs */
-#define UID_COMMON_RANGE_MINMAXTHRES_DOUBLE(vers)	(uint32_t)(0x000F0000 | ((uint32_t)vers << 20))
-
-
-
 /** Objeto range:minmaxthres:double */
 struct common_range_minmaxthres_double{
-	uint32_t uid;
 	double min;
 	double max;
 	double thres;
