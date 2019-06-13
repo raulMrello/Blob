@@ -325,22 +325,6 @@ public:
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
-		//----- LightManager delegation
-		if (std::is_same<T, Blob::LightCfgData_t>::value){
-			return JSON::getJsonFromLightCfg((const Blob::LightCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::LightStatData_t>::value){
-			return JSON::getJsonFromLightStat((const Blob::LightStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::LightBootData_t>::value){
-			return JSON::getJsonFromLightBoot((const Blob::LightBootData_t&)obj);
-		}
-		if (std::is_same<T, Blob::LightLuxLevel>::value){
-			return JSON::getJsonFromLightLux((const Blob::LightLuxLevel&)obj);
-		}
-		if (std::is_same<T, Blob::LightTimeData_t>::value){
-			return JSON::getJsonFromLightTime((const Blob::LightTimeData_t&)obj);
-		}
 		//----- FwUpdater delegation
 		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
 			return JSON::getJsonFromFwUpdCfg((const Blob::FwUpdCfgData_t&)obj);
@@ -402,6 +386,10 @@ public:
 		}
 		//----- Objetos calendar
 		if((result = JSON::getJsonFromCalendar((const T&)obj, type)) != NULL){
+			return result;
+		}
+		//----- Objetos light
+		if((result = JSON::getJsonFromLight((const T&)obj, type)) != NULL){
 			return result;
 		}
 
@@ -678,32 +666,6 @@ public:
 		}
 		//----
 		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::LightCfgData_t>::value){
-			result = JSON::getLightCfgFromJson((Blob::LightCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::LightStatData_t>::value){
-			result = JSON::getLightStatFromJson((Blob::LightStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::LightBootData_t>::value){
-			result = JSON::getLightBootFromJson((Blob::LightBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de configuraci�n ALS
-		if (std::is_same<T, Blob::LightLuxLevel>::value){
-			result = JSON::getLightLuxFromJson((Blob::LightLuxLevel&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de evento temporal
-		if (std::is_same<T, Blob::LightTimeData_t>::value){
-			result = JSON::getLightTimeFromJson((Blob::LightTimeData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraci�n
 		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
 			result = JSON::getFwUpdCfgFromJson((Blob::FwUpdCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -791,6 +753,10 @@ public:
 		}
 		//---- Decodifica Objetos calendar
 		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos light
+		if((result = JSON::getLightObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 
@@ -890,10 +856,10 @@ public:
 				}
 				else if(isTokenInTopic(topic, "/light")){
 					if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<Blob::LightCfgData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::LightCfgData_t>));
+						obj = (Blob::SetRequest_t<light_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<light_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::LightCfgData_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<Blob::LightCfgData_t>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<light_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<light_manager>);
 						}
 						else{
 							*size = 0;
@@ -961,31 +927,92 @@ public:
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
 		
-		if(isTokenInTopic(topic, "/energy")){
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/energy")){
 			if(size == sizeof(Blob::Response_t<metering_manager>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-response");
+				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<metering_manager>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-notification");
+				}
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering");
 			}
 		}
 
-		else if(isTokenInTopic(topic, "/astcal")){
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/astcal")){
 			if(size == sizeof(Blob::Response_t<calendar_manager>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar-response");
+				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<calendar_manager>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar-notification");
+				}
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar");
 			}
 		}
 
-		else if(isTokenInTopic(topic, "/sys")){
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/light")){
+			if(size == sizeof(Blob::NotificationData_t<light_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<light_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<light_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-notification");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<light_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<light_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<light_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-response");
+				}
+			}
+
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
+			}
+		}
+
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
 			if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysRestartData_t>*)data);
 			}
@@ -1006,25 +1033,7 @@ public:
 			}
 		}
 
-		else if(isTokenInTopic(topic, "/light")){
-			if(size == sizeof(Blob::Response_t<Blob::LightCfgData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::LightCfgData_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::LightStatData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::LightStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::LightStatData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::LightStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::LightBootData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::LightBootData_t>*)data);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
-			}
-		}
-
-		else if(isTokenInTopic(topic, "/fwupd")){
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/fwupd")){
 			if(size == sizeof(Blob::Response_t<Blob::FwUpdCfgData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::FwUpdCfgData_t>*)data);
 			}
