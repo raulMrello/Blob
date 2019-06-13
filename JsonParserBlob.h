@@ -352,13 +352,6 @@ public:
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
 		}
-		//----- Socket delegation
-		if (std::is_same<T, Blob::ServerSocketCfgData_t>::value){
-			return JSON::getJsonFromServerSocketCfg((const Blob::ServerSocketCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::SocketEvtFlags>::value){
-			return JSON::getJsonFromSocketEvent((const Blob::SocketEvtFlags&)obj);
-		}
 		//----- Objetos metering
 		cJSON* result = NULL;
 		if((result = JSON::getJsonFromMetering((const T&)obj, type)) != NULL){
@@ -378,6 +371,10 @@ public:
 		}
 		//----- Objetos mqtt
 		if((result = JSON::getJsonFromMQTTCli((const T&)obj, type)) != NULL){
+			return result;
+		}
+		//----- Objetos srvsock
+		if((result = JSON::getJsonFromServerSocket((const T&)obj, type)) != NULL){
 			return result;
 		}
 
@@ -694,16 +691,6 @@ public:
 			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
-		//decodifica objeto serverSocket
-		if (std::is_same<T, Blob::ServerSocketCfgData_t>::value){
-			result = JSON::getServerSocketCfgFromJson((Blob::ServerSocketCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto
-		if (std::is_same<T, Blob::SocketEvtFlags>::value){
-			result = JSON::getSocketEventFromJson((Blob::SocketEvtFlags&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
 		//---- Decodifica Objetos metering
 		if((result = JSON::getMeteringObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
@@ -722,6 +709,10 @@ public:
 		}
 		//---- Decodifica Objetos mqtt
 		if((result = JSON::getMQTTCliObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos srvsock
+		if((result = JSON::getServerSocketObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 
