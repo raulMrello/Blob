@@ -75,7 +75,7 @@ TEST_CASE("Get Json <--> Objects with max arrays ..", "[Blob]") {
 	// limita arrays
 	light_boot.cfg.outData.numActions = Blob::MaxAllowedActionDataInArray;
 	light_boot.cfg.outData.curve.samples = Blob::LightCurveSampleCount;
-	fwupd_boot.stat.job.devCount = Blob::MaxDevicesPerJob;
+	fwupd_boot.stat.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 
 	//-----------
 	DEBUG_TRACE_I(_EXPR_, _MODULE_, "getJsonFromGetRequest... ");
@@ -804,7 +804,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::FwUpdStatData_t> sr;
 	// limita arrays
-	sr.data.job.devCount = Blob::MaxDevicesPerJob;
+	sr.data.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -835,7 +835,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::FwUpdBootData_t> sr;
 	// limita arrays
-	sr.data.stat.job.devCount = Blob::MaxDevicesPerJob;
+	sr.data.stat.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -852,7 +852,7 @@ TEST_CASE("Get Json <--> SetRequest max arrays ....", "[Blob]") {
 	{
 	Blob::SetRequest_t<Blob::FwUpdJob_t> sr;
 	// limita arrays
-	sr.data.devCount = Blob::MaxDevicesPerJob;
+	sr.data.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromSetRequest(sr);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -1425,7 +1425,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::FwUpdStatData_t> notif;
 	// limita arrays
-	notif.data.job.devCount = Blob::MaxDevicesPerJob;
+	notif.data.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -1456,7 +1456,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::FwUpdBootData_t> notif;
 	// limita arrays
-	notif.data.stat.job.devCount = Blob::MaxDevicesPerJob;
+	notif.data.stat.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -1473,7 +1473,7 @@ TEST_CASE("Get Json <--> Notification max arrays ....", "[Blob]") {
 	{
 	Blob::NotificationData_t<Blob::FwUpdJob_t> notif;
 	// limita arrays
-	notif.data.devCount = Blob::MaxDevicesPerJob;
+	notif.data.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromNotification(notif);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -2047,7 +2047,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::FwUpdStatData_t> resp;
 	// limita arrays
-	resp.data.job.devCount = Blob::MaxDevicesPerJob;
+	resp.data.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -2078,7 +2078,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::FwUpdBootData_t> resp;
 	// limita arrays
-	resp.data.stat.job.devCount = Blob::MaxDevicesPerJob;
+	resp.data.stat.job.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
@@ -2095,7 +2095,7 @@ TEST_CASE("Get Json <--> Response max arrays ....", "[Blob]") {
 	{
 	Blob::Response_t<Blob::FwUpdJob_t> resp;
 	// limita arrays
-	resp.data.devCount = Blob::MaxDevicesPerJob;
+	resp.data.devCount = Blob::FwUpdMaxDevicesPerJob;
 	json = JsonParser::getJsonFromResponse(resp);
 	TEST_ASSERT_NOT_NULL(json);
 	msg = cJSON_PrintUnformatted(json);
