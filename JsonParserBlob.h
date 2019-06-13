@@ -325,19 +325,6 @@ public:
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
-		//----- FwUpdater delegation
-		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
-			return JSON::getJsonFromFwUpdCfg((const Blob::FwUpdCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::FwUpdStatData_t>::value){
-			return JSON::getJsonFromFwUpdStat((const Blob::FwUpdStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::FwUpdBootData_t>::value){
-			return JSON::getJsonFromFwUpdBoot((const Blob::FwUpdBootData_t&)obj);
-		}
-		if (std::is_same<T, Blob::FwUpdJob_t>::value){
-			return JSON::getJsonFromFwUpdJob((const Blob::FwUpdJob_t&)obj);
-		}
 		//----- SysManager delegation
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
 			return JSON::getJsonFromSysCfg((const Blob::SysCfgData_t&)obj);
@@ -390,6 +377,10 @@ public:
 		}
 		//----- Objetos light
 		if((result = JSON::getJsonFromLight((const T&)obj, type)) != NULL){
+			return result;
+		}
+		//----- Objetos FwUpdater
+		if((result = JSON::getJsonFromFwUpd((const T&)obj, type)) != NULL){
 			return result;
 		}
 
@@ -666,27 +657,6 @@ public:
 		}
 		//----
 		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::FwUpdCfgData_t>::value){
-			result = JSON::getFwUpdCfgFromJson((Blob::FwUpdCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::FwUpdStatData_t>::value){
-			result = JSON::getFwUpdStatFromJson((Blob::FwUpdStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::FwUpdBootData_t>::value){
-			result = JSON::getFwUpdBootFromJson((Blob::FwUpdBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de configuraci�n ALS
-		if (std::is_same<T, Blob::FwUpdJob_t>::value){
-			result = JSON::getFwUpdJobFromJson((Blob::FwUpdJob_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
-		// decodifica objeto de configuraci�n
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
 			result = JSON::getSysCfgFromJson((Blob::SysCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
@@ -757,6 +727,10 @@ public:
 		}
 		//---- Decodifica Objetos light
 		if((result = JSON::getLightObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos fwupd
+		if((result = JSON::getFwUpdObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 
@@ -868,10 +842,10 @@ public:
 						}
 					}
 					else if(isTokenInTopic(topic, "/value/")){
-						obj = (Blob::SetRequest_t<Blob::LightStatData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::LightStatData_t>));
+						obj = (Blob::SetRequest_t<light_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<light_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::LightStatData_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<Blob::LightStatData_t>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<light_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<light_manager>);
 						}
 						else{
 							*size = 0;
@@ -885,10 +859,10 @@ public:
 				}
 				else if(isTokenInTopic(topic, "/fwupd")){
 					if(isTokenInTopic(topic, "/start")){
-						obj = (Blob::SetRequest_t<Blob::FwUpdJob_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::FwUpdJob_t>));
+						obj = (Blob::SetRequest_t<fwupd_manager_job>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<fwupd_manager_job>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdJob_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<Blob::FwUpdJob_t>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<fwupd_manager_job>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<fwupd_manager_job>);
 						}
 						else{
 							*size = 0;
@@ -897,10 +871,10 @@ public:
 						}
 					}
 					else if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<Blob::FwUpdCfgData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::FwUpdCfgData_t>));
+						obj = (Blob::SetRequest_t<fwupd_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<fwupd_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::FwUpdCfgData_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<Blob::FwUpdCfgData_t>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<fwupd_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<fwupd_manager>);
 						}
 						else{
 							*size = 0;
@@ -1006,6 +980,34 @@ public:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-response");
 				}
 			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
+			}
+		}
+
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/fwupd")){
+			if(size == sizeof(Blob::NotificationData_t<fwupd_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<fwupd_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<fwupd_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-notification");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<fwupd_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<fwupd_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<fwupd_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-response");
+				}
+			}
 
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
@@ -1027,21 +1029,6 @@ public:
 			}
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysCfgData_t>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysCfgData_t>*)data);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
-			}
-		}
-
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/fwupd")){
-			if(size == sizeof(Blob::Response_t<Blob::FwUpdCfgData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::FwUpdCfgData_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::FwUpdStatData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::FwUpdStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::FwUpdStatData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::FwUpdStatData_t>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
