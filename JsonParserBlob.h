@@ -341,13 +341,6 @@ public:
 		if (std::is_same<T, Blob::SysRestartData_t>::value){
 			return JSON::getJsonFromSysRestart((const Blob::SysRestartData_t&)obj);
 		}
-		//----- MQTTClient delegation
-		if (std::is_same<T, Blob::MqttStatusFlags>::value){
-			return JSON::getJsonFromMQTTCliStat((const Blob::MqttStatusFlags&)obj);
-		}
-		if (std::is_same<T, Blob::MQTTCfgData_t>::value){
-			return JSON::getJsonFromMQTTCliCfg((const Blob::MQTTCfgData_t&)obj);
-		}
 		//----- HMIManager delegation
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
 			return JSON::getJsonFromHMILed((const Blob::HmiLedData_t&)obj);
@@ -381,6 +374,10 @@ public:
 		}
 		//----- Objetos FwUpdater
 		if((result = JSON::getJsonFromFwUpd((const T&)obj, type)) != NULL){
+			return result;
+		}
+		//----- Objetos mqtt
+		if((result = JSON::getJsonFromMQTTCli((const T&)obj, type)) != NULL){
 			return result;
 		}
 
@@ -682,16 +679,6 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::MqttStatusFlags>::value){
-			result = JSON::getMQTTCliStatFromJson((Blob::MqttStatusFlags&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		if (std::is_same<T, Blob::MQTTCfgData_t>::value){
-			result = JSON::getMQTTCliCfgFromJson((Blob::MQTTCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		//----
 		// decodifica objeto
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
 			result = JSON::getHMILedFromJson((Blob::HmiLedData_t&)obj, json_obj);
@@ -731,6 +718,10 @@ public:
 		}
 		//---- Decodifica Objetos fwupd
 		if((result = JSON::getFwUpdObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		//---- Decodifica Objetos mqtt
+		if((result = JSON::getMQTTCliObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 
