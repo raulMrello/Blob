@@ -856,10 +856,10 @@ public:
 				}
 				else if(isTokenInTopic(topic, "/light")){
 					if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<Blob::LightCfgData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::LightCfgData_t>));
+						obj = (Blob::SetRequest_t<light_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<light_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::LightCfgData_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<Blob::LightCfgData_t>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<light_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<light_manager>);
 						}
 						else{
 							*size = 0;
@@ -927,31 +927,92 @@ public:
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
 		
-		if(isTokenInTopic(topic, "/energy")){
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/energy")){
 			if(size == sizeof(Blob::Response_t<metering_manager>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-response");
+				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<metering_manager>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-notification");
+				}
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering");
 			}
 		}
 
-		else if(isTokenInTopic(topic, "/astcal")){
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/astcal")){
 			if(size == sizeof(Blob::Response_t<calendar_manager>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar-response");
+				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<calendar_manager>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar-notification");
+				}
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar");
 			}
 		}
 
-		else if(isTokenInTopic(topic, "/sys")){
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/light")){
+			if(size == sizeof(Blob::NotificationData_t<light_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<light_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<light_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-notification");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<light_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<light_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<light_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-response");
+				}
+			}
+
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
+			}
+		}
+
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
 			if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysRestartData_t>*)data);
 			}
@@ -972,25 +1033,7 @@ public:
 			}
 		}
 
-		else if(isTokenInTopic(topic, "/light")){
-			if(size == sizeof(Blob::Response_t<Blob::LightCfgData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::LightCfgData_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::LightStatData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::LightStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::LightStatData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::LightStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::LightBootData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::LightBootData_t>*)data);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
-			}
-		}
-
-		else if(isTokenInTopic(topic, "/fwupd")){
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/fwupd")){
 			if(size == sizeof(Blob::Response_t<Blob::FwUpdCfgData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::FwUpdCfgData_t>*)data);
 			}
