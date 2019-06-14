@@ -105,6 +105,7 @@ public:
 	static const char*	p_min;
 	static const char*	p_minmaxData;
 	static const char*	p_mode;
+	static const char*	p_modules;
 	static const char * p_mqttPort;
 	static const char * p_mqttUrl;
 	static const char * p_mqttUser;
@@ -340,6 +341,9 @@ public:
 		}
 		if (std::is_same<T, Blob::SysRestartData_t>::value){
 			return JSON::getJsonFromSysRestart((const Blob::SysRestartData_t&)obj);
+		}
+		if (std::is_same<T, Blob::SysModulesData_t>::value){
+			return JSON::getJsonFromSysModules((const Blob::SysModulesData_t&)obj);
 		}
 		//----- HMIManager delegation
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
@@ -675,6 +679,11 @@ public:
 			result = JSON::getSysRestartFromJson((Blob::SysRestartData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		// decodifica objeto de solicitud de reset
+		if (std::is_same<T, Blob::SysModulesData_t>::value){
+			result = JSON::getSysModulesFromJson((Blob::SysModulesData_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
 		//----
 		// decodifica objeto
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
@@ -747,7 +756,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
@@ -997,7 +1006,10 @@ public:
 		}
 
 		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
-			if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
+			if(isTokenInTopic(topic, "modules") && size == sizeof(Blob::Response_t<Blob::SysModulesData_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysModulesData_t>*)data);
+			}
+			else if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysRestartData_t>*)data);
 			}
 			else if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
