@@ -1005,6 +1005,38 @@ public:
 			}
 		}
 
+
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mqtt")){
+			if(size == sizeof(Blob::NotificationData_t<mqtt_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<mqtt_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<mqtt_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-notification");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<mqtt_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<mqtt_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<mqtt_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-response");
+				}
+			}
+
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
+			}
+		}
+
+
+
 		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
 			if(isTokenInTopic(topic, "modules") && size == sizeof(Blob::Response_t<Blob::SysModulesData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysModulesData_t>*)data);
@@ -1023,6 +1055,12 @@ public:
 			}
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysCfgData_t>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysCfgData_t>*)data);
+			}
+			else if(size == sizeof(Blob::Response_t<Blob::SysStatData_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysStatData_t>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<Blob::SysStatData_t>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysStatData_t>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
