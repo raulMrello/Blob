@@ -874,6 +874,24 @@ public:
 						}
 					}
 				}
+				else if(isTokenInTopic(topic, "/mqtt")){
+					DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en mqtt");
+					if(isTokenInTopic(topic, "/cfg/")){
+						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en mqtt cfg");
+						obj = (Blob::SetRequest_t<mqtt_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mqtt_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<mqtt_manager>*) (obj), json_obj)){
+							DEBUG_TRACE_E(true, "[JsonParser]....", "He getenido mqtt");
+							*size = sizeof(Blob::SetRequest_t<mqtt_manager>);
+						}
+						else{
+							DEBUG_TRACE_E(true, "[JsonParser]....", "He errado mqtt");
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic no controlado");
