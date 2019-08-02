@@ -139,6 +139,7 @@ public:
 	static const char*	p_thdV;
 	static const char*	p_thres;
 	static const char*	p_time;
+	static const char*	p_timeout;
 	static const char*	p_timestamp;
 	static const char*	p_timezone;
 	static const char*	p_uid;
@@ -152,7 +153,10 @@ public:
 	static const char*	p_wdowDawnStop;
 	static const char*	p_wdowDuskStart;
 	static const char*	p_wdowDuskStop;
-
+	static const char*	p_ssid;
+	static const char*	p_pass;
+	static const char*	p_ip;
+	static const char*	p_port;
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
@@ -335,6 +339,9 @@ public:
 		}
 		if (std::is_same<T, Blob::SysBootData_t>::value){
 			return JSON::getJsonFromSysBoot((const Blob::SysBootData_t&)obj);
+		}
+		if (std::is_same<T, Blob::SysBootDataReduced_t>::value){
+			return JSON::getJsonFromSysBootReduced((const Blob::SysBootDataReduced_t&)obj);
 		}
 		if (std::is_same<T, Blob::SysNullData_t>::value){
 			return JSON::getJsonFromSysNull((const Blob::SysNullData_t&)obj);
@@ -669,6 +676,11 @@ public:
 			result = JSON::getSysBootFromJson((Blob::SysBootData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		// decodifica objeto de arranque reducido
+		if (std::is_same<T, Blob::SysBootDataReduced_t>::value){
+			result = JSON::getSysBootReducedFromJson((Blob::SysBootDataReduced_t&)obj, json_obj);
+			goto _getObjFromJson_Exit;
+		}
 		// decodifica objeto de solicitud de arranque
 		if (std::is_same<T, Blob::SysNullData_t>::value){
 			result = JSON::getSysNullFromJson((Blob::SysNullData_t&)obj, json_obj);
@@ -795,18 +807,22 @@ public:
 				}
 				else if(isTokenInTopic(topic, "/sys")){
 					if(isTokenInTopic(topic, "/restart")){
+						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en restart");
 						obj = (Blob::SetRequest_t<Blob::SysRestartData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>));
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysRestartData_t>*) (obj), json_obj)){
+							DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en if restart");
 							*size = sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>);
 						}
 						else{
+							DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en else restart");
 							*size = 0;
 							Heap::memFree(obj);
 							obj = NULL;
 						}
 					}
 					else{
+						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy else sys");
 						obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj)){
@@ -875,22 +891,68 @@ public:
 					}
 				}
 				else if(isTokenInTopic(topic, "/mqtt")){
-					DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en mqtt");
 					if(isTokenInTopic(topic, "/cfg/")){
-						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en mqtt cfg");
 						obj = (Blob::SetRequest_t<mqtt_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mqtt_manager>));
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<mqtt_manager>*) (obj), json_obj)){
-							DEBUG_TRACE_E(true, "[JsonParser]....", "He getenido mqtt");
 							*size = sizeof(Blob::SetRequest_t<mqtt_manager>);
 						}
 						else{
-							DEBUG_TRACE_E(true, "[JsonParser]....", "He errado mqtt");
 							*size = 0;
 							Heap::memFree(obj);
 							obj = NULL;
 						}
 					}
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
+				}
+			}
+			else if(isTokenInTopic(topic, "stat/"))
+			{
+				if(isTokenInTopic(topic, "/conn/mqtt")){
+					obj = (Blob::MqttStatusFlags*)Heap::memAlloc(sizeof(Blob::MqttStatusFlags));
+					MBED_ASSERT(obj);
+					if(getObjFromJson(*(Blob::MqttStatusFlags*)(obj), json_obj)){
+						*size = sizeof(Blob::MqttStatusFlags);				
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+				}
+				else if(isTokenInTopic(topic, "/sys")){
+					if(isTokenInTopic(topic, "/null/")){
+						obj = (Blob::NotificationData_t<Blob::SysNullData_t>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::SysNullData_t>));
+						MBED_ASSERT(obj);
+						if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::SysNullData_t>*) (obj), json_obj)){
+							*size = sizeof(Blob::NotificationData_t<Blob::SysNullData_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/boot/")){
+						obj = (Blob::NotificationData_t<Blob::SysBootDataReduced_t>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::SysBootDataReduced_t>));
+						MBED_ASSERT(obj);
+						if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::SysBootDataReduced_t>*) (obj), json_obj)){
+							*size = sizeof(Blob::NotificationData_t<Blob::SysBootDataReduced_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else{
+						DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: Objeto sys no encontrado");
+					}
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic stat no controlado");
 				}
 			}
 			else{
@@ -999,7 +1061,7 @@ public:
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<fwupd_manager>*)data, ObjSelectCfg);
 				}
-				else if(isTokenInTopic(topic, "value")){
+				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<fwupd_manager>*)data, ObjSelectState);
 				}
 				else{
@@ -1010,7 +1072,7 @@ public:
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<fwupd_manager>*)data, ObjSelectCfg);
 				}
-				else if(isTokenInTopic(topic, "value")){
+				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<fwupd_manager>*)data, ObjSelectState);
 				}
 				else{
@@ -1033,7 +1095,7 @@ public:
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<mqtt_manager>*)data, ObjSelectState);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-notification");
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt-notification");
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<mqtt_manager>)){
@@ -1044,10 +1106,12 @@ public:
 					json_obj = getJsonFromResponse(*(Blob::Response_t<mqtt_manager>*)data, ObjSelectState);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-response");
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt-response");
 				}
 			}
-
+			else if(size == sizeof(Blob::MqttStatusFlags)){
+				json_obj = JsonParser::getJsonFromObj(*(Blob::MqttStatusFlags*)data);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
 			}
@@ -1065,8 +1129,14 @@ public:
 			else if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootData_t>*)data);
 			}
+			else if(size == sizeof(Blob::Response_t<Blob::SysBootDataReduced_t>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootDataReduced_t>*)data);
+			}
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootData_t>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysBootData_t>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootDataReduced_t>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysBootDataReduced_t>*)data);
 			}
 			else if(size == sizeof(Blob::Response_t<Blob::SysCfgData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysCfgData_t>*)data);
@@ -1080,8 +1150,39 @@ public:
 			else if(size == sizeof(Blob::NotificationData_t<Blob::SysStatData_t>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysStatData_t>*)data);
 			}
+			else if(size == sizeof(Blob::NotificationData_t<Blob::SysNullData_t>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysNullData_t>*)data);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+			}
+		}
+
+		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/socket")){
+			if(size == sizeof(Blob::NotificationData_t<srvsock_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<srvsock_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<srvsock_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket-notification");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<srvsock_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<srvsock_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<srvsock_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket-response");
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket");
 			}
 		}
 
@@ -1097,10 +1198,13 @@ public:
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = getDataFromObjTopic(topic, data, size);
 
-		if(json_obj != NULL){
-			DEBUG_TRACE_I(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, cJSON_PrintUnformatted(json_obj));
-		}
+		char* jsonMsg = cJSON_PrintUnformatted(json_obj);
 		cJSON_Delete(json_obj);
+		
+		if(json_obj != NULL){
+			DEBUG_TRACE_I(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
+		}
+		Heap::memFree(jsonMsg);
 	}
 
 };	// end class Parser

@@ -129,6 +129,7 @@ const char * JsonParser::p_thdA			= "thdA";
 const char * JsonParser::p_thdV			= "thdV";
 const char * JsonParser::p_thres		= "thres";
 const char * JsonParser::p_time			= "time";
+const char * JsonParser::p_timeout		= "timeout";
 const char * JsonParser::p_timestamp	= "timestamp";
 const char * JsonParser::p_timezone		= "timezone";
 const char * JsonParser::p_uid			= "uid";
@@ -142,5 +143,9 @@ const char * JsonParser::p_wdowDawnStart= "wdowDawnStart";
 const char * JsonParser::p_wdowDawnStop	= "wdowDawnStop";
 const char * JsonParser::p_wdowDuskStart= "wdowDuskStart";
 const char * JsonParser::p_wdowDuskStop	= "wdowDuskStop";
+const char * JsonParser::p_ssid		    = "ssid";
+const char * JsonParser::p_pass	        = "pass";
+const char * JsonParser::p_ip		    = "ip";
+const char * JsonParser::p_port	        = "port";
 
 
