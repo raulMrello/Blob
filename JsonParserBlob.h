@@ -15,21 +15,63 @@
 #include "Blob.h"
 #include "cJSON.h"
 
+/**
+ * Este archivo de cabecera es externo al proyecto y debe definir las diferentes claves que habilitan o deshabilitan
+ * porciones de código. Puesto que este módulo integra objetos de diferentes proyectos (AstCalendar, AMManager,
+ * LightManager, etc...) es necesario habilitar únicamente aquellos componentes que se quiera utilizar, de forma que
+ * la compilación pueda llevarse a cabo en diferentes plataformas o proyectos.
+ *
+ * Las claves que debe definir este archivo son:
+ *
+ * JsonParser_AstCalendar_Enabled
+ * JsonParser_AMManager_Enabled
+ * JsonParser_SysManager_Enabled
+ * JsonParser_LightManager_Enabled
+ * JsonParser_FwUpdater_Enabled
+ * JsonParser_MQTTClient_Enabled
+ * JsonParser_HMIManager_Enabled
+ * JsonParser_BlufiManager_Enabled
+ * JsonParser_ServerSocket_Enabled
+ *
+ */
+#include "JsonParserBlob_UserConfig.h"
+
 /** Cabeceras de los mï¿½dulos integrados en el namespace JSON */
+#if defined(JsonParser_AstCalendar_Enabled)
 #include "AstCalendarBlob.h"
+#endif
+#if defined(JsonParser_AMManager_Enabled)
 #include "AMManagerBlob.h"
+#endif
+#if defined(JsonParser_LightManager_Enabled)
 #include "LightManagerBlob.h"
+#endif
+#if defined(JsonParser_SysManager_Enabled)
 #include "SysManagerBlob.h"
+#endif
+#if defined(JsonParser_FwUpdater_Enabled)
 #include "FwUpdaterBlob.h"
+#endif
+#if defined(JsonParser_MQTTClient_Enabled)
 #include "MQTTClientBlob.h"
+#endif
+#if defined(JsonParser_HMIManager_Enabled)
 #include "HMIManagerBlob.h"
+#endif
+#if defined(JsonParser_BlufiManager_Enabled)
 #include "BlufiManagerBlob.h"
+#endif
+#if defined(JsonParser_ServerSocket_Enabled)
 #include "ServerSocketBlob.h"
+#endif
+
 
 /** Definiciones de los Modelos de datos */
 #include "common_objects.h"
 #include "metering_objects.h"
+#if defined(JsonParser_AstCalendar_Enabled)
 #include "calendar_objects.h"
+#endif
 
 #include <type_traits>
 
@@ -327,10 +369,12 @@ public:
 	 */
 	template <typename T>
 	static cJSON* getJsonFromObj(const T& obj, ObjDataSelection type = ObjSelectAll){
+		cJSON* result = NULL;
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
 		//----- SysManager delegation
+		#if defined(JsonParser_SysManager_Enabled)
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
 			return JSON::getJsonFromSysCfg((const Blob::SysCfgData_t&)obj);
 		}
@@ -352,43 +396,58 @@ public:
 		if (std::is_same<T, Blob::SysModulesData_t>::value){
 			return JSON::getJsonFromSysModules((const Blob::SysModulesData_t&)obj);
 		}
+		#endif
 		//----- HMIManager delegation
+		#if defined(JsonParser_HMIManager_Enabled)
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
 			return JSON::getJsonFromHMILed((const Blob::HmiLedData_t&)obj);
 		}
 		if (std::is_same<T, Blob::HmiEvtFlags>::value){
 			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
 		}
+		#endif
 		//----- BlufiManager delegation
+		#if defined(JsonParser_BlufiManager_Enabled)
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			return JSON::getJsonFromBlufiManStat((const Blob::BlufiCfgData_t&)obj);
 		}
+		#endif
 		//----- Objetos metering
-		cJSON* result = NULL;
+		#if defined(JsonParser_AMManager_Enabled)
 		if((result = JSON::getJsonFromMetering((const T&)obj, type)) != NULL){
 			return result;
 		}
+		#endif
 		//----- Objetos calendar
+		#if defined(JsonParser_AstCalendar_Enabled)
 		if((result = JSON::getJsonFromCalendar((const T&)obj, type)) != NULL){
 			return result;
 		}
+		#endif
 		//----- Objetos light
+		#if defined(JsonParser_LightManager_Enabled)
 		if((result = JSON::getJsonFromLight((const T&)obj, type)) != NULL){
 			return result;
 		}
+		#endif
 		//----- Objetos FwUpdater
+		#if defined(JsonParser_FwUpdater_Enabled)
 		if((result = JSON::getJsonFromFwUpd((const T&)obj, type)) != NULL){
 			return result;
 		}
+		#endif
 		//----- Objetos mqtt
+		#if defined(JsonParser_MQTTClient_Enabled)
 		if((result = JSON::getJsonFromMQTTCli((const T&)obj, type)) != NULL){
 			return result;
 		}
+		#endif
 		//----- Objetos srvsock
+		#if defined(JsonParser_ServerSocket_Enabled)
 		if((result = JSON::getJsonFromServerSocket((const T&)obj, type)) != NULL){
 			return result;
 		}
-
+		#endif
 		//----- Objetos externos de propï¿½sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
 			return JSON::getJsonFromRangeMinMaxThresDouble((const common_range_minmaxthres_double&)obj);
@@ -661,6 +720,7 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		//----
+		#if defined(JsonParser_SysManager_Enabled)
 		// decodifica objeto de configuraciï¿½n
 		if (std::is_same<T, Blob::SysCfgData_t>::value){
 			result = JSON::getSysCfgFromJson((Blob::SysCfgData_t&)obj, json_obj);
@@ -696,7 +756,9 @@ public:
 			result = JSON::getSysModulesFromJson((Blob::SysModulesData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 		//----
+		#if defined(JsonParser_HMIManager_Enabled)
 		// decodifica objeto
 		if (std::is_same<T, Blob::HmiLedData_t>::value){
 			result = JSON::getHMILedFromJson((Blob::HmiLedData_t&)obj, json_obj);
@@ -707,35 +769,50 @@ public:
 			result = JSON::getHMIEventFromJson((Blob::HmiEvtFlags&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		#endif
+		#if defined(JsonParser_BlufiManager_Enabled)
 		//decodifica objeto blufiMan
 		if (std::is_same<T, Blob::BlufiCfgData_t>::value){
 			result = JSON::getBlufiManStatFromJson((Blob::BlufiCfgData_t&)obj, json_obj);
 			goto _getObjFromJson_Exit;
 		}
+		#endif
+		#if defined(JsonParser_AMManager_Enabled)
 		//---- Decodifica Objetos metering
 		if((result = JSON::getMeteringObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 		//---- Decodifica Objetos calendar
+		#if defined(JsonParser_AstCalendar_Enabled)
 		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 		//---- Decodifica Objetos light
+		#if defined(JsonParser_LightManager_Enabled)
 		if((result = JSON::getLightObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 		//---- Decodifica Objetos fwupd
+		#if defined(JsonParser_FwUpdater_Enabled)
 		if((result = JSON::getFwUpdObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 		//---- Decodifica Objetos mqtt
+		#if defined(JsonParser_MQTTClient_Enabled)
 		if((result = JSON::getMQTTCliObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 		//---- Decodifica Objetos srvsock
+		#if defined(JsonParser_ServerSocket_Enabled)
 		if((result = JSON::getServerSocketObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
+		#endif
 
 		//---- Decodifica Objetos comunes de propï¿½sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -779,8 +856,10 @@ public:
 						obj = NULL;
 					}
 				}
+				goto _gofdt_exit;
 			}
 			else if(isTokenInTopic(topic, "set/")){
+				#if defined(JsonParser_AMManager_Enabled)
 				if(isTokenInTopic(topic, "/energy")){
 					obj = (Blob::SetRequest_t<metering_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<metering_manager>));
 					MBED_ASSERT(obj);
@@ -792,8 +871,11 @@ public:
 						Heap::memFree(obj);
 						obj = NULL;
 					}
+					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/astcal")){
+				#endif
+				#if defined(JsonParser_AstCalendar_Enabled)
+				if(isTokenInTopic(topic, "/astcal")){
 					obj = (Blob::SetRequest_t<calendar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<calendar_manager>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<calendar_manager>*) (obj), json_obj)){
@@ -804,8 +886,11 @@ public:
 						Heap::memFree(obj);
 						obj = NULL;
 					}
+					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/sys")){
+				#endif
+				#if defined(JsonParser_SysManager_Enabled)
+				if(isTokenInTopic(topic, "/sys")){
 					if(isTokenInTopic(topic, "/restart")){
 						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en restart");
 						obj = (Blob::SetRequest_t<Blob::SysRestartData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>));
@@ -834,8 +919,11 @@ public:
 							obj = NULL;
 						}
 					}
+					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/light")){
+				#endif
+				#if defined(JsonParser_LightManager_Enabled)
+				if(isTokenInTopic(topic, "/light")){
 					if(isTokenInTopic(topic, "/cfg/")){
 						obj = (Blob::SetRequest_t<light_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<light_manager>));
 						MBED_ASSERT(obj);
@@ -863,8 +951,11 @@ public:
 					else {
 						DEBUG_TRACE_E(true, "[JsonParser]....", "Objeto set/light no identificado");
 					}
+					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/fwupd")){
+				#endif
+				#if defined(JsonParser_FwUpdater_Enabled)
+				if(isTokenInTopic(topic, "/fwupd")){
 					if(isTokenInTopic(topic, "/start")){
 						obj = (Blob::SetRequest_t<fwupd_manager_job>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<fwupd_manager_job>));
 						MBED_ASSERT(obj);
@@ -889,8 +980,11 @@ public:
 							obj = NULL;
 						}
 					}
+					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/mqtt")){
+				#endif
+				#if defined(JsonParser_MQTTClient_Enabled)
+				if(isTokenInTopic(topic, "/mqtt")){
 					if(isTokenInTopic(topic, "/cfg/")){
 						obj = (Blob::SetRequest_t<mqtt_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mqtt_manager>));
 						MBED_ASSERT(obj);
@@ -903,13 +997,15 @@ public:
 							obj = NULL;
 						}
 					}
+					goto _gofdt_exit;
 				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
-				}
+				#endif
+				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
+				goto _gofdt_exit;
 			}
 			else if(isTokenInTopic(topic, "stat/"))
 			{
+				#if defined(JsonParser_MQTTClient_Enabled)
 				if(isTokenInTopic(topic, "/conn/mqtt")){
 					obj = (Blob::MqttStatusFlags*)Heap::memAlloc(sizeof(Blob::MqttStatusFlags));
 					MBED_ASSERT(obj);
@@ -921,8 +1017,11 @@ public:
 						Heap::memFree(obj);
 						obj = NULL;
 					}
+					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/sys")){
+				#endif
+				#if defined(JsonParser_SysManager_Enabled)
+				if(isTokenInTopic(topic, "/sys")){
 					if(isTokenInTopic(topic, "/null/")){
 						obj = (Blob::NotificationData_t<Blob::SysNullData_t>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::SysNullData_t>));
 						MBED_ASSERT(obj);
@@ -950,16 +1049,17 @@ public:
 					else{
 						DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: Objeto sys no encontrado");
 					}
+					goto _gofdt_exit;
 				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic stat no controlado");
-				}
+				#endif
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic stat no controlado");
+
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic no controlado");
 			}
 		}
-
+_gofdt_exit:
 		if(std::is_same<U,char>::value){
 			cJSON_Delete(json_obj);
 		}
@@ -971,7 +1071,7 @@ public:
 	static cJSON* getDataFromObjTopic(char* topic, void* data, uint16_t size){
 		// obtengo objeto json en funciï¿½n del tipo
 		cJSON *json_obj = NULL;
-		
+		#if defined(JsonParser_AMManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/energy")){
 			if(size == sizeof(Blob::Response_t<metering_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
@@ -998,9 +1098,11 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering");
 			}
+			return json_obj;
 		}
 
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/astcal")){
+		#if defined(JsonParser_AstCalendar_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/astcal")){
 			if(size == sizeof(Blob::Response_t<calendar_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectCfg);
@@ -1026,9 +1128,11 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar");
 			}
+			return json_obj;
 		}
-
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/light")){
+		#endif
+		#if defined(JsonParser_LightManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/light")){
 			if(size == sizeof(Blob::NotificationData_t<light_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<light_manager>*)data, ObjSelectCfg);
@@ -1054,9 +1158,11 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
 			}
+			return json_obj;
 		}
-
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/fwupd")){
+		#endif
+		#if defined(JsonParser_FwUpdater_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/fwupd")){
 			if(size == sizeof(Blob::NotificationData_t<fwupd_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<fwupd_manager>*)data, ObjSelectCfg);
@@ -1083,10 +1189,11 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
 			}
+			return json_obj;
 		}
-
-
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mqtt")){
+		#endif
+		#if defined(JsonParser_MQTTClient_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mqtt")){
 			if(size == sizeof(Blob::NotificationData_t<mqtt_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<mqtt_manager>*)data, ObjSelectCfg);
@@ -1115,11 +1222,11 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
 			}
+			return json_obj;
 		}
-
-
-
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
+		#endif
+		#if defined(JsonParser_SysManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
 			if(isTokenInTopic(topic, "modules") && size == sizeof(Blob::Response_t<Blob::SysModulesData_t>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysModulesData_t>*)data);
 			}
@@ -1156,9 +1263,11 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
 			}
+			return json_obj;
 		}
-
-		else if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/socket")){
+		#endif
+		#if defined(JsonParser_ServerSocket_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/socket")){
 			if(size == sizeof(Blob::NotificationData_t<srvsock_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<srvsock_manager>*)data, ObjSelectCfg);
@@ -1184,14 +1293,14 @@ public:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket");
 			}
+			return json_obj;
 		}
+		#endif
 
-		else{
-			DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
-		}
-		
+		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		return json_obj;
 	}
+
 
 
 	static void printBinaryObject(char* topic, void* data, uint16_t size){
