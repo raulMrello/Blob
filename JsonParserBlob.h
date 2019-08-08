@@ -1100,7 +1100,7 @@ _gofdt_exit:
 			}
 			return json_obj;
 		}
-
+		#endif
 		#if defined(JsonParser_AstCalendar_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/astcal")){
 			if(size == sizeof(Blob::Response_t<calendar_manager>)){
