@@ -36,12 +36,16 @@
  */
 #include "JsonParserBlob_UserConfig.h"
 
+/** Definiciones de los Modelos de datos */
+#include "common_objects.h"
+
 /** Cabeceras de los m�dulos integrados en el namespace JSON */
 #if defined(JsonParser_AstCalendar_Enabled)
 #include "AstCalendarBlob.h"
 #endif
 #if defined(JsonParser_AMManager_Enabled)
 #include "AMManagerBlob.h"
+#include "metering_objects.h"
 #endif
 #if defined(JsonParser_LightManager_Enabled)
 #include "LightManagerBlob.h"
@@ -64,11 +68,13 @@
 #if defined(JsonParser_ServerSocket_Enabled)
 #include "ServerSocketBlob.h"
 #endif
+#if defined(JsonParser_ShuckoManager_Enabled)
+#include "ShuckoManagerBlob.h"
+#include "shucko_objects.h"
+#endif
 
 
-/** Definiciones de los Modelos de datos */
-#include "common_objects.h"
-#include "metering_objects.h"
+
 #if defined(JsonParser_AstCalendar_Enabled)
 #include "calendar_objects.h"
 #endif
@@ -83,6 +89,7 @@ public:
 	static const char*	p_actions;
 	static const char*	p_active;
 	static const char*	p_alsData;
+	static const char*	p_analyzer;
 	static const char*	p_analyzers;
 	static const char*	p_aPow;
 	static const char*	p_ast;
@@ -97,6 +104,7 @@ public:
 	static const char*	p_channel;
 	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*	p_connector;
 	static const char*	p_coords;
 	static const char*	p_current;
 	static const char*	p_curve;
