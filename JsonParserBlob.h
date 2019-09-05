@@ -426,6 +426,12 @@ public:
 			return result;
 		}
 		#endif
+		//----- Objetos shucko
+		#if defined(JsonParser_ShuckoManager_Enabled)
+		if((result = JSON::getJsonFromShucko((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
 		//----- Objetos calendar
 		#if defined(JsonParser_AstCalendar_Enabled)
 		if((result = JSON::getJsonFromCalendar((const T&)obj, type)) != NULL){
@@ -791,6 +797,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		#if defined(JsonParser_ShuckoManager_Enabled)
+		//---- Decodifica Objetos shucko
+		if((result = JSON::getShuckoObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 		//---- Decodifica Objetos calendar
 		#if defined(JsonParser_AstCalendar_Enabled)
 		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
@@ -881,6 +893,35 @@ public:
 					}
 					goto _gofdt_exit;
 				}
+				#endif
+				#if defined(JsonParser_ShuckoManager_Enabled)
+				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/shucko")){
+					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/shucko")){
+					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+
 				#endif
 				#if defined(JsonParser_AstCalendar_Enabled)
 				if(isTokenInTopic(topic, "/astcal")){
@@ -1105,6 +1146,17 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_ShuckoManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/shucko")){
+			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
 			}
 			return json_obj;
 		}
