@@ -72,6 +72,10 @@
 #include "ShuckoManagerBlob.h"
 #include "shucko_objects.h"
 #endif
+#if defined(JsonParser_MennekesManager_Enabled)
+#include "MennekesManagerBlob.h"
+#include "mennekes_objects.h"
+#endif
 
 
 
@@ -89,6 +93,7 @@ public:
 	static const char*	p_actions;
 	static const char*	p_active;
 	static const char*	p_alsData;
+	static const char*	p_ampacity;
 	static const char*	p_analyzer;
 	static const char*	p_analyzers;
 	static const char*	p_aPow;
@@ -138,6 +143,7 @@ public:
 	static const char*	p_keepAlive;
 	static const char*	p_keys;
 	static const char*	p_latitude;
+	static const char*	p_leakage;
 	static const char*	p_light;
 	static const char*	p_loadPercent;
 	static const char*	p_localtime;
@@ -172,6 +178,8 @@ public:
 	static const char*	p_period;
 	static const char*	p_periods;
 	static const char*	p_pfactor;
+	static const char*	p_plugPresent;
+	static const char*	p_plugLimit;
 	static const char*	p_phase;
 	static const char*	p_qos;
 	static const char*	p_reactive;
@@ -429,6 +437,12 @@ public:
 		//----- Objetos shucko
 		#if defined(JsonParser_ShuckoManager_Enabled)
 		if((result = JSON::getJsonFromShucko((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+		//----- Objetos mennekes
+		#if defined(JsonParser_MennekesManager_Enabled)
+		if((result = JSON::getJsonFromMennekes((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -803,6 +817,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		#if defined(JsonParser_MennekesManager_Enabled)
+		//---- Decodifica Objetos mennekes
+		if((result = JSON::getMennekesObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 		//---- Decodifica Objetos calendar
 		#if defined(JsonParser_AstCalendar_Enabled)
 		if((result = JSON::getCalendarObjFromJson(obj, json_obj)) != 0){
@@ -921,8 +941,37 @@ public:
 					}
 					goto _gofdt_exit;
 				}
-
 				#endif
+
+				#if defined(JsonParser_MennekesManager_Enabled)
+				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/mennekes")){
+					obj = (Blob::SetRequest_t<mennekes_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_stat>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/mennekes")){
+					obj = (Blob::SetRequest_t<mennekes_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_cfg>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
 				#if defined(JsonParser_AstCalendar_Enabled)
 				if(isTokenInTopic(topic, "/astcal")){
 					obj = (Blob::SetRequest_t<calendar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<calendar_manager>));
@@ -1157,6 +1206,17 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_MennekesManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
+			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
 			}
 			return json_obj;
 		}
