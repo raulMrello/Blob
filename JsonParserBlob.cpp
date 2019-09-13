@@ -153,5 +153,9 @@ const char * JsonParser::p_ssid		    = "ssid";
 const char * JsonParser::p_pass	        = "pass";
 const char * JsonParser::p_ip		    = "ip";
 const char * JsonParser::p_port	        = "port";
+const char * JsonParser::p_state	    = "state";
+const char * JsonParser::p_idCharge	    = "idCharge";
+const char * JsonParser::p_user 	    = "user";
+const char * JsonParser::p_dataAnalyzer = "dataAnalyzer";
 
 
