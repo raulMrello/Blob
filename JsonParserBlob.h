@@ -80,6 +80,10 @@
 #include "EVStateMachineBlob.h"
 #include "evsm_objects.h"
 #endif
+#if defined(JsonParser_RequestsManager_Enabled)
+#include "RequestsManagerBlob.h"
+#include "requests_objects.h"
+#endif
 
 
 
@@ -223,6 +227,10 @@ public:
 	static const char*	p_idCharge;
 	static const char*	p_user;
 	static const char*	p_dataAnalyzer;
+	static const char*	p_source;
+	static const char*	p_priority;
+	static const char*	p_action;
+	static const char*	p_group;
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
@@ -491,6 +499,12 @@ public:
 		//----- Objetos state
 		#if defined(JsonParser_EVStateMachine_Enabled)
 		if((result = JSON::getJsonFromEVStateMachine((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+		//----- Objetos requests
+		#if defined(JsonParser_RequestsManager_Enabled)
+		if((result = JSON::getJsonFromRequestsManager((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -1209,6 +1223,17 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_RequestsManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/reqman")){
+			if(size == sizeof(Blob::NotificationData_t<element_request>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<element_request>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
 			}
 			return json_obj;
 		}
