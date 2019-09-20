@@ -157,5 +157,9 @@ const char * JsonParser::p_state	    = "state";
 const char * JsonParser::p_idCharge	    = "idCharge";
 const char * JsonParser::p_user 	    = "user";
 const char * JsonParser::p_dataAnalyzer = "dataAnalyzer";
+const char * JsonParser::p_source       = "source";
+const char * JsonParser::p_priority     = "priority";
+const char * JsonParser::p_action       = "action";
+const char * JsonParser::p_group        = "group";
 
 
