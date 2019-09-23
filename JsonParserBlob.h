@@ -17,9 +17,9 @@
 
 /**
  * Este archivo de cabecera es externo al proyecto y debe definir las diferentes claves que habilitan o deshabilitan
- * porciones de código. Puesto que este módulo integra objetos de diferentes proyectos (AstCalendar, AMManager,
- * LightManager, etc...) es necesario habilitar únicamente aquellos componentes que se quiera utilizar, de forma que
- * la compilación pueda llevarse a cabo en diferentes plataformas o proyectos.
+ * porciones de cï¿½digo. Puesto que este mï¿½dulo integra objetos de diferentes proyectos (AstCalendar, AMManager,
+ * LightManager, etc...) es necesario habilitar ï¿½nicamente aquellos componentes que se quiera utilizar, de forma que
+ * la compilaciï¿½n pueda llevarse a cabo en diferentes plataformas o proyectos.
  *
  * Las claves que debe definir este archivo son:
  *
@@ -75,6 +75,10 @@
 #if defined(JsonParser_MennekesManager_Enabled)
 #include "MennekesManagerBlob.h"
 #include "mennekes_objects.h"
+#endif
+#if defined(JsonParser_EVStateMachine_Enabled)
+#include "EVStateMachineBlob.h"
+#include "evsm_objects.h"
 #endif
 #if defined(JsonParser_RequestsManager_Enabled)
 #include "RequestsManagerBlob.h"
@@ -218,6 +222,14 @@ public:
 	static const char*	p_pass;
 	static const char*	p_ip;
 	static const char*	p_port;
+	static const char*	p_state;
+	static const char*	p_idCharge;
+	static const char*	p_user;
+	static const char*	p_dataAnalyzer;
+	static const char*	p_source;
+	static const char*	p_priority;
+	static const char*	p_action;
+	static const char*	p_group;
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
@@ -483,6 +495,18 @@ public:
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
 			return JSON::getJsonFromRangeMinMaxThresDouble((const common_range_minmaxthres_double&)obj);
 		}
+		//----- Objetos state
+		#if defined(JsonParser_EVStateMachine_Enabled)
+		if((result = JSON::getJsonFromEVStateMachine((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+		//----- Objetos requests
+		#if defined(JsonParser_RequestsManager_Enabled)
+		if((result = JSON::getJsonFromRequestsManager((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
@@ -1202,10 +1226,24 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
+		#if defined(JsonParser_RequestsManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/reqman")){
+			if(size == sizeof(Blob::NotificationData_t<element_request>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<element_request>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+			}
+			return json_obj;
+		}
+		#endif
 		#if defined(JsonParser_ShuckoManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/shucko")){
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
 			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
