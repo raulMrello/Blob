@@ -76,7 +76,10 @@
 #include "MennekesManagerBlob.h"
 #include "mennekes_objects.h"
 #endif
-
+#if defined(JsonParser_RequestsManager_Enabled)
+#include "RequestsManagerBlob.h"
+#include "requests_objects.h"
+#endif
 
 
 #if defined(JsonParser_AstCalendar_Enabled)
