@@ -1196,6 +1196,10 @@ _gofdt_exit:
 	static cJSON* getDataFromObjTopic(char* topic, void* data, uint16_t size){
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
+		if(size == sizeof(Blob::GetRequest_t)){
+			json_obj = getJsonFromGetRequest(*(Blob::GetRequest_t*)data);
+			return json_obj;
+		}
 		#if defined(JsonParser_AMManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/energy")){
 			if(size == sizeof(Blob::Response_t<metering_manager>)){
@@ -1231,6 +1235,23 @@ _gofdt_exit:
 			if(size == sizeof(Blob::NotificationData_t<element_request>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<element_request>*)data);
 			}
+			else if(size == sizeof(Blob::Response_t<element_request>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<element_request>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: reqman element");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_EVStateMachine_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
+			if(size == sizeof(Blob::Response_t<connector_state>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<connector_state>*)data);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
 			}
@@ -1241,9 +1262,6 @@ _gofdt_exit:
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
 			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
