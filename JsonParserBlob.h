@@ -90,6 +90,16 @@
 #include "calendar_objects.h"
 #endif
 
+#if defined(JsonParser_SchedulerManager_Enabled)
+#include "SchedulerManager.h"
+#include "scheduler_manager_objects.h"
+#endif
+
+#if defined(JsonParser_NewManager_Enabled)
+#include "NewManager.h"
+#include "new_manager_objects.h"
+#endif
+
 #include <type_traits>
 
 
@@ -230,6 +240,18 @@ public:
 	static const char*	p_priority;
 	static const char*	p_action;
 	static const char*	p_group;
+	static const char*	p_elements;
+	static const char*	p_name;
+	static const char*	p_tasks;
+	static const char*	p_initTime;
+	static const char*	p_endTime;
+	static const char*	p_day;
+	static const char*	p_month;
+	static const char*	p_weekday;
+	static const char*	p_timeList;
+	static const char*	p_hour;
+	static const char*	p_duration;
+
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
@@ -504,6 +526,20 @@ public:
 		//----- Objetos requests
 		#if defined(JsonParser_RequestsManager_Enabled)
 		if((result = JSON::getJsonFromRequestsManager((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos scheduler
+		#if defined(JsonParser_SchedulerManager_Enabled)
+		if((result = JSON::getJsonFromSchedulerManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos NewManager
+		#if defined(JsonParser_NewManager_Enabled)
+		if((result = JSON::getJsonFromNewManagerObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -1258,28 +1294,6 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
-		#if defined(JsonParser_ShuckoManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
-			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
-			}
-			return json_obj;
-		}
-		#endif
-		#if defined(JsonParser_MennekesManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
-			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
-			}
-			return json_obj;
-		}
-		#endif
 		#if defined(JsonParser_AstCalendar_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/astcal")){
 			if(size == sizeof(Blob::Response_t<calendar_manager>)){
@@ -1476,17 +1490,145 @@ _gofdt_exit:
 		}
 		#endif
 
+
+
+		#if defined(JsonParser_SchedulerManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/schedman")){
+			if(size == sizeof(Blob::Response_t<scheduler_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<scheduler_element>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_element>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_element>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<scheduler_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: scheduler");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<scheduler_element>)){
+				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_element>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: scheduler");
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/schedman")){
+			if(size == sizeof(Blob::SetRequest_t<scheduler_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<scheduler_manager>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		#endif
+
+		#if defined(JsonParser_NewManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/newman")){
+			if(size == sizeof(Blob::Response_t<new_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<new_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<new_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: NewManager");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<new_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<new_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<new_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: NewManager");
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: NewManager, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/newman")){
+			if(size == sizeof(Blob::SetRequest_t<new_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<new_manager>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		#endif
+
+		#if defined(JsonParser_ShuckoManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
+			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_MennekesManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
+			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
+			}
+			return json_obj;
+		}
+		#endif
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		return json_obj;
 	}
 
 
 
-	static void printBinaryObject(char* topic, void* data, uint16_t size){
+	static void printBinaryObject(char* topic, void* data, uint16_t size, bool formatted = false){
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = getDataFromObjTopic(topic, data, size);
 
-		char* jsonMsg = cJSON_PrintUnformatted(json_obj);
+		char* jsonMsg;
+		if(formatted)
+			jsonMsg = cJSON_Print(json_obj);
+		else
+			jsonMsg = cJSON_PrintUnformatted(json_obj);
 		cJSON_Delete(json_obj);
 		
 		if(json_obj != NULL){
