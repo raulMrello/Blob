@@ -161,5 +161,14 @@ const char * JsonParser::p_source       = "source";
 const char * JsonParser::p_priority     = "priority";
 const char * JsonParser::p_action       = "action";
 const char * JsonParser::p_group        = "group";
-
-
+const char * JsonParser::p_elements     = "schedElements";
+const char * JsonParser::p_name         = "name";
+const char * JsonParser::p_tasks        = "tasks";
+const char * JsonParser::p_initTime     = "initTime";
+const char * JsonParser::p_endTime      = "endTime";
+const char * JsonParser::p_day          = "day";
+const char * JsonParser::p_month        = "month";
+const char * JsonParser::p_weekday      = "weekday";
+const char * JsonParser::p_timeList     = "timeList";
+const char * JsonParser::p_hour         = "hourMin";
+const char * JsonParser::p_duration     = "duration";

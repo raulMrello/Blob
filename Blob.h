@@ -34,6 +34,8 @@ enum ErrorCode{
 	ErrAllocJson,		//!< No se permite la creaci�n del objeto
 	ErrJsonUnhandled,	//!< Objeto Json sin maneajador
 	ErrUidInvalid,		//!< UID Inv�lido
+	ErrElementInvalid,	//!< Element invalido
+	ErrElementMaxTasks,	//!< Element invalido
 	MaxNumErrorCodes
 };
 
@@ -47,7 +49,10 @@ static const char* errList[] = {
 	"value out of range",	//ErrRangeValue
 	"json alloc failed",	//ErrAllocJson
 	"json unhandled",		//ErrJsonUnhandled
-	"uid invalid"
+	"uid invalid",
+	"element invalid",
+	"elem num max tasks",
+	"max num error"
 };
 
 
@@ -102,6 +107,18 @@ struct SetRequest_t{
 	uint32_t keys;
 	T data;
 	Blob::ErrorData_t _error;
+	SetRequest_t(T& dat, uint32_t x_id=0){
+		idTrans = x_id;
+		data = dat;
+		_error.code = ErrOK;
+		_error.descr[0] = 0;
+	}
+};
+
+template <typename T>
+struct SetRequestElement_t {
+    Blob::SetRequest_t<T>* setReq;
+    char* element;
 };
 
 
@@ -115,6 +132,11 @@ struct GetRequest_t{
 		_error.code = ErrOK;
 		_error.descr[0] = 0;
 	}
+};
+
+struct GetRequestElement_t {
+    Blob::GetRequest_t* getReq;
+    char* element;
 };
 
 
