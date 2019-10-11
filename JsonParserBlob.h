@@ -118,6 +118,7 @@ public:
 	static const char*	p_ast;
 	static const char*	p_astcal;
 	static const char*	p_astCorr;
+	static const char*	p_barMode;
 	static const char*	p_blinkOn;
 	static const char*	p_blinkOff;
 	static const char*	p_bootCondition;
@@ -154,6 +155,7 @@ public:
 	static const char*	p_header;
 	static const char*	p_holdCount;
 	static const char*	p_hwv;
+	static const char*	p_iconMode;
 	static const char*	p_id;
 	static const char*	p_idTrans;
 	static const char*	p_inDomo;
