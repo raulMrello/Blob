@@ -61,6 +61,7 @@
 #endif
 #if defined(JsonParser_HMIManager_Enabled)
 #include "HMIManagerBlob.h"
+#include "hmi_objects.h"
 #endif
 #if defined(JsonParser_BlufiManager_Enabled)
 #include "BlufiManagerBlob.h"
@@ -151,9 +152,11 @@ public:
 	static const char*	p_geoloc;
 	static const char*	p_groupMask;
 	static const char*	p_header;
+	static const char*	p_holdCount;
 	static const char*	p_hwv;
 	static const char*	p_id;
 	static const char*	p_idTrans;
+	static const char*	p_inDomo;
 	static const char*	p_isRoot;
 	static const char*	p_job;
 	static const char*	p_jobId;
