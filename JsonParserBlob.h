@@ -61,6 +61,7 @@
 #endif
 #if defined(JsonParser_HMIManager_Enabled)
 #include "HMIManagerBlob.h"
+#include "hmi_objects.h"
 #endif
 #if defined(JsonParser_BlufiManager_Enabled)
 #include "BlufiManagerBlob.h"
@@ -117,6 +118,7 @@ public:
 	static const char*	p_ast;
 	static const char*	p_astcal;
 	static const char*	p_astCorr;
+	static const char*	p_barMode;
 	static const char*	p_blinkOn;
 	static const char*	p_blinkOff;
 	static const char*	p_bootCondition;
@@ -151,9 +153,12 @@ public:
 	static const char*	p_geoloc;
 	static const char*	p_groupMask;
 	static const char*	p_header;
+	static const char*	p_holdCount;
 	static const char*	p_hwv;
+	static const char*	p_iconMode;
 	static const char*	p_id;
 	static const char*	p_idTrans;
+	static const char*	p_inDomo;
 	static const char*	p_isRoot;
 	static const char*	p_job;
 	static const char*	p_jobId;
@@ -456,13 +461,10 @@ public:
 			return JSON::getJsonFromSysModules((const Blob::SysModulesData_t&)obj);
 		}
 		#endif
-		//----- HMIManager delegation
+		//----- Objetos hmi
 		#if defined(JsonParser_HMIManager_Enabled)
-		if (std::is_same<T, Blob::HmiLedData_t>::value){
-			return JSON::getJsonFromHMILed((const Blob::HmiLedData_t&)obj);
-		}
-		if (std::is_same<T, Blob::HmiEvtFlags>::value){
-			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
+		if((result = JSON::getJsonFromHMIObj((const T&)obj, type)) != NULL){
+			return result;
 		}
 		#endif
 		//----- BlufiManager delegation
@@ -856,14 +858,7 @@ public:
 		#endif
 		//----
 		#if defined(JsonParser_HMIManager_Enabled)
-		// decodifica objeto
-		if (std::is_same<T, Blob::HmiLedData_t>::value){
-			result = JSON::getHMILedFromJson((Blob::HmiLedData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto
-		if (std::is_same<T, Blob::HmiEvtFlags>::value){
-			result = JSON::getHMIEventFromJson((Blob::HmiEvtFlags&)obj, json_obj);
+		if((result = JSON::getHMIObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
