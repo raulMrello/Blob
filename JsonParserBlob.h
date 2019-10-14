@@ -455,13 +455,10 @@ public:
 			return JSON::getJsonFromSysModules((const Blob::SysModulesData_t&)obj);
 		}
 		#endif
-		//----- HMIManager delegation
+		//----- Objetos hmi
 		#if defined(JsonParser_HMIManager_Enabled)
-		if (std::is_same<T, Blob::HmiLedData_t>::value){
-			return JSON::getJsonFromHMILed((const Blob::HmiLedData_t&)obj);
-		}
-		if (std::is_same<T, Blob::HmiEvtFlags>::value){
-			return JSON::getJsonFromHMIEvent((const Blob::HmiEvtFlags&)obj);
+		if((result = JSON::getJsonFromHMIObj((const T&)obj, type)) != NULL){
+			return result;
 		}
 		#endif
 		//----- BlufiManager delegation
@@ -855,14 +852,7 @@ public:
 		#endif
 		//----
 		#if defined(JsonParser_HMIManager_Enabled)
-		// decodifica objeto
-		if (std::is_same<T, Blob::HmiLedData_t>::value){
-			result = JSON::getHMILedFromJson((Blob::HmiLedData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto
-		if (std::is_same<T, Blob::HmiEvtFlags>::value){
-			result = JSON::getHMIEventFromJson((Blob::HmiEvtFlags&)obj, json_obj);
+		if((result = JSON::getHMIObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
