@@ -51,7 +51,7 @@ static const char* errList[] = {
 	"json unhandled",		//ErrJsonUnhandled
 	"uid invalid",
 	"element invalid",
-	"elem num max tasks",
+	"elem num max data",
 	"max num error"
 };
 
@@ -161,6 +161,12 @@ struct NotificationData_t{
 	T data;
 	NotificationData_t() { header.timestamp = time(NULL); }
 	NotificationData_t(const T& dat) : data(dat) { header.timestamp = time(NULL); }
+};
+
+template <typename T>
+struct NotificationDataElement_t {
+    Blob::NotificationData_t<T>* notif;
+    char* element;
 };
 
 

@@ -81,8 +81,8 @@
 #include "evsm_objects.h"
 #endif
 #if defined(JsonParser_RequestsManager_Enabled)
-#include "RequestsManagerBlob.h"
-#include "requests_objects.h"
+#include "RequestsManager.h"
+#include "requests_manager_objects.h"
 #endif
 
 
@@ -251,6 +251,12 @@ public:
 	static const char*	p_timeList;
 	static const char*	p_hour;
 	static const char*	p_duration;
+	static const char*	p_defaultState;
+	static const char*	p_modeUser;
+	static const char*	p_modeElements;
+	static const char*	p_modeActivation;
+	static const char*	p_sources;
+	static const char*	p_childs;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -525,7 +531,7 @@ public:
 		#endif
 		//----- Objetos requests
 		#if defined(JsonParser_RequestsManager_Enabled)
-		if((result = JSON::getJsonFromRequestsManager((const T&)obj, type)) != NULL){
+		if((result = JSON::getJsonFromRequestsManagerObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -1268,14 +1274,67 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_RequestsManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/reqman")){
-			if(size == sizeof(Blob::NotificationData_t<element_request>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<element_request>*)data);
+			if(size == sizeof(Blob::Response_t<requests_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: RequestsManager");
+				}
 			}
-			else if(size == sizeof(Blob::Response_t<element_request>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<element_request>*)data);
+			else if(size == sizeof(Blob::NotificationData_t<requests_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: RequestsManager");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<requests_element>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_element>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_element>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: RequestsElement");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<requests_element>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: RequestsElement");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<requests_element_stat>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element_stat>*)data);
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: reqman element");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: RequestsManager, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/reqman")){
+			if(size == sizeof(Blob::SetRequest_t<requests_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<requests_manager>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<requests_element>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<requests_element>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: RequestsManager, tipo mensaje no controlado");
 			}
 			return json_obj;
 		}
@@ -1543,46 +1602,6 @@ _gofdt_exit:
 		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/schedman")){
 			if(size == sizeof(Blob::SetRequest_t<scheduler_manager>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<scheduler_manager>*)data);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
-			}
-			return json_obj;
-		}
-		#endif
-
-		#if defined(JsonParser_NewManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/newman")){
-			if(size == sizeof(Blob::Response_t<new_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<new_manager>*)data, ObjSelectCfg);
-				}
-				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<new_manager>*)data, ObjSelectState);
-				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: NewManager");
-				}
-			}
-			else if(size == sizeof(Blob::NotificationData_t<new_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<new_manager>*)data, ObjSelectCfg);
-				}
-				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<new_manager>*)data, ObjSelectState);
-				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: NewManager");
-				}
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: NewManager, tipo mensaje no controlado");
-			}
-			return json_obj;
-		}
-		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/newman")){
-			if(size == sizeof(Blob::SetRequest_t<new_manager>)){
-				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<new_manager>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
