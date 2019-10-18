@@ -50,9 +50,6 @@
 #if defined(JsonParser_LightManager_Enabled)
 #include "LightManagerBlob.h"
 #endif
-#if defined(JsonParser_SysManager_Enabled)
-#include "SysManagerBlob.h"
-#endif
 #if defined(JsonParser_FwUpdater_Enabled)
 #include "FwUpdaterBlob.h"
 #endif
@@ -82,7 +79,6 @@
 #include "evsm_objects.h"
 #endif
 #if defined(JsonParser_RequestsManager_Enabled)
-#include "RequestsManager.h"
 #include "requests_manager_objects.h"
 #endif
 
@@ -92,13 +88,11 @@
 #endif
 
 #if defined(JsonParser_SchedulerManager_Enabled)
-#include "SchedulerManager.h"
 #include "scheduler_manager_objects.h"
 #endif
 
-#if defined(JsonParser_NewManager_Enabled)
-#include "NewManager.h"
-#include "new_manager_objects.h"
+#if defined(JsonParser_SysManager_Enabled)
+#include "sys_manager_objects.h"
 #endif
 
 #include <type_traits>
@@ -437,30 +431,6 @@ public:
 		if (std::is_same<T, Blob::GetRequest_t>::value){
 			return getJsonFromGetRequest((const Blob::GetRequest_t&)obj);
 		}
-		//----- SysManager delegation
-		#if defined(JsonParser_SysManager_Enabled)
-		if (std::is_same<T, Blob::SysCfgData_t>::value){
-			return JSON::getJsonFromSysCfg((const Blob::SysCfgData_t&)obj);
-		}
-		if (std::is_same<T, Blob::SysStatData_t>::value){
-			return JSON::getJsonFromSysStat((const Blob::SysStatData_t&)obj);
-		}
-		if (std::is_same<T, Blob::SysBootData_t>::value){
-			return JSON::getJsonFromSysBoot((const Blob::SysBootData_t&)obj);
-		}
-		if (std::is_same<T, Blob::SysBootDataReduced_t>::value){
-			return JSON::getJsonFromSysBootReduced((const Blob::SysBootDataReduced_t&)obj);
-		}
-		if (std::is_same<T, Blob::SysNullData_t>::value){
-			return JSON::getJsonFromSysNull((const Blob::SysNullData_t&)obj);
-		}
-		if (std::is_same<T, Blob::SysRestartData_t>::value){
-			return JSON::getJsonFromSysRestart((const Blob::SysRestartData_t&)obj);
-		}
-		if (std::is_same<T, Blob::SysModulesData_t>::value){
-			return JSON::getJsonFromSysModules((const Blob::SysModulesData_t&)obj);
-		}
-		#endif
 		//----- Objetos hmi
 		#if defined(JsonParser_HMIManager_Enabled)
 		if((result = JSON::getJsonFromHMIObj((const T&)obj, type)) != NULL){
@@ -545,9 +515,9 @@ public:
 		}
 		#endif
 
-		//----- Objetos NewManager
-		#if defined(JsonParser_NewManager_Enabled)
-		if((result = JSON::getJsonFromNewManagerObj((const T&)obj, type)) != NULL){
+		//----- Objetos SysManager
+		#if defined(JsonParser_SysManager_Enabled)
+		if((result = JSON::getJsonFromSysManagerObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -819,44 +789,6 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		//----
-		#if defined(JsonParser_SysManager_Enabled)
-		// decodifica objeto de configuraci�n
-		if (std::is_same<T, Blob::SysCfgData_t>::value){
-			result = JSON::getSysCfgFromJson((Blob::SysCfgData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de estado
-		if (std::is_same<T, Blob::SysStatData_t>::value){
-			result = JSON::getSysStatFromJson((Blob::SysStatData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque
-		if (std::is_same<T, Blob::SysBootData_t>::value){
-			result = JSON::getSysBootFromJson((Blob::SysBootData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de arranque reducido
-		if (std::is_same<T, Blob::SysBootDataReduced_t>::value){
-			result = JSON::getSysBootReducedFromJson((Blob::SysBootDataReduced_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de solicitud de arranque
-		if (std::is_same<T, Blob::SysNullData_t>::value){
-			result = JSON::getSysNullFromJson((Blob::SysNullData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de solicitud de reset
-		if (std::is_same<T, Blob::SysRestartData_t>::value){
-			result = JSON::getSysRestartFromJson((Blob::SysRestartData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		// decodifica objeto de solicitud de reset
-		if (std::is_same<T, Blob::SysModulesData_t>::value){
-			result = JSON::getSysModulesFromJson((Blob::SysModulesData_t&)obj, json_obj);
-			goto _getObjFromJson_Exit;
-		}
-		#endif
-		//----
 		#if defined(JsonParser_HMIManager_Enabled)
 		if((result = JSON::getHMIObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
@@ -1051,39 +983,6 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
-				#if defined(JsonParser_SysManager_Enabled)
-				if(isTokenInTopic(topic, "/sys")){
-					if(isTokenInTopic(topic, "/restart")){
-						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en restart");
-						obj = (Blob::SetRequest_t<Blob::SysRestartData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>));
-						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysRestartData_t>*) (obj), json_obj)){
-							DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en if restart");
-							*size = sizeof(Blob::SetRequest_t<Blob::SysRestartData_t>);
-						}
-						else{
-							DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy en else restart");
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else{
-						DEBUG_TRACE_E(true, "[JsonParser]....", "Estoy else sys");
-						obj = (Blob::SetRequest_t<Blob::SysBootData_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<Blob::SysBootData_t>));
-						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<Blob::SysBootData_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<Blob::SysBootData_t>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					goto _gofdt_exit;
-				}
-				#endif
 				#if defined(JsonParser_LightManager_Enabled)
 				if(isTokenInTopic(topic, "/light")){
 					if(isTokenInTopic(topic, "/cfg/")){
@@ -1178,38 +1077,6 @@ public:
 						*size = 0;
 						Heap::memFree(obj);
 						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				#endif
-				#if defined(JsonParser_SysManager_Enabled)
-				if(isTokenInTopic(topic, "/sys")){
-					if(isTokenInTopic(topic, "/null/")){
-						obj = (Blob::NotificationData_t<Blob::SysNullData_t>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::SysNullData_t>));
-						MBED_ASSERT(obj);
-						if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::SysNullData_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::NotificationData_t<Blob::SysNullData_t>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "/boot/")){
-						obj = (Blob::NotificationData_t<Blob::SysBootDataReduced_t>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::SysBootDataReduced_t>));
-						MBED_ASSERT(obj);
-						if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::SysBootDataReduced_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::NotificationData_t<Blob::SysBootDataReduced_t>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else{
-						DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: Objeto sys no encontrado");
 					}
 					goto _gofdt_exit;
 				}
@@ -1471,44 +1338,14 @@ _gofdt_exit:
 			}
 			return json_obj;
 		}
-		#endif
-		#if defined(JsonParser_SysManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
-			if(isTokenInTopic(topic, "modules") && size == sizeof(Blob::Response_t<Blob::SysModulesData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysModulesData_t>*)data);
-			}
-			else if(isTokenInTopic(topic, "/restart") && size == sizeof(Blob::Response_t<Blob::SysRestartData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysRestartData_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::SysBootData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootData_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::SysBootDataReduced_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysBootDataReduced_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysBootData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::SysBootDataReduced_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysBootDataReduced_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::SysCfgData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysCfgData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::SysCfgData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysCfgData_t>*)data);
-			}
-			else if(size == sizeof(Blob::Response_t<Blob::SysStatData_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<Blob::SysStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::SysStatData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysStatData_t>*)data);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<Blob::SysNullData_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::SysNullData_t>*)data);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: estructura no controlada");
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/mqtt")){
+			if(size == sizeof(Blob::SetRequest_t<mqtt_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<mqtt_manager>*)data);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt-notification");
+				}
 			}
 			return json_obj;
 		}
@@ -1623,6 +1460,46 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
+			}
+			return json_obj;
+		}
+		#endif
+
+		#if defined(JsonParser_SysManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
+			if(size == sizeof(Blob::Response_t<sys_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: SysManager");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<sys_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: SysManager");
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/sys")){
+			if(size == sizeof(Blob::SetRequest_t<sys_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_manager>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
 			}
 			return json_obj;
 		}
