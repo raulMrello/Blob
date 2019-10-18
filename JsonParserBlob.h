@@ -146,6 +146,7 @@ public:
 	static const char*	p_fwv;
 	static const char*	p_geoloc;
 	static const char*	p_groupMask;
+	static const char*	p_guiMode;
 	static const char*	p_header;
 	static const char*	p_holdCount;
 	static const char*	p_hwv;

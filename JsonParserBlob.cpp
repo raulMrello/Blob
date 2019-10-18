@@ -72,6 +72,7 @@ const char * JsonParser::p_fwUrl		= "fwUrl";
 const char * JsonParser::p_fwv			= "fwv";
 const char * JsonParser::p_geoloc		= "geoloc";
 const char * JsonParser::p_groupMask	= "groupMask";
+const char * JsonParser::p_guiMode		= "guiMode";
 const char * JsonParser::p_header		= "header";
 const char * JsonParser::p_holdCount	= "holdCount";
 const char * JsonParser::p_hwv			= "hwv";
