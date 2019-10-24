@@ -183,3 +183,4 @@ const char * JsonParser::p_modeElements = "modeElements";
 const char * JsonParser::p_modeActivation= "modeActivation";
 const char * JsonParser::p_sources      = "sources";
 const char * JsonParser::p_childs       = "childs";
+const char * JsonParser::p_event       = "event";

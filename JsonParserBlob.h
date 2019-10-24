@@ -257,6 +257,7 @@ public:
 	static const char*	p_modeActivation;
 	static const char*	p_sources;
 	static const char*	p_childs;
+	static const char*	p_event;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -1204,11 +1205,27 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_EVStateMachine_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
-			if(size == sizeof(Blob::Response_t<connector_state>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<connector_state>*)data);
+			if(isTokenInTopic(topic, "evt")){
+				if(size == sizeof(Blob::Response_t<connector_event>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_event>*)data);
+				}
+				else if(size == sizeof(Blob::NotificationData_t<connector_event>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_event>*)data);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+				}
 			}
-			else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+			else if (isTokenInTopic(topic, "value")){
+				if(size == sizeof(Blob::Response_t<connector_state>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_state>*)data);
+				}
+				else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
