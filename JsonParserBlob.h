@@ -258,6 +258,12 @@ public:
 	static const char*	p_sources;
 	static const char*	p_childs;
 	static const char*	p_event;
+	static const char*	p_permis;
+	static const char*	p_iconError;
+	static const char*	p_iconConn;
+	static const char*	p_iconPlug;
+	static const char*	p_iconModul;
+	static const char*	p_iconSched;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -851,6 +857,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos schedman
+		#if defined(JsonParser_SchedulerManager_Enabled)
+		if((result = JSON::getSchedulerManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -931,35 +943,6 @@ public:
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				#endif
-
-				#if defined(JsonParser_MennekesManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_stat>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
 					}
 					else{
 						*size = 0;
@@ -1059,6 +1042,65 @@ public:
 							Heap::memFree(obj);
 							obj = NULL;
 						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
+				#if defined(JsonParser_SchedulerManager_Enabled)
+				if(isTokenInTopic(topic, "/schedman/")){
+					DEBUG_TRACE_I(true, "[JsonParser]....", "Schedman element cfg");
+					obj = (Blob::SetRequest_t<scheduler_element>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_element>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_element>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<scheduler_element>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/schedman")){
+					obj = (Blob::SetRequest_t<scheduler_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<scheduler_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
+				#if defined(JsonParser_MennekesManager_Enabled)
+				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/mennekes")){
+					obj = (Blob::SetRequest_t<mennekes_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_stat>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/mennekes")){
+					obj = (Blob::SetRequest_t<mennekes_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_cfg>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
 					}
 					goto _gofdt_exit;
 				}
@@ -1213,7 +1255,7 @@ _gofdt_exit:
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_event>*)data);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+					DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
 				}
 			}
 			else if (isTokenInTopic(topic, "value")){
@@ -1224,11 +1266,11 @@ _gofdt_exit:
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+					DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
 				}
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+				DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
 			}
 			return json_obj;
 		}
@@ -1410,6 +1452,9 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_manager>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "boot")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_manager>*)data, ObjSelectAll);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
 				}
@@ -1421,6 +1466,9 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_element>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "boot")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_element>*)data, ObjSelectAll);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
 				}
@@ -1431,6 +1479,9 @@ _gofdt_exit:
 				}
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "boot")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_manager>*)data, ObjSelectAll);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: scheduler");
