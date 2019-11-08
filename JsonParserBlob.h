@@ -95,6 +95,11 @@
 #include "sys_manager_objects.h"
 #endif
 
+#if defined(JsonParser_ModulatorManager_Enabled)
+#include "ModulatorManagerBlob.h"
+#include "modulator_objects.h"
+#endif
+
 #include <type_traits>
 
 
