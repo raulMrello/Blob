@@ -182,6 +182,7 @@ public:
 	static const char*	p_meterRegs;
 	static const char*	p_min;
 	static const char*	p_minmaxData;
+	static const char*	p_minPower;
 	static const char*	p_mode;
 	static const char*	p_modules;
 	static const char * p_mqttPort;

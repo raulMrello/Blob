@@ -103,6 +103,7 @@ const char * JsonParser::p_meshPasswd	= "meshPasswd";
 const char * JsonParser::p_meterRegs	= "meterRegs";
 const char * JsonParser::p_min			= "min";
 const char * JsonParser::p_minmaxData	= "minmaxData";
+const char * JsonParser::p_minPower		= "minPower";
 const char * JsonParser::p_mode			= "mode";
 const char * JsonParser::p_modules		= "modules";
 const char * JsonParser::p_mqttPort		= "mqttPort";
