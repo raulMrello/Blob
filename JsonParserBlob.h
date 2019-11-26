@@ -868,6 +868,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos schedman
+		#if defined(JsonParser_RequestsManager_Enabled)
+		if((result = JSON::getRequestsManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -929,25 +935,12 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
-				#if defined(JsonParser_ShuckoManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/shucko")){
-					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+				#if defined(JsonParser_RequestsManager_Enabled)
+				if(isTokenInTopic(topic, "/request")){
+					obj = (Blob::NotificationData_t<requests_element_stat>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<requests_element_stat>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/shucko")){
-					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
+					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
 					}
 					else{
 						*size = 0;
@@ -1101,6 +1094,34 @@ public:
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_ShuckoManager_Enabled)
+				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/shucko")){
+					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/shucko")){
+					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
 					}
 					else{
 						*size = 0;
@@ -1269,6 +1290,9 @@ _gofdt_exit:
 				}
 				else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+				}
+				else if(size == sizeof(Blob::Response_t<evsm_connector_list>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_connector_list>*)data);
 				}
 				else{
 					DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
