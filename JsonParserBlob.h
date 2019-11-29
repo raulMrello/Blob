@@ -143,6 +143,7 @@ public:
 	static const char*	p_energy;
 	static const char*	p_energyValues;
 	static const char*	p_error;
+	static const char*	p_evsePower;
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
 	static const char*	p_freq;
@@ -154,6 +155,7 @@ public:
 	static const char*	p_guiMode;
 	static const char*	p_header;
 	static const char*	p_holdCount;
+	static const char*	p_homePower;
 	static const char*	p_hwv;
 	static const char*	p_iconMode;
 	static const char*	p_id;
@@ -167,6 +169,7 @@ public:
 	static const char*	p_latitude;
 	static const char*	p_leakage;
 	static const char*	p_light;
+	static const char*	p_limitPower;
 	static const char*	p_loadPercent;
 	static const char*	p_localtime;
 	static const char*	p_longitude;
@@ -182,6 +185,7 @@ public:
 	static const char*	p_meterRegs;
 	static const char*	p_min;
 	static const char*	p_minmaxData;
+	static const char*	p_minPower;
 	static const char*	p_mode;
 	static const char*	p_modules;
 	static const char * p_mqttPort;
@@ -222,6 +226,7 @@ public:
 	static const char*	p_timeout;
 	static const char*	p_timestamp;
 	static const char*	p_timezone;
+	static const char*	p_totalPower;
 	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
