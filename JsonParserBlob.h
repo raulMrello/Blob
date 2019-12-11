@@ -81,6 +81,10 @@
 #if defined(JsonParser_RequestsManager_Enabled)
 #include "requests_manager_objects.h"
 #endif
+#if defined(JsonParser_Stm32Updater_Enabled)
+#include "Stm32UpdaterBlob.h"
+#include "stm32updater_objects.h"
+#endif
 
 
 #if defined(JsonParser_AstCalendar_Enabled)
@@ -240,6 +244,7 @@ public:
 	static const char*	p_port;
 	static const char*	p_state;
 	static const char*	p_idCharge;
+	static const char*	p_updProgress;
 	static const char*	p_user;
 	static const char*	p_dataAnalyzer;
 	static const char*	p_source;

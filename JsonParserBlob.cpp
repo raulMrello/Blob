@@ -147,6 +147,7 @@ const char * JsonParser::p_timezone		= "timezone";
 const char * JsonParser::p_uid			= "uid";
 const char * JsonParser::p_until		= "until";
 const char * JsonParser::p_updFlags		= "updFlags";
+const char * JsonParser::p_updProgress	= "updProgress";
 const char * JsonParser::p_username		= "username";
 const char * JsonParser::p_verbosity	= "verbosity";
 const char * JsonParser::p_version		= "version";
