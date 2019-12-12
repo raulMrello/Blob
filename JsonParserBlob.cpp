@@ -196,3 +196,4 @@ const char * JsonParser::p_limitPower       = "limitPower";
 const char * JsonParser::p_totalPower       = "totalPower";
 const char * JsonParser::p_homePower       = "homePower";
 const char * JsonParser::p_evsePower       = "evsePower";
+const char * JsonParser::p_selectorPower   = "selectorPower";

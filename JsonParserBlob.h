@@ -279,6 +279,7 @@ public:
 	static const char*	p_totalPower;
 	static const char*	p_homePower;
 	static const char*	p_evsePower;
+	static const char*	p_selectorPower;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -894,6 +895,12 @@ public:
 		//---- Decodifica Objetos modulator
 		#if defined(JsonParser_ModulatorManager_Enabled)
 		if((result = JSON::getModulatorManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos modulator
+		#if defined(JsonParser_SysManager_Enabled)
+		if((result = JSON::getSysManagerObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
