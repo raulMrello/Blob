@@ -1070,7 +1070,7 @@ public:
 
 				#if defined(JsonParser_SchedulerManager_Enabled)
 				if(isTokenInTopic(topic, "/schedman/")){
-					DEBUG_TRACE_I(true, "[JsonParser]....", "Schedman element cfg");
+					DEBUG_TRACE_D(true, "[JsonParser]....", "Schedman element cfg");
 					obj = (Blob::SetRequest_t<scheduler_element>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_element>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_element>*) (obj), json_obj)){
@@ -1709,7 +1709,7 @@ _gofdt_exit:
 		cJSON_Delete(json_obj);
 		
 		if(json_obj != NULL){
-			DEBUG_TRACE_I(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
+			DEBUG_TRACE_D(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
 		}
 		Heap::memFree(jsonMsg);
 	}
