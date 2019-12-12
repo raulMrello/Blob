@@ -81,6 +81,10 @@
 #if defined(JsonParser_RequestsManager_Enabled)
 #include "requests_manager_objects.h"
 #endif
+#if defined(JsonParser_Stm32Updater_Enabled)
+#include "Stm32UpdaterBlob.h"
+#include "stm32updater_objects.h"
+#endif
 
 
 #if defined(JsonParser_AstCalendar_Enabled)
@@ -182,6 +186,7 @@ public:
 	static const char*	p_meterRegs;
 	static const char*	p_min;
 	static const char*	p_minmaxData;
+	static const char*	p_minPower;
 	static const char*	p_mode;
 	static const char*	p_modules;
 	static const char * p_mqttPort;
@@ -239,6 +244,7 @@ public:
 	static const char*	p_port;
 	static const char*	p_state;
 	static const char*	p_idCharge;
+	static const char*	p_updProgress;
 	static const char*	p_user;
 	static const char*	p_dataAnalyzer;
 	static const char*	p_source;
@@ -269,6 +275,10 @@ public:
 	static const char*	p_iconPlug;
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
+	static const char*	p_limitPower;
+	static const char*	p_totalPower;
+	static const char*	p_homePower;
+	static const char*	p_evsePower;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -531,6 +541,13 @@ public:
 		//----- Objetos SysManager
 		#if defined(JsonParser_SysManager_Enabled)
 		if((result = JSON::getJsonFromSysManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos ModulatorManager
+		#if defined(JsonParser_ModulatorManager_Enabled)
+		if((result = JSON::getJsonFromModulatorManagerObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -868,6 +885,18 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos schedman
+		#if defined(JsonParser_RequestsManager_Enabled)
+		if((result = JSON::getRequestsManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos modulator
+		#if defined(JsonParser_ModulatorManager_Enabled)
+		if((result = JSON::getModulatorManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -929,25 +958,12 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
-				#if defined(JsonParser_ShuckoManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/shucko")){
-					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+				#if defined(JsonParser_RequestsManager_Enabled)
+				if(isTokenInTopic(topic, "/request")){
+					obj = (Blob::NotificationData_t<requests_element_stat>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<requests_element_stat>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/shucko")){
-					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
+					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
 					}
 					else{
 						*size = 0;
@@ -1106,6 +1122,51 @@ public:
 						*size = 0;
 						Heap::memFree(obj);
 						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_ShuckoManager_Enabled)
+				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/shucko")){
+					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/shucko")){
+					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_ModulatorManager_Enabled)
+				if(isTokenInTopic(topic, "/modulator")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<modulator_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_cfg>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_cfg>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager_cfg>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					goto _gofdt_exit;
 				}
@@ -1269,6 +1330,9 @@ _gofdt_exit:
 				}
 				else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+				}
+				else if(size == sizeof(Blob::Response_t<evsm_connector_list>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_connector_list>*)data);
 				}
 				else{
 					DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
@@ -1516,29 +1580,6 @@ _gofdt_exit:
 		}
 		#endif
 
-		#if defined(JsonParser_ShuckoManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
-			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
-			}
-			return json_obj;
-		}
-		#endif
-		#if defined(JsonParser_MennekesManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
-			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
-			}
-			return json_obj;
-		}
-		#endif
-
 		#if defined(JsonParser_SysManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
 			if(size == sizeof(Blob::Response_t<sys_manager>)){
@@ -1578,6 +1619,77 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
+		#if defined(JsonParser_ModulatorManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/modulator")){
+			if(size == sizeof(Blob::Response_t<modulator_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Modulator");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<modulator_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Modulator");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<modulator_manager_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_cfg>*)data, ObjSelectCfg);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_cfg>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_cfg>*)data, ObjSelectCfg);
+			}
+			else if(size == sizeof(Blob::Response_t<modulator_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_stat>*)data, ObjSelectState);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_stat>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Modulator, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_ShuckoManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/shucko")){
+			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
+			}
+			else if(size == sizeof(Blob::Response_t<shucko_manager_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_cfg>*)data, ObjSelectCfg);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: shucko");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_MennekesManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
+			if(size == sizeof(Blob::Response_t<mennekes_manager_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_cfg>*)data, ObjSelectCfg);
+			}
+			else if(size == sizeof(Blob::Response_t<mennekes_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
+			}
+			return json_obj;
+		}
+		#endif
+
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		return json_obj;
