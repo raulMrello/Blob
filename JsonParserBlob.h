@@ -950,6 +950,21 @@ public:
 				goto _gofdt_exit;
 			}
 			else if(isTokenInTopic(topic, "set/")){
+				#if defined(JsonParser_SysManager_Enabled)
+				if(isTokenInTopic(topic, "/sys")){
+					obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
 				#if defined(JsonParser_AMManager_Enabled)
 				if(isTokenInTopic(topic, "/energy")){
 					obj = (Blob::SetRequest_t<metering_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<metering_manager>));
