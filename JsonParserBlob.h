@@ -1626,6 +1626,9 @@ _gofdt_exit:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: SysManager");
 				}
 			}
+			else if(size == sizeof(Blob::NotificationData_t<sys_boot>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_boot>*)data, ObjSelectAll);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 			}
