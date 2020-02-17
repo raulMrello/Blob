@@ -276,10 +276,12 @@ public:
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
 	static const char*	p_limitPower;
+	static const char*	p_maxPower;
 	static const char*	p_totalPower;
 	static const char*	p_homePower;
 	static const char*	p_evsePower;
 	static const char*	p_selectorPower;
+	static const char* 	p_model;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -1628,6 +1630,9 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::NotificationData_t<sys_boot>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_boot>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<sys_boot>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
