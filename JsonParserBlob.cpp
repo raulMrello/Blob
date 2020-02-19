@@ -78,6 +78,7 @@ const char * JsonParser::p_holdCount	= "holdCount";
 const char * JsonParser::p_hwv			= "hwv";
 const char * JsonParser::p_iconMode		= "iconMode";
 const char * JsonParser::p_id			= "id";
+const char * JsonParser::p_idTag		= "idTag";
 const char * JsonParser::p_idTrans		= "idTrans";
 const char * JsonParser::p_inDomo		= "inDomo";
 const char * JsonParser::p_isRoot		= "isRoot";

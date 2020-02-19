@@ -161,6 +161,7 @@ public:
 	static const char*	p_hwv;
 	static const char*	p_iconMode;
 	static const char*	p_id;
+	static const char*  p_idTag;
 	static const char*	p_idTrans;
 	static const char*	p_inDomo;
 	static const char*	p_isRoot;
