@@ -44,6 +44,7 @@ const char * JsonParser::p_blinkOff		= "blinkOff";
 const char * JsonParser::p_bootCondition= "bootCondition";
 const char * JsonParser::p_bootVers		= "bootVers";
 const char * JsonParser::p_calibData	= "calibData";
+const char * JsonParser::p_cardFile		= "cardFile";
 const char * JsonParser::p_cfg			= "cfg";
 const char * JsonParser::p_channel		= "channel";
 const char * JsonParser::p_clock		= "clock";

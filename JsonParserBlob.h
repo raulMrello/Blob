@@ -127,6 +127,7 @@ public:
 	static const char*	p_bootCondition;
 	static const char*	p_bootVers;
 	static const char*	p_calibData;
+	static const char*	p_cardFile;
 	static const char*	p_cfg;
 	static const char*	p_channel;
 	static const char*	p_clock;
@@ -1276,6 +1277,9 @@ _gofdt_exit:
 					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "tagid")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectState);
 				}
 				else{
