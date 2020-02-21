@@ -130,6 +130,7 @@ public:
 	static const char*	p_cardFile;
 	static const char*	p_cfg;
 	static const char*	p_channel;
+	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
 	static const char*	p_connector;
@@ -147,6 +148,7 @@ public:
 	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
+	static const char*	p_eocMode;
 	static const char*	p_error;
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
@@ -214,6 +216,8 @@ public:
 	static const char*	p_reactive;
 	static const char*	p_reductionStart;
 	static const char*	p_reductionStop;
+	static const char*	p_rfid;
+	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
 	static const char*	p_samples;
 	static const char*	p_serial;
@@ -1611,7 +1615,7 @@ _gofdt_exit:
 
 		#if defined(JsonParser_SysManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
-			if(size == sizeof(Blob::Response_t<sys_manager>)){
+			if(size == sizeof(Blob::Response_t<sys_manager>) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value"))){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectCfg);
 				}
@@ -1638,6 +1642,9 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::Response_t<sys_boot>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<sys_rfid_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_rfid_cfg>*)data, ObjSelectAll);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
