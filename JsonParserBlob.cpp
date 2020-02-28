@@ -139,6 +139,7 @@ const char * JsonParser::p_rPow			= "rPow";
 const char * JsonParser::p_samples		= "samples";
 const char * JsonParser::p_seasonCfg	= "seasonCfg";
 const char * JsonParser::p_serial		= "serial";
+const char * JsonParser::p_selectorPosition	= "selectorPosition";
 const char * JsonParser::p_since		= "since";
 const char * JsonParser::p_staEssid		= "staEssid";
 const char * JsonParser::p_staPasswd	= "staPasswd";
