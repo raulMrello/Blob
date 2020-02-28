@@ -127,8 +127,10 @@ public:
 	static const char*	p_bootCondition;
 	static const char*	p_bootVers;
 	static const char*	p_calibData;
+	static const char*	p_cardFile;
 	static const char*	p_cfg;
 	static const char*	p_channel;
+	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
 	static const char*	p_connector;
@@ -146,6 +148,7 @@ public:
 	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
+	static const char*	p_eocMode;
 	static const char*	p_error;
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
@@ -161,6 +164,7 @@ public:
 	static const char*	p_hwv;
 	static const char*	p_iconMode;
 	static const char*	p_id;
+	static const char*  p_idTag;
 	static const char*	p_idTrans;
 	static const char*	p_inDomo;
 	static const char*	p_isRoot;
@@ -212,6 +216,8 @@ public:
 	static const char*	p_reactive;
 	static const char*	p_reductionStart;
 	static const char*	p_reductionStop;
+	static const char*	p_rfid;
+	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
 	static const char*	p_samples;
 	static const char*	p_serial;
@@ -276,9 +282,12 @@ public:
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
 	static const char*	p_limitPower;
+	static const char*	p_maxPower;
 	static const char*	p_totalPower;
 	static const char*	p_homePower;
 	static const char*	p_evsePower;
+	static const char*	p_selectorPower;
+	static const char* 	p_model;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
@@ -897,6 +906,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos modulator
+		#if defined(JsonParser_SysManager_Enabled)
+		if((result = JSON::getSysManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -943,6 +958,21 @@ public:
 				goto _gofdt_exit;
 			}
 			else if(isTokenInTopic(topic, "set/")){
+				#if defined(JsonParser_SysManager_Enabled)
+				if(isTokenInTopic(topic, "/sys")){
+					obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
 				#if defined(JsonParser_AMManager_Enabled)
 				if(isTokenInTopic(topic, "/energy")){
 					obj = (Blob::SetRequest_t<metering_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<metering_manager>));
@@ -1251,6 +1281,9 @@ _gofdt_exit:
 					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "tagid")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<requests_manager>*)data, ObjSelectState);
 				}
 				else{
@@ -1582,7 +1615,7 @@ _gofdt_exit:
 
 		#if defined(JsonParser_SysManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
-			if(size == sizeof(Blob::Response_t<sys_manager>)){
+			if(size == sizeof(Blob::Response_t<sys_manager>) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value"))){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectCfg);
 				}
@@ -1603,6 +1636,15 @@ _gofdt_exit:
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: SysManager");
 				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<sys_boot>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_boot>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<sys_boot>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<sys_rfid_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_rfid_cfg>*)data, ObjSelectAll);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
