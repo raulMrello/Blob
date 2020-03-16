@@ -205,6 +205,7 @@ public:
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
+	static const char*	p_notifCycle;
 	static const char*	p_now;
 	static const char*	p_numActions;
 	static const char*	p_outData;
