@@ -118,6 +118,7 @@ public:
 	static const char*	p_analyzer;
 	static const char*	p_analyzers;
 	static const char*	p_aPow;
+	static const char*	p_assignment;
 	static const char*	p_ast;
 	static const char*	p_astcal;
 	static const char*	p_astCorr;
@@ -166,6 +167,7 @@ public:
 	static const char*	p_id;
 	static const char*  p_idTag;
 	static const char*	p_idTrans;
+	static const char*	p_ip;
 	static const char*	p_inDomo;
 	static const char*	p_isRoot;
 	static const char*	p_job;
@@ -175,6 +177,7 @@ public:
 	static const char*	p_latitude;
 	static const char*	p_leakage;
 	static const char*	p_light;
+	static const char*	p_limited;
 	static const char*	p_loadPercent;
 	static const char*	p_localtime;
 	static const char*	p_longitude;
@@ -189,6 +192,7 @@ public:
 	static const char*	p_meshPasswd;
 	static const char*	p_meterRegs;
 	static const char*	p_min;
+	static const char*	p_minCurrent;
 	static const char*	p_minmaxData;
 	static const char*	p_minPower;
 	static const char*	p_mode;
@@ -201,10 +205,12 @@ public:
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
+	static const char*	p_notifCycle;
 	static const char*	p_now;
 	static const char*	p_numActions;
 	static const char*	p_outData;
 	static const char*	p_outValue;
+	static const char*	p_pass;
 	static const char*	p_passwd;
 	static const char*	p_period;
 	static const char*	p_periods;
@@ -216,6 +222,7 @@ public:
 	static const char*	p_reactive;
 	static const char*	p_reductionStart;
 	static const char*	p_reductionStop;
+	static const char*	p_request;
 	static const char*	p_rfid;
 	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
@@ -224,6 +231,7 @@ public:
 	static const char*	p_selectorPosition;
 	static const char*	p_seasonCfg;
 	static const char*	p_since;
+	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
 	static const char*	p_stat;
@@ -234,6 +242,7 @@ public:
 	static const char*	p_timeout;
 	static const char*	p_timestamp;
 	static const char*	p_timezone;
+	static const char*	p_topic;
 	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
@@ -245,9 +254,6 @@ public:
 	static const char*	p_wdowDawnStop;
 	static const char*	p_wdowDuskStart;
 	static const char*	p_wdowDuskStop;
-	static const char*	p_ssid;
-	static const char*	p_pass;
-	static const char*	p_ip;
 	static const char*	p_port;
 	static const char*	p_state;
 	static const char*	p_idCharge;
@@ -287,8 +293,13 @@ public:
 	static const char*	p_totalPower;
 	static const char*	p_homePower;
 	static const char*	p_evsePower;
+	static const char*	p_evseLimitPower;
+	static const char*	p_evseTotalPower;
+	static const char*	p_ownLimitPower;
 	static const char*	p_selectorPower;
 	static const char* 	p_model;
+	static const char*	p_localOperations;
+	static const char*	p_remoteOperations;
 
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
