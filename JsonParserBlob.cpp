@@ -121,6 +121,7 @@ const char * JsonParser::p_mqttData		= "mqttData";
 const char * JsonParser::p_msPow		= "msPow";
 const char * JsonParser::p_netCfg		= "netCfg";
 const char * JsonParser::p_netReady		= "netReady";
+const char * JsonParser::p_notifCycle	= "notifCycle";
 const char * JsonParser::p_now			= "now";
 const char * JsonParser::p_numActions	= "numActions";
 const char * JsonParser::p_outData		= "outData";
