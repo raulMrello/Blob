@@ -1709,6 +1709,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_stat>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_stat>*)data, ObjSelectState);
 			}
+			else if(size == sizeof(Blob::NotificationData_t<ModulatorStatProcesses>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorStatProcesses>*)data, ObjSelectAll);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Modulator, tipo mensaje no controlado");
 			}
