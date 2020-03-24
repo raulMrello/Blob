@@ -1169,7 +1169,7 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_ShuckoManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/schucko")){
+				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/schuko")){
 					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
@@ -1182,7 +1182,7 @@ public:
 					}
 					goto _gofdt_exit;
 				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/schucko")){
+				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/schuko")){
 					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
@@ -1719,7 +1719,7 @@ _gofdt_exit:
 		}
 		#endif
 		#if defined(JsonParser_ShuckoManager_Enabled)
-		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/schucko")){
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/schuko")){
 			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
 			}
@@ -1727,7 +1727,7 @@ _gofdt_exit:
 				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_cfg>*)data, ObjSelectCfg);
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schucko");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schuko");
 			}
 			return json_obj;
 		}
