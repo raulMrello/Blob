@@ -135,6 +135,8 @@ public:
 	static const char*	p_clock;
 	static const char*	p_code;
 	static const char*	p_connector;
+	static const char*	p_connectorId;
+	static const char*	p_connectorType;
 	static const char*	p_coords;
 	static const char*	p_current;
 	static const char*	p_curve;
@@ -218,11 +220,15 @@ public:
 	static const char*	p_plugPresent;
 	static const char*	p_plugLimit;
 	static const char*	p_phase;
+	static const char*	p_pwm;
 	static const char*	p_qos;
 	static const char*	p_reactive;
 	static const char*	p_reductionStart;
 	static const char*	p_reductionStop;
 	static const char*	p_request;
+	static const char*	p_requestStart;
+	static const char*	p_requestStop;
+	static const char*	p_relOverload;
 	static const char*	p_rfid;
 	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
@@ -234,6 +240,8 @@ public:
 	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
+	static const char*	p_start;
+	static const char*	p_status;
 	static const char*	p_stat;
 	static const char*	p_thdA;
 	static const char*	p_thdV;
