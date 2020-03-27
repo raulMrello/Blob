@@ -227,6 +227,7 @@ public:
 	static const char*	p_request;
 	static const char*	p_requestStart;
 	static const char*	p_requestStop;
+	static const char*	p_relOverload;
 	static const char*	p_rfid;
 	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
@@ -238,6 +239,8 @@ public:
 	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
+	static const char*	p_start;
+	static const char*	p_status;
 	static const char*	p_stat;
 	static const char*	p_thdA;
 	static const char*	p_thdV;
