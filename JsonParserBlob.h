@@ -220,6 +220,7 @@ public:
 	static const char*	p_plugPresent;
 	static const char*	p_plugLimit;
 	static const char*	p_phase;
+	static const char*	p_pwm;
 	static const char*	p_qos;
 	static const char*	p_reactive;
 	static const char*	p_reductionStart;

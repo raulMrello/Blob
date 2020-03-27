@@ -135,6 +135,7 @@ const char * JsonParser::p_pfactor		= "pfactor";
 const char * JsonParser::p_plugPresent	= "plugPresent";
 const char * JsonParser::p_plugLimit	= "plugLimit";
 const char * JsonParser::p_phase		= "phase";
+const char * JsonParser::p_pwm			= "pwm";
 const char * JsonParser::p_qos			= "qos";
 const char * JsonParser::p_reactive		= "reactive";
 const char * JsonParser::p_reductionStart= "reductionStart";
