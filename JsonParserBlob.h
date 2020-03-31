@@ -1236,6 +1236,18 @@ public:
 							obj = NULL;
 						}
 					}
+					else if(isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<modulator_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_stat>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_stat>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager_stat>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
 					goto _gofdt_exit;
 				}
 				#endif
