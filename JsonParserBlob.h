@@ -266,6 +266,7 @@ public:
 	static const char*	p_state;
 	static const char*	p_idCharge;
 	static const char*	p_updProgress;
+	static const char*  p_url;
 	static const char*	p_user;
 	static const char*	p_dataAnalyzer;
 	static const char*	p_source;
@@ -979,7 +980,20 @@ public:
 			}
 			else if(isTokenInTopic(topic, "set/")){
 				#if defined(JsonParser_SysManager_Enabled)
-				if(isTokenInTopic(topic, "/sys")){
+				if(isTokenInTopic(topic, "/fwupdate")){
+					obj = (Blob::SetRequest_t<sys_fwUpdate_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_fwUpdate_data>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_fwUpdate_data>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_fwUpdate_data>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/sys")){
 					obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_manager>*) (obj), json_obj)){
@@ -1666,6 +1680,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_rfid_cfg>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_rfid_cfg>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 			}
@@ -1674,6 +1691,9 @@ _gofdt_exit:
 		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/sys")){
 			if(size == sizeof(Blob::SetRequest_t<sys_manager>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_manager>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_fwUpdate_data>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_fwUpdate_data>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
