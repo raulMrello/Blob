@@ -131,11 +131,13 @@ public:
 	static const char*	p_cardFile;
 	static const char*	p_cfg;
 	static const char*	p_channel;
+	static const char*	p_chargeProcess;
 	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
 	static const char*	p_connector;
 	static const char*	p_connectorId;
+	static const char*	p_connectorName;
 	static const char*	p_connectorType;
 	static const char*	p_coords;
 	static const char*	p_current;
@@ -176,6 +178,7 @@ public:
 	static const char*	p_jobId;
 	static const char*	p_keepAlive;
 	static const char*	p_keys;
+	static const char*	p_last;
 	static const char*	p_latitude;
 	static const char*	p_leakage;
 	static const char*	p_light;
@@ -197,6 +200,7 @@ public:
 	static const char*	p_minCurrent;
 	static const char*	p_minmaxData;
 	static const char*	p_minPower;
+	static const char*	p_minPwm;
 	static const char*	p_mode;
 	static const char*	p_modules;
 	static const char * p_mqttPort;
@@ -1225,6 +1229,18 @@ public:
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_cfg>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<modulator_manager_cfg>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<modulator_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_stat>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_stat>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager_stat>);
 						}
 						else{
 							*size = 0;
