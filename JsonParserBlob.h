@@ -1248,6 +1248,18 @@ public:
 							obj = NULL;
 						}
 					}
+					else if(isTokenInTopic(topic, "/rt/")){
+						obj = (Blob::SetRequest_t<ModulatorRt>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModulatorRt>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModulatorRt>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ModulatorRt>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
 					goto _gofdt_exit;
 				}
 				#endif
@@ -1755,6 +1767,9 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::NotificationData_t<ModulatorStatProcesses>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorStatProcesses>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<ModulatorRt>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<ModulatorRt>*)data, ObjSelectAll);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Modulator, tipo mensaje no controlado");
