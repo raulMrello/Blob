@@ -1768,6 +1768,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::NotificationData_t<ModulatorStatProcesses>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorStatProcesses>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::Response_t<ModulatorStatProcesses>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<ModulatorStatProcesses>*)data, ObjSelectAll);
+			}
 			else if(size == sizeof(Blob::Response_t<ModulatorRt>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<ModulatorRt>*)data, ObjSelectAll);
 			}
