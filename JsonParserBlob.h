@@ -161,12 +161,15 @@ public:
 	static const char*	p_fwSize;
 	static const char*	p_fwUrl;
 	static const char*	p_fwv;
+	static const char*  p_fwvPot;
+	static const char*  p_fwvCortex;
 	static const char*	p_geoloc;
 	static const char*	p_groupMask;
 	static const char*	p_guiMode;
 	static const char*	p_header;
 	static const char*	p_holdCount;
 	static const char*	p_hwv;
+	static const char*	p_hwvPot;
 	static const char*	p_iconMode;
 	static const char*	p_id;
 	static const char*  p_idTag;
@@ -239,6 +242,7 @@ public:
 	static const char*	p_samples;
 	static const char*	p_serial;
 	static const char*	p_selectorPosition;
+	static const char * p_shucko;
 	static const char*	p_seasonCfg;
 	static const char*	p_since;
 	static const char*	p_ssid;
