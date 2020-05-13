@@ -322,6 +322,7 @@ public:
 	static const char * JsonParser::p_inverse;
 	static const char * JsonParser::p_erased;
 	static const char * JsonParser::p_remaining;
+	static const char * JsonParser::p_restore;
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
