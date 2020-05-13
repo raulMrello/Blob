@@ -317,7 +317,12 @@ public:
 	static const char* 	p_model;
 	static const char*	p_localOperations;
 	static const char*	p_remoteOperations;
-
+	static const char * JsonParser::p_count;
+	static const char * JsonParser::p_body;
+	static const char * JsonParser::p_inverse;
+	static const char * JsonParser::p_erased;
+	static const char * JsonParser::p_remaining;
+	static const char * JsonParser::p_restore;
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
@@ -1264,6 +1269,18 @@ public:
 							obj = NULL;
 						}
 					}
+					else if(isTokenInTopic(topic, "/hist-")){
+						obj = (Blob::SetRequest_t<ModulatorSearchFilter>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModulatorSearchFilter>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModulatorSearchFilter>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ModulatorSearchFilter>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
 					goto _gofdt_exit;
 				}
 				#endif
@@ -1735,7 +1752,20 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_ModulatorManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/modulator")){
-			if(size == sizeof(Blob::Response_t<modulator_manager>)){
+			if(isTokenInTopic(topic, "/historic/") && size == sizeof(Blob::NotificationData_t<ModulatorHistoric>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorHistoric>*)data, ObjSelectAll);
+			}
+			else if(isTokenInTopic(topic, "/hist-search/")){
+				if(size == sizeof(Blob::Response_t<ModulatorHistFile>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ModulatorHistFile>*)data, ObjSelectAll);
+				}
+			}
+			else if(isTokenInTopic(topic, "/hist-erase/")){
+				if(size == sizeof(Blob::Response_t<ModulatorEraseReport>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ModulatorEraseReport>*)data, ObjSelectAll);
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<modulator_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager>*)data, ObjSelectCfg);
 				}
