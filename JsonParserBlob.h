@@ -1268,59 +1268,11 @@ public:
 							obj = NULL;
 						}
 					}
-					else if(isTokenInTopic(topic, "set/historic/")){
-						obj = (Blob::SetRequest_t<ModulatorHistoric>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModulatorHistoric>));
-						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModulatorHistoric>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<ModulatorHistoric>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "stat/historic/")){
-						obj = (Blob::NotificationData_t<ModulatorHistoric>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<ModulatorHistoric>));
-						MBED_ASSERT(obj);
-						if(getNotificationFromJson(*(Blob::NotificationData_t<ModulatorHistoric>*) (obj), json_obj)){
-							*size = sizeof(Blob::NotificationData_t<ModulatorHistoric>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "set/hist-search/") || isTokenInTopic(topic, "set/hist-erase/")){
+					else if(isTokenInTopic(topic, "/hist-")){
 						obj = (Blob::SetRequest_t<ModulatorSearchFilter>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModulatorSearchFilter>));
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModulatorSearchFilter>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<ModulatorSearchFilter>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "stat/hist-search/")){
-						obj = (Blob::Response_t<ModulatorHistFile>*)Heap::memAlloc(sizeof(Blob::Response_t<ModulatorHistFile>));
-						MBED_ASSERT(obj);
-						if(getResponseFromJson(*(Blob::Response_t<ModulatorHistFile>*) (obj), json_obj)){
-							*size = sizeof(Blob::Response_t<ModulatorHistFile>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "stat/hist-erase/")){
-						obj = (Blob::Response_t<ModulatorEraseReport>*)Heap::memAlloc(sizeof(Blob::Response_t<ModulatorEraseReport>));
-						MBED_ASSERT(obj);
-						if(getResponseFromJson(*(Blob::Response_t<ModulatorEraseReport>*) (obj), json_obj)){
-							*size = sizeof(Blob::Response_t<ModulatorEraseReport>);
 						}
 						else{
 							*size = 0;
