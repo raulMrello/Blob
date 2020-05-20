@@ -1410,6 +1410,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::NotificationData_t<requests_element_stat>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element_stat>*)data);
 			}
+			else if(isTokenInTopic(topic, "tag_id")){
+				json_obj = cJSON_CreateObject();
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: RequestsManager, tipo mensaje no controlado");
 			}
