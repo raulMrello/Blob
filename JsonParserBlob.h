@@ -1339,7 +1339,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-response");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<metering_manager>)){
@@ -1351,12 +1350,10 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1375,7 +1372,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: RequestsManager");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<requests_manager>)){
@@ -1387,7 +1383,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: RequestsManager");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<requests_element>)){
@@ -1399,7 +1394,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: RequestsElement");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<requests_element>)){
@@ -1411,7 +1405,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: RequestsElement");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<requests_element_stat>)){
@@ -1422,7 +1415,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: RequestsManager, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1435,7 +1427,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: RequestsManager, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1450,8 +1441,7 @@ _gofdt_exit:
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_event>*)data);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
-					json_obj = cJSON_CreateObject();
+					DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
 				}
 			}
 			else if (isTokenInTopic(topic, "value")){
@@ -1465,13 +1455,11 @@ _gofdt_exit:
 					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_connector_list>*)data);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
-					json_obj = cJSON_CreateObject();
+					DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
 				}
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
-				json_obj = cJSON_CreateObject();
+				DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
 			}
 			return json_obj;
 		}
@@ -1487,7 +1475,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar-response");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<calendar_manager>)){
@@ -1499,12 +1486,10 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: calendar");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1520,7 +1505,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<light_manager>)){
@@ -1532,12 +1516,10 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light-response");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1553,7 +1535,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<fwupd_manager>)){
@@ -1565,13 +1546,11 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: fwupd-response");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: light");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1587,7 +1566,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<mqtt_manager>)){
@@ -1599,7 +1577,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt-response");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::MqttStatusFlags)){
@@ -1607,7 +1584,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1618,7 +1594,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			return json_obj;
@@ -1635,7 +1610,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket-notification");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<srvsock_manager>)){
@@ -1647,12 +1621,10 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket-response");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: socket");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1674,7 +1646,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<scheduler_element>)){
@@ -1689,7 +1660,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<scheduler_manager>)){
@@ -1704,7 +1674,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: scheduler");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<scheduler_element>)){
@@ -1713,12 +1682,10 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: scheduler");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1728,7 +1695,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1745,7 +1711,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: SysManager");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<sys_manager>)){
@@ -1757,7 +1722,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: SysManager");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<sys_boot>)){
@@ -1774,7 +1738,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1787,7 +1750,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1816,7 +1778,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Modulator");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<modulator_manager>)){
@@ -1828,7 +1789,6 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Modulator");
-					json_obj = cJSON_CreateObject();
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<modulator_manager_cfg>)){
@@ -1854,7 +1814,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Modulator, tipo mensaje no controlado");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1869,7 +1828,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schuko");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1884,7 +1842,6 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
-				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
 		}
@@ -1892,7 +1849,6 @@ _gofdt_exit:
 
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
-		json_obj = cJSON_CreateObject();
 		return json_obj;
 	}
 
