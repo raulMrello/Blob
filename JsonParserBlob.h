@@ -325,6 +325,10 @@ public:
 	static const char * JsonParser::p_restore;
 	static const char * JsonParser::p_totalCurrent;
 
+	static void setLoggingLevel(esp_log_level_t level){
+		esp_log_level_set("[JsonParser]....", level);
+	}
+
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
     }
