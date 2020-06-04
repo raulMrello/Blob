@@ -105,7 +105,6 @@
 #endif
 
 #if defined(JsonParser_OCPPManager_Enabled)
-#include "OCPPManager.h"
 #include "ocpp_manager_objects.h"
 #endif
 
@@ -960,6 +959,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos ocpp
+		#if defined(JsonParser_OCPPManager_Enabled)
+		if((result = JSON::getOCPPManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -1294,6 +1299,21 @@ public:
 							Heap::memFree(obj);
 							obj = NULL;
 						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_OCPPManager_Enabled)
+				else if(isTokenInTopic(topic, "/ocpp")){
+					obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
 					}
 					goto _gofdt_exit;
 				}
