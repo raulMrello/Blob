@@ -4,7 +4,7 @@
  *  Created on: Mar 2019
  *      Author: raulMrello
  *
- *	Objetos JSON e propósito general
+ *	Objetos JSON e propï¿½sito general
  */
  
 #ifndef COMMON_OBJECTS_
@@ -14,14 +14,15 @@
 #include <type_traits>
 #include "cJSON.h"
 
+#define MWIFI_ADDR_LEN              6
 
 /** Tipos de secciones de datos que se pueden leer-escribir en los objetos
  *
  */
 enum ObjDataSelection {
 	ObjSelectAll,   //!< ObjSelectAll 	Todo el contenido del objeto
-	ObjSelectState,	//!< ObjSelectState Únicamente el estado del objeto
-	ObjSelectCfg 	//!< ObjSelectCfg 	Únicamente la configuración del objeto
+	ObjSelectState,	//!< ObjSelectState ï¿½nicamente el estado del objeto
+	ObjSelectCfg 	//!< ObjSelectCfg 	ï¿½nicamente la configuraciï¿½n del objeto
 };
 
 
@@ -47,7 +48,7 @@ cJSON* getJsonFromRangeMinMaxThresDouble(const common_range_minmaxthres_double& 
  * Decodifica el mensaje JSON en un objeto
  * @param obj Recibe el objeto decodificado
  * @param json Objeto JSON a decodificar
- * @return keys Parámetros decodificados o 0 en caso de error
+ * @return keys Parï¿½metros decodificados o 0 en caso de error
  */
 uint32_t getRangeMinMaxThresDoubleFromJson(common_range_minmaxthres_double &obj, cJSON* json);
 
