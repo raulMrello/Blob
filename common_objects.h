@@ -15,6 +15,11 @@
 #include "cJSON.h"
 
 #define MWIFI_ADDR_LEN              6
+#define MWIFI_ADDR_NONE         {0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+#define MWIFI_ADDR_ROOT         {0xFF, 0x0, 0x0, 0x1, 0x0, 0x0}
+#define MWIFI_ADDR_ANY          {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} /**< All node in the mesh network */
+#define MWIFI_ADDR_BROADCAST    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0XFE} /**< Other node except the root */
+
 
 /** Tipos de secciones de datos que se pueden leer-escribir en los objetos
  *
