@@ -329,6 +329,7 @@ public:
 	static const char * JsonParser::p_restore;
 	static const char * JsonParser::p_totalCurrent;
 	static const char*	p_serverUrl;
+	static const char*	p_pingInterval;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
