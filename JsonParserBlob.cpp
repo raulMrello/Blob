@@ -241,4 +241,6 @@ const char * JsonParser::p_erased   			= "erased";
 const char * JsonParser::p_remaining   			= "remaining";
 const char * JsonParser::p_restore   			= "restore";
 const char * JsonParser::p_totalCurrent	       	= "totalCurrent";
-
+const char * JsonParser::p_serverUrl			= "serverUrl";
+const char * JsonParser::p_pingInterval			= "pingInterval";
+const char * JsonParser::p_bootInterval			= "bootInterval";
