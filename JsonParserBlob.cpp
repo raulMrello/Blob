@@ -244,3 +244,4 @@ const char * JsonParser::p_totalCurrent	       	= "totalCurrent";
 const char * JsonParser::p_serverUrl			= "serverUrl";
 const char * JsonParser::p_pingInterval			= "pingInterval";
 const char * JsonParser::p_bootInterval			= "bootInterval";
+const char * JsonParser::p_connectionTimeOut			= "connectionTimeOut";
