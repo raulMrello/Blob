@@ -252,6 +252,8 @@ public:
 	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
+	static const char*	p_lastStaEssid;
+	static const char*	p_lastStaPasswd;
 	static const char*	p_start;
 	static const char*	p_status;
 	static const char*	p_stat;
