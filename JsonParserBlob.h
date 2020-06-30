@@ -104,6 +104,10 @@
 #include "modulator_objects.h"
 #endif
 
+#if defined(JsonParser_OCPPManager_Enabled)
+#include "ocpp_manager_objects.h"
+#endif
+
 #include <type_traits>
 
 
@@ -248,6 +252,8 @@ public:
 	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
+	static const char*	p_lastStaEssid;
+	static const char*	p_lastStaPasswd;
 	static const char*	p_start;
 	static const char*	p_status;
 	static const char*	p_stat;
@@ -324,6 +330,14 @@ public:
 	static const char * JsonParser::p_remaining;
 	static const char * JsonParser::p_restore;
 	static const char * JsonParser::p_totalCurrent;
+	static const char*	p_serverUrl;
+	static const char*	p_pingInterval;
+	static const char*	p_bootInterval;
+	static const char*	p_connectionTimeOut;
+
+	static void setLoggingLevel(esp_log_level_t level){
+		esp_log_level_set("[JsonParser]....", level);
+	}
 
 	static inline bool isTokenInTopic(const char* topic, const char* token){
     	return ((strstr(topic, token) != NULL)? true : false);
@@ -592,6 +606,13 @@ public:
 		//----- Objetos ModulatorManager
 		#if defined(JsonParser_ModulatorManager_Enabled)
 		if((result = JSON::getJsonFromModulatorManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos OCPPManager
+		#if defined(JsonParser_OCPPManager_Enabled)
+		if((result = JSON::getJsonFromOCPPManagerObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -947,6 +968,18 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos ocpp
+		#if defined(JsonParser_OCPPManager_Enabled)
+		if((result = JSON::getOCPPManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos evsm
+		#if defined(JsonParser_EVStateMachine_Enabled)
+		if((result = JSON::getEVStateMachineObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -1285,6 +1318,36 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+				#if defined(JsonParser_OCPPManager_Enabled)
+				else if(isTokenInTopic(topic, "/ocpp")){
+					obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_EVStateMachine_Enabled)
+				else if(isTokenInTopic(topic, "/evsm")){
+					obj = (Blob::SetRequest_t<evsm_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<evsm_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<evsm_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<evsm_manager>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				#endif
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
 			}
@@ -1433,6 +1496,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::SetRequest_t<requests_element>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<requests_element>*)data);
 			}
+			else if(size == sizeof(Blob::SetRequest_t<RequestsSourcesActv>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<RequestsSourcesActv>*)data);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: RequestsManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
@@ -1463,6 +1529,18 @@ _gofdt_exit:
 				}
 				else if(size == sizeof(Blob::Response_t<evsm_connector_list>)){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_connector_list>*)data);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(isTokenInTopic(topic, "cfg")){
+				if(size == sizeof(Blob::Response_t<evsm_manager>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_manager>*)data);
+				}
+				else if(size == sizeof(Blob::NotificationData_t<evsm_manager>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<evsm_manager>*)data);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
@@ -1885,6 +1963,46 @@ _gofdt_exit:
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
 				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+
+		#if defined(JsonParser_OCPPManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/ocpp")){
+			if(size == sizeof(Blob::Response_t<ocpp_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: OCPPManager");
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<ocpp_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ocpp_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ocpp_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: OCPPManager");
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: OCPPManager, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/ocpp")){
+			if(size == sizeof(Blob::SetRequest_t<ocpp_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<ocpp_manager>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
 			}
 			return json_obj;
 		}

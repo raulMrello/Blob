@@ -162,6 +162,8 @@ const char * JsonParser::p_shucko		= "schuko";
 const char * JsonParser::p_since		= "since";
 const char * JsonParser::p_staEssid		= "staEssid";
 const char * JsonParser::p_staPasswd	= "staPasswd";
+const char * JsonParser::p_lastStaEssid		= "lastStaEssid";
+const char * JsonParser::p_lastStaPasswd	= "lastStaPasswd";
 const char * JsonParser::p_start		= "start";
 const char * JsonParser::p_status		= "status";
 const char * JsonParser::p_stat			= "stat";
@@ -241,4 +243,7 @@ const char * JsonParser::p_erased   			= "erased";
 const char * JsonParser::p_remaining   			= "remaining";
 const char * JsonParser::p_restore   			= "restore";
 const char * JsonParser::p_totalCurrent	       	= "totalCurrent";
-
+const char * JsonParser::p_serverUrl			= "serverUrl";
+const char * JsonParser::p_pingInterval			= "pingInterval";
+const char * JsonParser::p_bootInterval			= "bootInterval";
+const char * JsonParser::p_connectionTimeOut			= "connectionTimeOut";
