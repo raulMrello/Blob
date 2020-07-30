@@ -159,6 +159,7 @@ public:
 	static const char*	p_energyValues;
 	static const char*	p_eocMode;
 	static const char*	p_error;
+	static const char*  p_eth;
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
 	static const char*	p_freq;
