@@ -1041,6 +1041,19 @@ public:
 					}
 					goto _gofdt_exit;
 				}
+				else if(isTokenInTopic(topic, "/reset")){
+					obj = (Blob::SetRequest_t<sys_reset_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_reset_data>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_reset_data>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_reset_data>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
 				else if(isTokenInTopic(topic, "/sys")){
 					obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
 					MBED_ASSERT(obj);
@@ -1851,6 +1864,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::Response_t<sys_reset_data>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_reset_data>*)data, ObjSelectAll);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
@@ -1864,8 +1880,11 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::SetRequest_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_fwUpdate_data>*)data);
 			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
+			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
