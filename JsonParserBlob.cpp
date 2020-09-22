@@ -72,6 +72,7 @@ const char * JsonParser::p_energy		= "energy";
 const char * JsonParser::p_energyValues	= "energyValues";
 const char * JsonParser::p_eocMode		= "eocMode";
 const char * JsonParser::p_error		= "error";
+const char * JsonParser::p_eth			= "ethernet";
 const char * JsonParser::p_evtFlags		= "evtFlags";
 const char * JsonParser::p_flags		= "flags";
 const char * JsonParser::p_freq			= "freq";
