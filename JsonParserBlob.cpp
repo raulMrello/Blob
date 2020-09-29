@@ -194,6 +194,7 @@ const char * JsonParser::p_wdowDawnStart= "wdowDawnStart";
 const char * JsonParser::p_wdowDawnStop	= "wdowDawnStop";
 const char * JsonParser::p_wdowDuskStart= "wdowDuskStart";
 const char * JsonParser::p_wdowDuskStop	= "wdowDuskStop";
+const char * JsonParser::p_wifi_sta		= "wifi_sta";
 const char * JsonParser::p_wifiDhcpen   = "wifiDhcpen";
 const char * JsonParser::p_wifiipstatic = "wifiipstatic";
 const char * JsonParser::p_wifimask     = "wifimask";

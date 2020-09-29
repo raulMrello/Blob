@@ -282,6 +282,7 @@ public:
 	static const char*	p_wdowDawnStop;
 	static const char*	p_wdowDuskStart;
 	static const char*	p_wdowDuskStop;
+	static const char*  p_wifi_sta;
 	static const char*  p_wifiDhcpen;
 	static const char*  p_wifidns;
 	static const char* 	p_wifigw;
