@@ -244,6 +244,7 @@ public:
 	static const char*	p_rfid;
 	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
+	static const char*  p_rst_reason;
 	static const char*	p_samples;
 	static const char*	p_serial;
 	static const char*	p_selectorPosition;
