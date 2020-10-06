@@ -1013,7 +1013,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
