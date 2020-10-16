@@ -335,6 +335,7 @@ public:
 	static const char*	p_pingInterval;
 	static const char*	p_bootInterval;
 	static const char*	p_connectionTimeOut;
+	static const char*	p_splCfg;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
