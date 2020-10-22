@@ -160,6 +160,11 @@ public:
 	static const char*	p_eocMode;
 	static const char*	p_error;
 	static const char*  p_eth;
+	static const char*  p_ethDhcpen;
+	static const char*  p_ethipstatic;
+	static const char*  p_ethmask;
+	static const char*  p_ethgw;
+	static const char*  p_ethdns;
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
 	static const char*	p_freq;
@@ -278,6 +283,12 @@ public:
 	static const char*	p_wdowDawnStop;
 	static const char*	p_wdowDuskStart;
 	static const char*	p_wdowDuskStop;
+	static const char*  p_wifi_sta;
+	static const char*  p_wifiDhcpen;
+	static const char*  p_wifidns;
+	static const char* 	p_wifigw;
+	static const char* 	p_wifiipstatic;
+	static const char* 	p_wifimask;
 	static const char*	p_port;
 	static const char*	p_state;
 	static const char*	p_idCharge;
