@@ -155,6 +155,7 @@ const char * JsonParser::p_relOverload	= "relOverload";
 const char * JsonParser::p_rfid			= "rfid";
 const char * JsonParser::p_rfidCfg		= "rfidCfg";
 const char * JsonParser::p_rPow			= "rPow";
+const char * JsonParser::p_rst_reason   = "rst_reason";
 const char * JsonParser::p_samples		= "samples";
 const char * JsonParser::p_seasonCfg	= "seasonCfg";
 const char * JsonParser::p_serial		= "serial";
