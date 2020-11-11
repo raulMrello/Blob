@@ -52,6 +52,7 @@ const char * JsonParser::p_chargeProcess= "chargeProcess";
 const char * JsonParser::p_childSync	= "childSync";
 const char * JsonParser::p_clock		= "clock";
 const char * JsonParser::p_code			= "code";
+const char * JsonParser::p_connCfg      = "connCfg";
 const char * JsonParser::p_connector	= "connector";
 const char * JsonParser::p_connectorId	= "connectorId";
 const char * JsonParser::p_connectorName= "connectorName";

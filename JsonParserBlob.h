@@ -139,6 +139,7 @@ public:
 	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*  p_connCfg;
 	static const char*	p_connector;
 	static const char*	p_connectorId;
 	static const char*	p_connectorName;
