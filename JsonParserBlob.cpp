@@ -238,6 +238,7 @@ const char * JsonParser::p_iconConn       = "iconConn";
 const char * JsonParser::p_iconPlug       = "iconPlug";
 const char * JsonParser::p_iconModul       = "iconModul";
 const char * JsonParser::p_iconSched       = "iconSched";
+const char * JsonParser::p_iconSched2       = "iconSched2";
 const char * JsonParser::p_limitPower       = "limitPower";
 const char * JsonParser::p_maxPower         = "maxPower";
 const char * JsonParser::p_totalPower       = "totalPower";

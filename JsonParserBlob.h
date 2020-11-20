@@ -325,6 +325,7 @@ public:
 	static const char*	p_iconPlug;
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
+	static const char*  p_iconSched2;
 	static const char*	p_limitPower;
 	static const char*	p_maxPower;
 	static const char*	p_totalPower;
