@@ -108,6 +108,11 @@
 #include "ocpp_manager_objects.h"
 #endif
 
+#if defined(JsonParser_SolarManager_Enabled)
+#include "SolarManagerBlob.h"
+#include "solar_objects.h"
+#endif
+
 #include <type_traits>
 
 
@@ -631,6 +636,13 @@ public:
 		}
 		#endif
 
+		//----- Objetos SolarManager
+		#if defined(JsonParser_SolarManager_Enabled)
+		if((result = JSON::getJsonFromSolarManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -991,6 +1003,12 @@ public:
 		//---- Decodifica Objetos evsm
 		#if defined(JsonParser_EVStateMachine_Enabled)
 		if((result = JSON::getEVStateMachineObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos Solar
+		#if defined(JsonParser_SolarManager_Enabled)
+		if((result = JSON::getSolarManagerObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1375,6 +1393,25 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+
+				#if defined(JsonParser_SolarManager_Enabled)
+				if(isTokenInTopic(topic, "/solar")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<solar_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<solar_manager_cfg>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<solar_manager_cfg>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<solar_manager_cfg>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
 			}
@@ -2040,7 +2077,51 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
-
+		#if defined(JsonParser_SolarManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/solar")){
+			if(size == sizeof(Blob::Response_t<solar_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Modulator");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<solar_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Solar");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<solar_manager_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager_cfg>*)data, ObjSelectCfg);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<solar_manager_cfg>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager_cfg>*)data, ObjSelectCfg);
+			}
+			else if(size == sizeof(Blob::Response_t<solar_manager_stat>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager_stat>*)data, ObjSelectState);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<solar_manager_stat>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager_stat>*)data, ObjSelectState);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Solar, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		json_obj = cJSON_CreateObject();
