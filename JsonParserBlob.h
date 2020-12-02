@@ -159,6 +159,12 @@ public:
 	static const char*	p_energyValues;
 	static const char*	p_eocMode;
 	static const char*	p_error;
+	static const char*  p_eth;
+	static const char*  p_ethDhcpen;
+	static const char*  p_ethipstatic;
+	static const char*  p_ethmask;
+	static const char*  p_ethgw;
+	static const char*  p_ethdns;
 	static const char*	p_evtFlags;
 	static const char*	p_flags;
 	static const char*	p_freq;
@@ -243,6 +249,7 @@ public:
 	static const char*	p_rfid;
 	static const char*	p_rfidCfg;
 	static const char*	p_rPow;
+	static const char*  p_rst_reason;
 	static const char*	p_samples;
 	static const char*	p_serial;
 	static const char*	p_selectorPosition;
@@ -276,6 +283,12 @@ public:
 	static const char*	p_wdowDawnStop;
 	static const char*	p_wdowDuskStart;
 	static const char*	p_wdowDuskStop;
+	static const char*  p_wifi_sta;
+	static const char*  p_wifiDhcpen;
+	static const char*  p_wifidns;
+	static const char* 	p_wifigw;
+	static const char* 	p_wifiipstatic;
+	static const char* 	p_wifimask;
 	static const char*	p_port;
 	static const char*	p_state;
 	static const char*	p_idCharge;
@@ -334,6 +347,7 @@ public:
 	static const char*	p_pingInterval;
 	static const char*	p_bootInterval;
 	static const char*	p_connectionTimeOut;
+	static const char*	p_splCfg;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1012,7 +1026,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
@@ -1032,6 +1046,19 @@ public:
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_fwUpdate_data>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<sys_fwUpdate_data>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/reset")){
+					obj = (Blob::SetRequest_t<sys_reset_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_reset_data>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_reset_data>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_reset_data>);
 					}
 					else{
 						*size = 0;
@@ -1850,6 +1877,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::Response_t<sys_reset_data>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_reset_data>*)data, ObjSelectAll);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
@@ -1863,8 +1893,11 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::SetRequest_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_fwUpdate_data>*)data);
 			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
+			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
