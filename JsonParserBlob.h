@@ -139,6 +139,7 @@ public:
 	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*  p_connCfg;
 	static const char*	p_connector;
 	static const char*	p_connectorId;
 	static const char*	p_connectorName;
@@ -272,6 +273,7 @@ public:
 	static const char*	p_timestamp;
 	static const char*	p_timezone;
 	static const char*	p_topic;
+	static const char*	p_type;
 	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
@@ -324,6 +326,7 @@ public:
 	static const char*	p_iconPlug;
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
+	static const char*  p_iconSched2;
 	static const char*	p_limitPower;
 	static const char*	p_maxPower;
 	static const char*	p_totalPower;
