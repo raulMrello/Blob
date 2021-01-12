@@ -1100,11 +1100,11 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_RequestsManager_Enabled)
-				if(isTokenInTopic(topic, "/request")){
-					obj = (Blob::NotificationData_t<requests_element_stat>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<requests_element_stat>));
+				if(isTokenInTopic(topic, "/reqman")){
+					obj = (Blob::SetRequest_t<requests_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<requests_manager>));
 					MBED_ASSERT(obj);
-					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<requests_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<requests_manager>);
 					}
 					else{
 						*size = 0;
