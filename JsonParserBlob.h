@@ -108,6 +108,10 @@
 #include "ocpp_manager_objects.h"
 #endif
 
+#if defined(JsonParser_ModbusMap_Enabled)
+#include "modbus_objects.h"
+#endif
+
 #include <type_traits>
 
 
