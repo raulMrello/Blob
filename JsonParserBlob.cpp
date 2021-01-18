@@ -182,6 +182,7 @@ const char * JsonParser::p_timeout		= "timeout";
 const char * JsonParser::p_timestamp	= "timestamp";
 const char * JsonParser::p_timezone		= "timezone";
 const char * JsonParser::p_topic		= "topic";
+const char * JsonParser::p_type			= "type";
 const char * JsonParser::p_uid			= "uid";
 const char * JsonParser::p_until		= "until";
 const char * JsonParser::p_updFlags		= "updFlags";

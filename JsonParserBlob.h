@@ -272,6 +272,7 @@ public:
 	static const char*	p_timestamp;
 	static const char*	p_timezone;
 	static const char*	p_topic;
+	static const char*	p_type;
 	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
