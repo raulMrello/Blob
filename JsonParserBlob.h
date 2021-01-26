@@ -1085,6 +1085,19 @@ public:
 					}
 					goto _gofdt_exit;
 				}
+				else if(isTokenInTopic(topic, "/rfid")){
+					obj = (Blob::SetRequest_t<sys_rfid_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_rfid_cfg>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_rfid_cfg>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_rfid_cfg>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
 				else if(isTokenInTopic(topic, "/sys")){
 					obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
 					MBED_ASSERT(obj);
