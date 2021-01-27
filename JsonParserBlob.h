@@ -1899,6 +1899,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
 			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_rfid_cfg>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_rfid_cfg>*)data);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
