@@ -80,6 +80,7 @@ const char * JsonParser::p_ethmask      = "ethmask";
 const char * JsonParser::p_ethgw        = "ethgw";
 const char * JsonParser::p_ethdns       = "ethdns";
 const char * JsonParser::p_evtFlags		= "evtFlags";
+const char * JsonParser::p_extraInfo	= "extraInfo";
 const char * JsonParser::p_flags		= "flags";
 const char * JsonParser::p_freq			= "freq";
 const char * JsonParser::p_fwSize		= "fwSize";

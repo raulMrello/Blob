@@ -167,6 +167,7 @@ public:
 	static const char*  p_ethgw;
 	static const char*  p_ethdns;
 	static const char*	p_evtFlags;
+	static const char*  p_extraInfo;
 	static const char*	p_flags;
 	static const char*	p_freq;
 	static const char*	p_fwSize;
