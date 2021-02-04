@@ -143,6 +143,7 @@ public:
 	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*  p_connCfg;
 	static const char*	p_connector;
 	static const char*	p_connectorId;
 	static const char*	p_connectorName;
@@ -170,6 +171,7 @@ public:
 	static const char*  p_ethgw;
 	static const char*  p_ethdns;
 	static const char*	p_evtFlags;
+	static const char*  p_extraInfo;
 	static const char*	p_flags;
 	static const char*	p_freq;
 	static const char*	p_fwSize;
@@ -329,6 +331,7 @@ public:
 	static const char*	p_iconPlug;
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
+	static const char*  p_iconSched2;
 	static const char*	p_limitPower;
 	static const char*	p_maxPower;
 	static const char*	p_totalPower;
@@ -1128,11 +1131,11 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_RequestsManager_Enabled)
-				if(isTokenInTopic(topic, "/request")){
-					obj = (Blob::NotificationData_t<requests_element_stat>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<requests_element_stat>));
+				if(isTokenInTopic(topic, "/reqman")){
+					obj = (Blob::SetRequest_t<requests_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<requests_manager>));
 					MBED_ASSERT(obj);
-					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<requests_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<requests_manager>);
 					}
 					else{
 						*size = 0;
@@ -1943,6 +1946,9 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_rfid_cfg>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_rfid_cfg>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
