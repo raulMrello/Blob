@@ -1101,7 +1101,20 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_RequestsManager_Enabled)
-				if(isTokenInTopic(topic, "/reqman")){
+				if(isTokenInTopic(topic, "/request")){
+					obj = (Blob::NotificationData_t<requests_element_stat>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<requests_element_stat>));
+					MBED_ASSERT(obj);
+					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
+						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/reqman")){
 					obj = (Blob::SetRequest_t<requests_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<requests_manager>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<requests_manager>*) (obj), json_obj)){
