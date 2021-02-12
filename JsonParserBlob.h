@@ -112,6 +112,10 @@
 #include "modbus_objects.h"
 #endif
 
+#if defined(JsonParser_SolarManager_Enabled)
+#include "solar_objects.h"
+#endif
+
 #include <type_traits>
 
 
