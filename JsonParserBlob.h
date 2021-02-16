@@ -116,6 +116,10 @@
 #include "solar_objects.h"
 #endif
 
+#if defined(JsonParser_WSClient_Enabled)
+#include "wsclient_objects.h"
+#endif
+
 #include <type_traits>
 
 
