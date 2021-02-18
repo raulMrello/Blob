@@ -116,6 +116,10 @@
 #include "solar_objects.h"
 #endif
 
+#if defined(JsonParser_WSClient_Enabled)
+#include "wsclient_objects.h"
+#endif
+
 #include <type_traits>
 
 
@@ -650,6 +654,13 @@ public:
 		}
 		#endif
 
+		//----- Objetos WSClient
+		#if defined(JsonParser_WSClient_Enabled)
+		if((result = JSON::getJsonFromWSClientObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -1016,6 +1027,12 @@ public:
 		//---- Decodifica Objetos ModbusMap
 		#if defined(JsonParser_ModbusMap_Enabled)
 		if((result = JSON::getModbusMapObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos WSClient
+		#if defined(JsonParser_WSClient_Enabled)
+		if((result = JSON::getWSClientObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1433,6 +1450,23 @@ public:
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModbusMapCfg>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<ModbusMapCfg>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+						goto _gofdt_exit;
+					}
+				}
+				#endif
+				#if defined(JsonParser_WSClient_Enabled)
+				else if(isTokenInTopic(topic, "/wscli") || isTokenInTopic(topic, "/wslog")){
+					if(isTokenInTopic(topic, "/connect") || isTokenInTopic(topic, "/disconnect") || isTokenInTopic(topic, "/start-log") || isTokenInTopic(topic, "/stop-log")){
+						obj = (Blob::SetRequest_t<WSClientUri>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<WSClientUri>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<WSClientUri>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<WSClientUri>);
 						}
 						else{
 							*size = 0;
@@ -2139,7 +2173,21 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
-
+		#if defined(JsonParser_WSClient_Enabled)
+		if(isTokenInTopic(topic, "stat") && (isTokenInTopic(topic, "/wscli") || isTokenInTopic(topic, "/wslog"))){
+			if(size == sizeof(Blob::Response_t<WSClientUri>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<WSClientUri>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<WSClientUri>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WSClientUri>*)data, ObjSelectAll);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wscli | wslog");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		json_obj = cJSON_CreateObject();
