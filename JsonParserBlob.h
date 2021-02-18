@@ -117,7 +117,7 @@
 #endif
 
 #if defined(JsonParser_WSClient_Enabled)
-#include "WSClient.h"
+#include "wsclient_objects.h"
 #endif
 
 #include <type_traits>
@@ -1462,11 +1462,11 @@ public:
 				#endif
 				#if defined(JsonParser_WSClient_Enabled)
 				else if(isTokenInTopic(topic, "/wscli") || isTokenInTopic(topic, "/wslog")){
-					if(isTokenInTopic(topic, "/connect") || isTokenInTopic(topic, "/disconnect")){
-						obj = (Blob::SetRequest_t<WSClient::Uri_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<WSClient::Uri_t>));
+					if(isTokenInTopic(topic, "/connect") || isTokenInTopic(topic, "/disconnect") || isTokenInTopic(topic, "/start-log") || isTokenInTopic(topic, "/stop-log")){
+						obj = (Blob::SetRequest_t<WSClientUri>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<WSClientUri>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<WSClient::Uri_t>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<WSClient::Uri_t>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<WSClientUri>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<WSClientUri>);
 						}
 						else{
 							*size = 0;
@@ -2175,11 +2175,11 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_WSClient_Enabled)
 		if(isTokenInTopic(topic, "stat") && (isTokenInTopic(topic, "/wscli") || isTokenInTopic(topic, "/wslog"))){
-			if(size == sizeof(Blob::Response_t<WSClient::Uri_t>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<WSClient::Uri_t>*)data, ObjSelectAll);
+			if(size == sizeof(Blob::Response_t<WSClientUri>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<WSClientUri>*)data, ObjSelectAll);
 			}
-			else if(size == sizeof(Blob::NotificationData_t<WSClient::Uri_t>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WSClient::Uri_t>*)data, ObjSelectAll);
+			else if(size == sizeof(Blob::NotificationData_t<WSClientUri>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WSClientUri>*)data, ObjSelectAll);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wscli | wslog");
