@@ -1363,10 +1363,10 @@ public:
 				#if defined(JsonParser_ModulatorManager_Enabled)
 				if(isTokenInTopic(topic, "/modulator")){
 					if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<modulator_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_cfg>));
+						obj = (Blob::SetRequest_t<modulator_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_cfg>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<modulator_manager_cfg>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager>);
 						}
 						else{
 							*size = 0;
@@ -1375,10 +1375,10 @@ public:
 						}
 					}
 					else if(isTokenInTopic(topic, "/value/")){
-						obj = (Blob::SetRequest_t<modulator_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_stat>));
+						obj = (Blob::SetRequest_t<modulator_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_stat>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<modulator_manager_stat>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager>);
 						}
 						else{
 							*size = 0;
@@ -2024,11 +2024,8 @@ _gofdt_exit:
 				}
 			}
 			else if(size == sizeof(Blob::Response_t<modulator_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
+				if(isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager>*)data, ObjSelectCfg);
-				}
-				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager>*)data, ObjSelectState);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Modulator");
@@ -2036,28 +2033,13 @@ _gofdt_exit:
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<modulator_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
+				if(isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager>*)data, ObjSelectCfg);
-				}
-				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager>*)data, ObjSelectState);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Modulator");
 					json_obj = cJSON_CreateObject();
 				}
-			}
-			else if(size == sizeof(Blob::Response_t<modulator_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_cfg>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::Response_t<modulator_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_stat>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_stat>*)data, ObjSelectState);
 			}
 			else if(size == sizeof(Blob::NotificationData_t<ModulatorStatProcesses>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorStatProcesses>*)data, ObjSelectAll);
