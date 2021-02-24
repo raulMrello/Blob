@@ -1306,10 +1306,10 @@ public:
 
 				#if defined(JsonParser_MennekesManager_Enabled)
 				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_stat>));
+					obj = (Blob::SetRequest_t<mennekes_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_stat>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager>);
 					}
 					else{
 						*size = 0;
@@ -1319,10 +1319,10 @@ public:
 					goto _gofdt_exit;
 				}
 				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_cfg>));
+					obj = (Blob::SetRequest_t<mennekes_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager>);
 					}
 					else{
 						*size = 0;
@@ -2092,11 +2092,11 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_MennekesManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
-			if(size == sizeof(Blob::Response_t<mennekes_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_cfg>*)data, ObjSelectCfg);
+			if(size == sizeof(Blob::Response_t<mennekes_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectCfg);
 			}
-			else if(size == sizeof(Blob::Response_t<mennekes_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
+			else if(size == sizeof(Blob::Response_t<mennekes_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectState);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
