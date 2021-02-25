@@ -1420,11 +1420,11 @@ public:
 				#endif
 				#if defined(JsonParser_ModbusMap_Enabled)
 				else if(isTokenInTopic(topic, "/modbus")){
-					if(isTokenInTopic(topic, "/cfg")){
-						obj = (Blob::SetRequest_t<ModbusMapCfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModbusMapCfg>));
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<ModbusMapObj>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModbusMapObj>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModbusMapCfg>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<ModbusMapCfg>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModbusMapObj>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ModbusMapObj>);
 						}
 						else{
 							*size = 0;
@@ -2171,18 +2171,18 @@ _gofdt_exit:
 
 		#if defined(JsonParser_ModbusMap_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/modbus")){
-			if(size == sizeof(Blob::Response_t<ModbusMapCfg>)){
+			if(size == sizeof(Blob::Response_t<ModbusMapObj>)){
 				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<ModbusMapCfg>*)data, ObjSelectCfg);
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ModbusMapObj>*)data, ObjSelectCfg);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus-response");
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::NotificationData_t<ModbusMapCfg>)){
+			else if(size == sizeof(Blob::NotificationData_t<ModbusMapObj>)){
 				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModbusMapCfg>*)data, ObjSelectCfg);
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModbusMapObj>*)data, ObjSelectCfg);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus-notification");
