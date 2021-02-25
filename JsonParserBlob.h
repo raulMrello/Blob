@@ -113,14 +113,13 @@
 #endif
 
 #if defined(JsonParser_SolarManager_Enabled)
-#include "solar_objects.h"
-#endif
-
-#if defined(JsonParser_SolarManager_Enabled)
 #include "SolarManagerBlob.h"
 #include "solar_objects.h"
 #endif
 
+#if defined(JsonParser_WSClient_Enabled)
+#include "wsclient_objects.h"
+#endif
 #include <type_traits>
 
 
@@ -1456,11 +1455,11 @@ public:
 
 				#if defined(JsonParser_SolarManager_Enabled)
 				if(isTokenInTopic(topic, "/solar")){
-					if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<solar_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<solar_manager_cfg>));
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<solar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<solar_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<solar_manager_cfg>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<solar_manager_cfg>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<solar_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<solar_manager>);
 						}
 						else{
 							*size = 0;
@@ -2161,18 +2160,6 @@ _gofdt_exit:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Solar");
 					json_obj = cJSON_CreateObject();
 				}
-			}
-			else if(size == sizeof(Blob::Response_t<solar_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<solar_manager_cfg>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::Response_t<solar_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<solar_manager_stat>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager_stat>*)data, ObjSelectState);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Solar, tipo mensaje no controlado");
