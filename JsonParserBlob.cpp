@@ -265,3 +265,7 @@ const char * JsonParser::p_pingInterval			= "pingInterval";
 const char * JsonParser::p_bootInterval			= "bootInterval";
 const char * JsonParser::p_connectionTimeOut			= "connectionTimeOut";
 const char * JsonParser::p_splCfg			= "splCfg";
+const char * JsonParser::p_network			= "network";
+const char * JsonParser::p_mac_wifi 		= "mac_wifi";
+const char * JsonParser::p_mac_eth 		    = "mac_ethernet";
+const char * JsonParser::p_spl 		    = "spl";
