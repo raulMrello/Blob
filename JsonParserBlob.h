@@ -364,6 +364,11 @@ public:
 	static const char*	p_bootInterval;
 	static const char*	p_connectionTimeOut;
 	static const char*	p_splCfg;
+	static const char*	p_network;
+	static const char*	p_mac_wifi;
+	static const char*	p_mac_eth;
+	static const char*	p_spl;
+	static const char*	p_conn;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1123,10 +1128,10 @@ public:
 					goto _gofdt_exit;
 				}
 				else if(isTokenInTopic(topic, "/rfid")){
-					obj = (Blob::SetRequest_t<sys_rfid_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_rfid_cfg>));
+					obj = (Blob::SetRequest_t<rfid_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<rfid_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_rfid_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<sys_rfid_cfg>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<rfid_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<rfid_manager>);
 					}
 					else{
 						*size = 0;
@@ -1937,12 +1942,15 @@ _gofdt_exit:
 
 		#if defined(JsonParser_SysManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
-			if(size == sizeof(Blob::Response_t<sys_manager>) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value"))){
+			if(size == sizeof(Blob::Response_t<sys_manager>) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value") || isTokenInTopic(topic, "all"))){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "all")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectAll);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: SysManager");
@@ -1956,6 +1964,9 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_manager>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "all")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_manager>*)data, ObjSelectAll);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: SysManager");
 					json_obj = cJSON_CreateObject();
@@ -1967,8 +1978,8 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_boot>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
 			}
-			else if(size == sizeof(Blob::Response_t<sys_rfid_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_rfid_cfg>*)data, ObjSelectAll);
+			else if(size == sizeof(Blob::Response_t<rfid_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<rfid_manager>*)data, ObjSelectAll);
 			}
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
@@ -1992,8 +2003,8 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
 			}
-			else if(size == sizeof(Blob::SetRequest_t<sys_rfid_cfg>)){
-				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_rfid_cfg>*)data);
+			else if(size == sizeof(Blob::SetRequest_t<rfid_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<rfid_manager>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");

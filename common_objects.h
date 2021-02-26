@@ -26,8 +26,14 @@
  */
 enum ObjDataSelection {
 	ObjSelectAll,   //!< ObjSelectAll 	Todo el contenido del objeto
-	ObjSelectState,	//!< ObjSelectState �nicamente el estado del objeto
-	ObjSelectCfg 	//!< ObjSelectCfg 	�nicamente la configuraci�n del objeto
+	ObjSelectState,	//!< ObjSelectState �nicamente el estado del objeto y de los submodulos y/o elementos
+	ObjSelectCfg, 	//!< ObjSelectCfg 	�nicamente la configuraci�n del objeto y de los submodulos y/o elementos
+	ObjSelectAllMan,   //!< ObjSelectAllMan 	Todo el contenido del objeto sin submodulos ni elementos
+	ObjSelectStateMan,	//!< ObjSelectStateMan �nicamente el estado del objeto sin submodulos ni elementos
+	ObjSelectCfgMan, 	//!< ObjSelectCfgMan 	�nicamente la configuraci�n del objeto sin submodulos ni elementos
+	ObjSelectAllSub, // !< ObjSelectAllSub 	Todo el contenido únicamente de los submodulos y/o elementos
+	ObjSelectStateSub, // !< ObjSelectStateSub 	�nicamente la configuración de los submodulos y/o elementos
+	ObjSelectCfgSub // !< ObjSelectCfgSub 	�nicamente la configuración de los submodulos y/o elementos
 };
 
 
