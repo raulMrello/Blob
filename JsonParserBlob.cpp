@@ -269,3 +269,4 @@ const char * JsonParser::p_network			= "network";
 const char * JsonParser::p_mac_wifi 		= "mac_wifi";
 const char * JsonParser::p_mac_eth 		    = "mac_ethernet";
 const char * JsonParser::p_spl 		    = "spl";
+const char * JsonParser::p_conn					= "connectors";
