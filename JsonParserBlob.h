@@ -1637,11 +1637,11 @@ _gofdt_exit:
 		#if defined(JsonParser_EVStateMachine_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
 			if(isTokenInTopic(topic, "evt")){
-				if(size == sizeof(Blob::Response_t<connector_event>)){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_event>*)data);
+				if(size == sizeof(Blob::Response_t<connector_manager>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_manager>*)data);
 				}
-				else if(size == sizeof(Blob::NotificationData_t<connector_event>)){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_event>*)data);
+				else if(size == sizeof(Blob::NotificationData_t<connector_manager>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_manager>*)data);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
@@ -1649,11 +1649,11 @@ _gofdt_exit:
 				}
 			}
 			else if (isTokenInTopic(topic, "value")){
-				if(size == sizeof(Blob::Response_t<connector_state>)){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_state>*)data);
+				if(size == sizeof(Blob::Response_t<connector_manager>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_manager>*)data);
 				}
-				else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+				else if(size == sizeof(Blob::NotificationData_t<connector_manager>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_manager>*)data);
 				}
 				else if(size == sizeof(Blob::Response_t<evsm_connector_list>)){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_connector_list>*)data);
