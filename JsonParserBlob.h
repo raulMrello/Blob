@@ -113,13 +113,13 @@
 #endif
 
 #if defined(JsonParser_SolarManager_Enabled)
+#include "SolarManagerBlob.h"
 #include "solar_objects.h"
 #endif
 
 #if defined(JsonParser_WSClient_Enabled)
 #include "wsclient_objects.h"
 #endif
-
 #include <type_traits>
 
 
@@ -666,6 +666,13 @@ public:
 		}
 		#endif
 
+		//----- Objetos SolarManager
+		#if defined(JsonParser_SolarManager_Enabled)
+		if((result = JSON::getJsonFromSolarManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -1041,6 +1048,12 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos Solar
+		#if defined(JsonParser_SolarManager_Enabled)
+		if((result = JSON::getSolarManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -1310,24 +1323,11 @@ public:
 				#endif
 
 				#if defined(JsonParser_MennekesManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_stat>));
+				if((isTokenInTopic(topic, "/value") || isTokenInTopic(topic, "/cfg")) && isTokenInTopic(topic, "/mennekes")){
+					obj = (Blob::SetRequest_t<mennekes_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager>);
 					}
 					else{
 						*size = 0;
@@ -1338,24 +1338,11 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_ShuckoManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/schuko")){
-					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+				if((isTokenInTopic(topic, "/cfg") || isTokenInTopic(topic, "/value")) && isTokenInTopic(topic, "/schuko")){
+					obj = (Blob::SetRequest_t<shucko_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/schuko")){
-					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager>);
 					}
 					else{
 						*size = 0;
@@ -1367,23 +1354,11 @@ public:
 				#endif
 				#if defined(JsonParser_ModulatorManager_Enabled)
 				if(isTokenInTopic(topic, "/modulator")){
-					if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<modulator_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_cfg>));
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<modulator_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_cfg>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<modulator_manager_cfg>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "/value/")){
-						obj = (Blob::SetRequest_t<modulator_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_stat>));
-						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_stat>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<modulator_manager_stat>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager>);
 						}
 						else{
 							*size = 0;
@@ -1450,11 +1425,11 @@ public:
 				#endif
 				#if defined(JsonParser_ModbusMap_Enabled)
 				else if(isTokenInTopic(topic, "/modbus")){
-					if(isTokenInTopic(topic, "/cfg")){
-						obj = (Blob::SetRequest_t<ModbusMapCfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModbusMapCfg>));
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<ModbusMapObj>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModbusMapObj>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModbusMapCfg>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<ModbusMapCfg>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModbusMapObj>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ModbusMapObj>);
 						}
 						else{
 							*size = 0;
@@ -1482,7 +1457,26 @@ public:
 					}
 				}
 				#endif
-				DEBUG_TRACE_W(true, "[JsonParser]....", "No se encuentra el modulo");
+
+				#if defined(JsonParser_SolarManager_Enabled)
+				if(isTokenInTopic(topic, "/solar")){
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<solar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<solar_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<solar_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<solar_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
+				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
 			}
 			else if(isTokenInTopic(topic, "stat/"))
@@ -2058,18 +2052,6 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::Response_t<modulator_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_cfg>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::Response_t<modulator_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_stat>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_stat>*)data, ObjSelectState);
-			}
 			else if(size == sizeof(Blob::NotificationData_t<ModulatorStatProcesses>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorStatProcesses>*)data, ObjSelectAll);
 			}
@@ -2088,11 +2070,17 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_ShuckoManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/schuko")){
-			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::Response_t<shucko_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_cfg>*)data, ObjSelectCfg);
+			if(size == sizeof(Blob::Response_t<shucko_manager>)){
+				if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schuko");
+					json_obj = cJSON_CreateObject();
+				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schuko");
@@ -2103,15 +2091,17 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_MennekesManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
-			if(size == sizeof(Blob::Response_t<mennekes_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::Response_t<mennekes_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
-				json_obj = cJSON_CreateObject();
+			if(size == sizeof(Blob::Response_t<mennekes_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Mennekes");
+					json_obj = cJSON_CreateObject();
+				}
 			}
 			return json_obj;
 		}
@@ -2156,21 +2146,54 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
+		#if defined(JsonParser_SolarManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/solar")){
+			if(size == sizeof(Blob::Response_t<solar_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Modulator");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<solar_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Solar");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Solar, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
 
 		#if defined(JsonParser_ModbusMap_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/modbus")){
-			if(size == sizeof(Blob::Response_t<ModbusMapCfg>)){
+			if(size == sizeof(Blob::Response_t<ModbusMapObj>)){
 				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<ModbusMapCfg>*)data, ObjSelectCfg);
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ModbusMapObj>*)data, ObjSelectCfg);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus-response");
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::NotificationData_t<ModbusMapCfg>)){
+			else if(size == sizeof(Blob::NotificationData_t<ModbusMapObj>)){
 				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModbusMapCfg>*)data, ObjSelectCfg);
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModbusMapObj>*)data, ObjSelectCfg);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus-notification");
