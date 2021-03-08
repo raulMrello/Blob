@@ -1597,7 +1597,7 @@ _gofdt_exit:
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element>*)data, ObjSelectCfg);
 				}
-				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop")){
+				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop") || isTokenInTopic(topic, "permiss")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element>*)data, ObjSelectState);
 				}
 				else{
@@ -1609,6 +1609,9 @@ _gofdt_exit:
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element_stat>*)data);
 			}
 			else if(isTokenInTopic(topic, "tag_id")){
+				json_obj = cJSON_CreateObject();
+			}
+			else if(isTokenInTopic(topic, "_tagid_check")){
 				json_obj = cJSON_CreateObject();
 			}
 			else{
