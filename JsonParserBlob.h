@@ -241,6 +241,7 @@ public:
 	static const char*	p_notifCycle;
 	static const char*	p_now;
 	static const char*	p_numActions;
+	static const char*  p_nvsId;
 	static const char*	p_outData;
 	static const char*	p_outValue;
 	static const char*	p_pass;

@@ -141,6 +141,7 @@ const char * JsonParser::p_netReady		= "netReady";
 const char * JsonParser::p_notifCycle	= "notifCycle";
 const char * JsonParser::p_now			= "now";
 const char * JsonParser::p_numActions	= "numActions";
+const char * JsonParser::p_nvsId		= "nvsId";
 const char * JsonParser::p_outData		= "outData";
 const char * JsonParser::p_outValue		= "outValue";
 const char * JsonParser::p_passwd		= "passwd";
