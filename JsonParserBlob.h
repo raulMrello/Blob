@@ -271,6 +271,7 @@ public:
 	static const char * p_shucko;
 	static const char*	p_seasonCfg;
 	static const char*	p_since;
+	static const char*  p_solarPriority;
 	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;

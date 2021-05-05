@@ -170,6 +170,7 @@ const char * JsonParser::p_serial		= "serial";
 const char * JsonParser::p_selectorPosition	= "selectorPosition";
 const char * JsonParser::p_shucko		= "schuko";
 const char * JsonParser::p_since		= "since";
+const char * JsonParser::p_solarPriority= "solarPriority";
 const char * JsonParser::p_staEssid		= "staEssid";
 const char * JsonParser::p_staPasswd	= "staPasswd";
 const char * JsonParser::p_lastStaEssid		= "lastStaEssid";
