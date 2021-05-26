@@ -2228,7 +2228,7 @@ _gofdt_exit:
 		}
 		#endif
 
-		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
+		DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		json_obj = cJSON_CreateObject();
 		return json_obj;
 	}
