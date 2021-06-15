@@ -122,7 +122,7 @@
 #endif
 #include <type_traits>
 
-
+#define JSONPARSER_ENABLE_PrintBinaryObject		false
 
 class JsonParser {
 public:
@@ -2255,6 +2255,7 @@ _gofdt_exit:
 
 
 	static void printBinaryObject(char* topic, void* data, uint16_t size, bool formatted = false){
+		#if JSONPARSER_ENABLE_PrintBinaryObject == true
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = getDataFromObjTopic(topic, data, size);
 
@@ -2269,6 +2270,7 @@ _gofdt_exit:
 			DEBUG_TRACE_D(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
 		}
 		Heap::memFree(jsonMsg);
+		#endif
 	}
 
 };	// end class Parser
