@@ -122,7 +122,7 @@
 #endif
 #include <type_traits>
 
-
+#define JSONPARSER_ENABLE_PrintBinaryObject		false
 
 class JsonParser {
 public:
@@ -1116,6 +1116,19 @@ public:
 					}
 					goto _gofdt_exit;
 				}
+				else if(isTokenInTopic(topic, "/simulator")){
+					obj = (Blob::SetRequest_t<sys_simulator>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_simulator>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_simulator>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_simulator>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
 				else if(isTokenInTopic(topic, "/reset")){
 					obj = (Blob::SetRequest_t<sys_reset_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_reset_data>));
 					MBED_ASSERT(obj);
@@ -1989,6 +2002,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::Response_t<sys_simulator>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_simulator>*)data, ObjSelectAll);
+			}
 			else if(size == sizeof(Blob::Response_t<sys_reset_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_reset_data>*)data, ObjSelectAll);
 			}
@@ -2001,6 +2017,9 @@ _gofdt_exit:
 		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/sys")){
 			if(size == sizeof(Blob::SetRequest_t<sys_manager>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_manager>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_simulator>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_simulator>*)data);
 			}
 			else if(size == sizeof(Blob::SetRequest_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_fwUpdate_data>*)data);
@@ -2236,6 +2255,7 @@ _gofdt_exit:
 
 
 	static void printBinaryObject(char* topic, void* data, uint16_t size, bool formatted = false){
+		#if JSONPARSER_ENABLE_PrintBinaryObject == true
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = getDataFromObjTopic(topic, data, size);
 
@@ -2250,6 +2270,7 @@ _gofdt_exit:
 			DEBUG_TRACE_D(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
 		}
 		Heap::memFree(jsonMsg);
+		#endif
 	}
 
 };	// end class Parser
