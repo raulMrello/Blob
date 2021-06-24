@@ -1932,7 +1932,8 @@ _gofdt_exit:
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<scheduler_element>)){
-				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop")){
+				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop") || isTokenInTopic(topic, "enable") || isTokenInTopic(topic, "disable") || 
+				   isTokenInTopic(topic, "start_power") || isTokenInTopic(topic, "stop_power")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_element>*)data, ObjSelectState);
 				}
 				else{
