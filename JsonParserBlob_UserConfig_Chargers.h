@@ -47,22 +47,11 @@
  *
  */
 
-#define JsonParser_AstCalendar_Enabled
-#define JsonParser_AMManager_Enabled
-#define JsonParser_SysManager_Enabled
+// #define JsonParser_SysManager_Enabled
+#define JsonParser_SysManager_Panels_Enabled
 #define JsonParser_MQTTClient_Enabled
-#define JsonParser_HMIManager_Enabled
-#define JsonParser_ShuckoManager_Enabled
-#define JsonParser_MennekesManager_Enabled
-#define JsonParser_EVStateMachine_Enabled
-#define JsonParser_RequestsManager_Enabled
-#define JsonParser_SchedulerManager_Enabled
-#define JsonParser_ModulatorManager_Enabled
-#define JsonParser_Stm32Updater_Enabled
-#define JsonParser_OCPPManager_Enabled
-#define JsonParser_ModbusMap_Enabled
-#define JsonParser_SolarManager_Enabled
-#define JsonParser_WSClient_Enabled
+// #define JsonParser_HMIManager_Enabled
+
 
 
 #endif
