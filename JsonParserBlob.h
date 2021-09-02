@@ -108,9 +108,21 @@
 #include "ocpp_manager_objects.h"
 #endif
 
+#if defined(JsonParser_ModbusMap_Enabled)
+#include "modbus_objects.h"
+#endif
+
+#if defined(JsonParser_SolarManager_Enabled)
+#include "SolarManagerBlob.h"
+#include "solar_objects.h"
+#endif
+
+#if defined(JsonParser_WSClient_Enabled)
+#include "wsclient_objects.h"
+#endif
 #include <type_traits>
 
-
+#define JSONPARSER_ENABLE_PrintBinaryObject		false
 
 class JsonParser {
 public:
@@ -139,6 +151,7 @@ public:
 	static const char*	p_childSync;
 	static const char*	p_clock;
 	static const char*	p_code;
+	static const char*  p_connCfg;
 	static const char*	p_connector;
 	static const char*	p_connectorId;
 	static const char*	p_connectorName;
@@ -166,6 +179,7 @@ public:
 	static const char*  p_ethgw;
 	static const char*  p_ethdns;
 	static const char*	p_evtFlags;
+	static const char*  p_extraInfo;
 	static const char*	p_flags;
 	static const char*	p_freq;
 	static const char*	p_fwSize;
@@ -227,6 +241,7 @@ public:
 	static const char*	p_notifCycle;
 	static const char*	p_now;
 	static const char*	p_numActions;
+	static const char*  p_nvsId;
 	static const char*	p_outData;
 	static const char*	p_outValue;
 	static const char*	p_pass;
@@ -256,6 +271,7 @@ public:
 	static const char * p_shucko;
 	static const char*	p_seasonCfg;
 	static const char*	p_since;
+	static const char*  p_solarPriority;
 	static const char*	p_ssid;
 	static const char*	p_staEssid;
 	static const char*	p_staPasswd;
@@ -272,6 +288,7 @@ public:
 	static const char*	p_timestamp;
 	static const char*	p_timezone;
 	static const char*	p_topic;
+	static const char*	p_type;
 	static const char*	p_uid;
 	static const char*	p_until;
 	static const char*	p_updFlags;
@@ -324,6 +341,7 @@ public:
 	static const char*	p_iconPlug;
 	static const char*	p_iconModul;
 	static const char*	p_iconSched;
+	static const char*  p_iconSched2;
 	static const char*	p_limitPower;
 	static const char*	p_maxPower;
 	static const char*	p_totalPower;
@@ -348,6 +366,11 @@ public:
 	static const char*	p_bootInterval;
 	static const char*	p_connectionTimeOut;
 	static const char*	p_splCfg;
+	static const char*	p_network;
+	static const char*	p_mac_wifi;
+	static const char*	p_mac_eth;
+	static const char*	p_spl;
+	static const char*	p_conn;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -627,6 +650,27 @@ public:
 		//----- Objetos OCPPManager
 		#if defined(JsonParser_OCPPManager_Enabled)
 		if((result = JSON::getJsonFromOCPPManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos ModbusMap
+		#if defined(JsonParser_ModbusMap_Enabled)
+		if((result = JSON::getJsonFromModbusMapObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos WSClient
+		#if defined(JsonParser_WSClient_Enabled)
+		if((result = JSON::getJsonFromWSClientObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos SolarManager
+		#if defined(JsonParser_SolarManager_Enabled)
+		if((result = JSON::getJsonFromSolarManagerObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -994,6 +1038,24 @@ public:
 			goto _getObjFromJson_Exit;
 		}
 		#endif
+		//---- Decodifica Objetos ModbusMap
+		#if defined(JsonParser_ModbusMap_Enabled)
+		if((result = JSON::getModbusMapObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos WSClient
+		#if defined(JsonParser_WSClient_Enabled)
+		if((result = JSON::getWSClientObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos Solar
+		#if defined(JsonParser_SolarManager_Enabled)
+		if((result = JSON::getSolarManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
 
 		//---- Decodifica Objetos comunes de prop�sito general
 		if (std::is_same<T, common_range_minmaxthres_double>::value){
@@ -1054,11 +1116,37 @@ public:
 					}
 					goto _gofdt_exit;
 				}
+				else if(isTokenInTopic(topic, "/simulator")){
+					obj = (Blob::SetRequest_t<sys_simulator>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_simulator>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_simulator>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_simulator>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
 				else if(isTokenInTopic(topic, "/reset")){
 					obj = (Blob::SetRequest_t<sys_reset_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_reset_data>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_reset_data>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<sys_reset_data>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/rfid")){
+					obj = (Blob::SetRequest_t<rfid_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<rfid_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<rfid_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<rfid_manager>);
 					}
 					else{
 						*size = 0;
@@ -1102,6 +1190,19 @@ public:
 					MBED_ASSERT(obj);
 					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
 						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/reqman")){
+					obj = (Blob::SetRequest_t<requests_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<requests_manager>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<requests_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<requests_manager>);
 					}
 					else{
 						*size = 0;
@@ -1237,24 +1338,11 @@ public:
 				#endif
 
 				#if defined(JsonParser_MennekesManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_stat>));
+				if((isTokenInTopic(topic, "/value") || isTokenInTopic(topic, "/cfg")) && isTokenInTopic(topic, "/mennekes")){
+					obj = (Blob::SetRequest_t<mennekes_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/mennekes")){
-					obj = (Blob::SetRequest_t<mennekes_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<mennekes_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<mennekes_manager_cfg>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<mennekes_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<mennekes_manager>);
 					}
 					else{
 						*size = 0;
@@ -1265,24 +1353,11 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_ShuckoManager_Enabled)
-				if(isTokenInTopic(topic, "/value") && isTokenInTopic(topic, "/schuko")){
-					obj = (Blob::SetRequest_t<shucko_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_stat>));
+				if((isTokenInTopic(topic, "/cfg") || isTokenInTopic(topic, "/value")) && isTokenInTopic(topic, "/schuko")){
+					obj = (Blob::SetRequest_t<shucko_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager>));
 					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_stat>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_stat>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
-					}
-					goto _gofdt_exit;
-				}
-				else if(isTokenInTopic(topic, "/cfg") && isTokenInTopic(topic, "/schuko")){
-					obj = (Blob::SetRequest_t<shucko_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<shucko_manager_cfg>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager_cfg>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<shucko_manager_cfg>);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<shucko_manager>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<shucko_manager>);
 					}
 					else{
 						*size = 0;
@@ -1294,23 +1369,11 @@ public:
 				#endif
 				#if defined(JsonParser_ModulatorManager_Enabled)
 				if(isTokenInTopic(topic, "/modulator")){
-					if(isTokenInTopic(topic, "/cfg/")){
-						obj = (Blob::SetRequest_t<modulator_manager_cfg>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_cfg>));
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<modulator_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager>));
 						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_cfg>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<modulator_manager_cfg>);
-						}
-						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
-						}
-					}
-					else if(isTokenInTopic(topic, "/value/")){
-						obj = (Blob::SetRequest_t<modulator_manager_stat>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<modulator_manager_stat>));
-						MBED_ASSERT(obj);
-						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager_stat>*) (obj), json_obj)){
-							*size = sizeof(Blob::SetRequest_t<modulator_manager_stat>);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<modulator_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<modulator_manager>);
 						}
 						else{
 							*size = 0;
@@ -1375,6 +1438,59 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+				#if defined(JsonParser_ModbusMap_Enabled)
+				else if(isTokenInTopic(topic, "/modbus")){
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<ModbusMapObj>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ModbusMapObj>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ModbusMapObj>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ModbusMapObj>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+						goto _gofdt_exit;
+					}
+				}
+				#endif
+				#if defined(JsonParser_WSClient_Enabled)
+				else if(isTokenInTopic(topic, "/wscli") || isTokenInTopic(topic, "/wslog")){
+					if(isTokenInTopic(topic, "/connect") || isTokenInTopic(topic, "/disconnect") || isTokenInTopic(topic, "/start-log") || isTokenInTopic(topic, "/stop-log")){
+						obj = (Blob::SetRequest_t<WSClientUri>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<WSClientUri>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<WSClientUri>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<WSClientUri>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+						goto _gofdt_exit;
+					}
+				}
+				#endif
+
+				#if defined(JsonParser_SolarManager_Enabled)
+				if(isTokenInTopic(topic, "/solar")){
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<solar_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<solar_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<solar_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<solar_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
 			}
@@ -1496,7 +1612,7 @@ _gofdt_exit:
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element>*)data, ObjSelectCfg);
 				}
-				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop")){
+				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop") || isTokenInTopic(topic, "permiss")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element>*)data, ObjSelectState);
 				}
 				else{
@@ -1508,6 +1624,9 @@ _gofdt_exit:
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<requests_element_stat>*)data);
 			}
 			else if(isTokenInTopic(topic, "tag_id")){
+				json_obj = cJSON_CreateObject();
+			}
+			else if(isTokenInTopic(topic, "_tagid_check")){
 				json_obj = cJSON_CreateObject();
 			}
 			else{
@@ -1536,11 +1655,11 @@ _gofdt_exit:
 		#if defined(JsonParser_EVStateMachine_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/evsm")){
 			if(isTokenInTopic(topic, "evt")){
-				if(size == sizeof(Blob::Response_t<connector_event>)){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_event>*)data);
+				if(size == sizeof(Blob::Response_t<connector_manager>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_manager>*)data);
 				}
-				else if(size == sizeof(Blob::NotificationData_t<connector_event>)){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_event>*)data);
+				else if(size == sizeof(Blob::NotificationData_t<connector_manager>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_manager>*)data);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
@@ -1548,11 +1667,11 @@ _gofdt_exit:
 				}
 			}
 			else if (isTokenInTopic(topic, "value")){
-				if(size == sizeof(Blob::Response_t<connector_state>)){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_state>*)data);
+				if(size == sizeof(Blob::Response_t<connector_manager>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<connector_manager>*)data);
 				}
-				else if(size == sizeof(Blob::NotificationData_t<connector_state>)){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_state>*)data);
+				else if(size == sizeof(Blob::NotificationData_t<connector_manager>)){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<connector_manager>*)data);
 				}
 				else if(size == sizeof(Blob::Response_t<evsm_connector_list>)){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_connector_list>*)data);
@@ -1813,7 +1932,8 @@ _gofdt_exit:
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<scheduler_element>)){
-				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop")){
+				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop") || isTokenInTopic(topic, "enable") || isTokenInTopic(topic, "disable") || 
+				   isTokenInTopic(topic, "start_power") || isTokenInTopic(topic, "stop_power")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_element>*)data, ObjSelectState);
 				}
 				else{
@@ -1841,12 +1961,15 @@ _gofdt_exit:
 
 		#if defined(JsonParser_SysManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/sys")){
-			if(size == sizeof(Blob::Response_t<sys_manager>) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value"))){
+			if(size == sizeof(Blob::Response_t<sys_manager>) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value") || isTokenInTopic(topic, "all"))){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "all")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<sys_manager>*)data, ObjSelectAll);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: SysManager");
@@ -1860,6 +1983,9 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_manager>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "all")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_manager>*)data, ObjSelectAll);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: SysManager");
 					json_obj = cJSON_CreateObject();
@@ -1871,11 +1997,14 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_boot>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
 			}
-			else if(size == sizeof(Blob::Response_t<sys_rfid_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_rfid_cfg>*)data, ObjSelectAll);
+			else if(size == sizeof(Blob::Response_t<rfid_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<rfid_manager>*)data, ObjSelectAll);
 			}
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<sys_simulator>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_simulator>*)data, ObjSelectAll);
 			}
 			else if(size == sizeof(Blob::Response_t<sys_reset_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_reset_data>*)data, ObjSelectAll);
@@ -1890,11 +2019,17 @@ _gofdt_exit:
 			if(size == sizeof(Blob::SetRequest_t<sys_manager>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_manager>*)data);
 			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_simulator>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_simulator>*)data);
+			}
 			else if(size == sizeof(Blob::SetRequest_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_fwUpdate_data>*)data);
 			}
 			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<rfid_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<rfid_manager>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
@@ -1942,18 +2077,6 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::Response_t<modulator_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_cfg>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::Response_t<modulator_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<modulator_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::NotificationData_t<modulator_manager_stat>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<modulator_manager_stat>*)data, ObjSelectState);
-			}
 			else if(size == sizeof(Blob::NotificationData_t<ModulatorStatProcesses>)){
 				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModulatorStatProcesses>*)data, ObjSelectAll);
 			}
@@ -1972,11 +2095,17 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_ShuckoManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/schuko")){
-			if(size == sizeof(Blob::Response_t<shucko_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_stat>*)data, ObjSelectState);
-			}
-			else if(size == sizeof(Blob::Response_t<shucko_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager_cfg>*)data, ObjSelectCfg);
+			if(size == sizeof(Blob::Response_t<shucko_manager>)){
+				if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<shucko_manager>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schuko");
+					json_obj = cJSON_CreateObject();
+				}
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: schuko");
@@ -1987,15 +2116,17 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_MennekesManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/mennekes")){
-			if(size == sizeof(Blob::Response_t<mennekes_manager_cfg>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_cfg>*)data, ObjSelectCfg);
-			}
-			else if(size == sizeof(Blob::Response_t<mennekes_manager_stat>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager_stat>*)data, ObjSelectState);
-			}
-			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mennekes");
-				json_obj = cJSON_CreateObject();
+			if(size == sizeof(Blob::Response_t<mennekes_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Mennekes");
+					json_obj = cJSON_CreateObject();
+				}
 			}
 			return json_obj;
 		}
@@ -2040,9 +2171,84 @@ _gofdt_exit:
 			return json_obj;
 		}
 		#endif
+		#if defined(JsonParser_SolarManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/solar")){
+			if(size == sizeof(Blob::Response_t<solar_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<solar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: Modulator");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<solar_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<solar_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: Solar");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Solar, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
 
+		#if defined(JsonParser_ModbusMap_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/modbus")){
+			if(size == sizeof(Blob::Response_t<ModbusMapObj>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ModbusMapObj>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus-response");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<ModbusMapObj>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<ModbusMapObj>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus-notification");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: modbus");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_WSClient_Enabled)
+		if(isTokenInTopic(topic, "stat") && (isTokenInTopic(topic, "/wscli") || isTokenInTopic(topic, "/wslog"))){
+			if(size == sizeof(Blob::Response_t<WSClientUri>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<WSClientUri>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::NotificationData_t<WSClientUri>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WSClientUri>*)data, ObjSelectAll);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wscli | wslog");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
 
-		DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
+		DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		json_obj = cJSON_CreateObject();
 		return json_obj;
 	}
@@ -2050,6 +2256,7 @@ _gofdt_exit:
 
 
 	static void printBinaryObject(char* topic, void* data, uint16_t size, bool formatted = false){
+		#if JSONPARSER_ENABLE_PrintBinaryObject == true
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = getDataFromObjTopic(topic, data, size);
 
@@ -2064,6 +2271,7 @@ _gofdt_exit:
 			DEBUG_TRACE_D(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
 		}
 		Heap::memFree(jsonMsg);
+		#endif
 	}
 
 };	// end class Parser
