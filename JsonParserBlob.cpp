@@ -272,3 +272,6 @@ const char * JsonParser::p_mac_wifi 		= "mac_wifi";
 const char * JsonParser::p_mac_eth 		    = "mac_ethernet";
 const char * JsonParser::p_spl 		    = "spl";
 const char * JsonParser::p_conn					= "connectors";
+const char * JsonParser::p_sensor				= "sensor";
+const char * JsonParser::p_sensors				= "sensors";
+const char * JsonParser::p_test				= "test";

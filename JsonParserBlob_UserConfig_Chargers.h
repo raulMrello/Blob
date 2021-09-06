@@ -50,6 +50,7 @@
 // #define JsonParser_SysManager_Enabled
 #define JsonParser_SysManager_Panels_Enabled
 #define JsonParser_MQTTClient_Enabled
+#define JsonParser_PanelManager_Enabled
 // #define JsonParser_HMIManager_Enabled
 
 
