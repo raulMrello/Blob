@@ -371,6 +371,7 @@ public:
 	static const char*	p_mac_eth;
 	static const char*	p_spl;
 	static const char*	p_conn;
+	static const char*	p_listAPs;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
