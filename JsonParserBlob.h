@@ -217,6 +217,7 @@ public:
 	static const char*	p_luxLevel;
 	static const char*	p_mac;
 	static const char*	p_max;
+	static const char*	p_maxAmpacity;
 	static const char*	p_measPeriod;
 	static const char*	p_measRegs;
 	static const char*	p_measureValues;
