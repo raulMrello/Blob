@@ -117,6 +117,7 @@ const char * JsonParser::p_lux			= "lux";
 const char * JsonParser::p_luxLevel		= "luxLevel";
 const char * JsonParser::p_mac			= "mac";
 const char * JsonParser::p_max			= "max";
+const char * JsonParser::p_maxAmpacity	= "maxAmpacity";
 const char * JsonParser::p_measPeriod	= "measPeriod";
 const char * JsonParser::p_measRegs		= "measRegs";
 const char * JsonParser::p_measureValues= "measureValues";

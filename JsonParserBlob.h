@@ -217,6 +217,7 @@ public:
 	static const char*	p_luxLevel;
 	static const char*	p_mac;
 	static const char*	p_max;
+	static const char*	p_maxAmpacity;
 	static const char*	p_measPeriod;
 	static const char*	p_measRegs;
 	static const char*	p_measureValues;
@@ -1089,7 +1090,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
