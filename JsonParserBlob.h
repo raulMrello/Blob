@@ -287,6 +287,7 @@ public:
 	static const char*	p_time;
 	static const char*	p_timeout;
 	static const char*	p_timestamp;
+	static const char*	p_heapFree;
 	static const char*	p_timezone;
 	static const char*	p_topic;
 	static const char*	p_type;
@@ -470,6 +471,7 @@ public:
 			return NULL;
 		}
 		cJSON_AddNumberToObject(header, p_timestamp, resp.header.timestamp);
+		cJSON_AddNumberToObject(header, p_heapFree, resp.header.heapFree);
 		cJSON_AddItemToObject(root, p_header, header);
 
 		// key: error s�lo se env�a si el error es distinto de Blob::ErrOK
@@ -525,6 +527,7 @@ public:
 			return NULL;
 		}
 		cJSON_AddNumberToObject(header, p_timestamp, notif.header.timestamp);
+		cJSON_AddNumberToObject(header, p_heapFree, notif.header.heapFree);
 		cJSON_AddItemToObject(root, p_header, header);
 
 		// key: object
@@ -765,6 +768,13 @@ public:
 		}
 		notif.header.timestamp = (time_t)obj->valuedouble;
 
+		// key: heapFree
+		if((value = cJSON_GetObjectItem(obj, p_heapFree)) == NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: heapFree is NULL");
+			goto _getNotificationFromJson_Exit;
+		}
+		notif.header.heapFree = obj->valueint;
+
 		// key:obj
 		if((obj = cJSON_GetObjectItem(json_obj, p_data)) == NULL){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: data is NULL");
@@ -880,6 +890,13 @@ public:
 			goto _getResponseFromJson_Exit;
 		}
 		resp.header.timestamp = (time_t)obj->valuedouble;
+		// key: heapFree
+		if((value = cJSON_GetObjectItem(obj, p_heapFree)) == NULL){
+			resp.error.code = Blob::ErrEmptyContent;
+			strcpy(resp.error.descr, Blob::errList[resp.error.code]);
+			goto _getResponseFromJson_Exit;
+		}
+		resp.header.heapFree = obj->valueint;
 
 		// key: error
 		if((obj = cJSON_GetObjectItem(json_obj, p_error)) != NULL){

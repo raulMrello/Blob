@@ -185,6 +185,7 @@ const char * JsonParser::p_thres		= "thres";
 const char * JsonParser::p_time			= "time";
 const char * JsonParser::p_timeout		= "timeout";
 const char * JsonParser::p_timestamp	= "timestamp";
+const char * JsonParser::p_heapFree		= "heapFree";
 const char * JsonParser::p_timezone		= "timezone";
 const char * JsonParser::p_topic		= "topic";
 const char * JsonParser::p_type			= "type";
