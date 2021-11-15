@@ -88,6 +88,7 @@ static const uint16_t TimestampMinutesDayLimit = (24 * 60);
  */
 struct HeaderData_t{
 	time_t timestamp;
+	uint32_t heapFree;
 };
 
 
@@ -153,7 +154,7 @@ struct Response_t{
 	Blob::ErrorData_t error;
 	T data;
 	Response_t() : idTrans(0) { header.timestamp = time(NULL); }
-	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat) : idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); }
+	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat) : idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
 };
 
 
@@ -163,8 +164,8 @@ template <typename T>
 struct NotificationData_t{
 	Blob::HeaderData_t header;
 	T data;
-	NotificationData_t() { header.timestamp = time(NULL); }
-	NotificationData_t(const T& dat) : data(dat) { header.timestamp = time(NULL); }
+	NotificationData_t() { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	NotificationData_t(const T& dat) : data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
 };
 
 template <typename T>
