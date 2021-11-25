@@ -276,3 +276,4 @@ const char * JsonParser::p_spl 		    = "spl";
 const char * JsonParser::p_conn					= "connectors";
 
 const char * JsonParser::p_listAPs					= "listAPs";
+const char * JsonParser::p_midAnalyzers				= "midAnalyzers";
