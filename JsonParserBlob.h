@@ -382,6 +382,12 @@ public:
 	static const char*	p_sensor;
 	static const char*	p_sensors;
 	static const char*	p_test;
+	static const char*	p_defaultTest;
+	static const char*	p_commTime;
+	static const char*	p_test_time;
+	static const char*	p_n_channel;
+	static const char*	p_value;
+	static const char*	p_idTest;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1219,9 +1225,26 @@ public:
 				}
 				#endif
 				#if defined(JsonParser_PanelManager_Enabled)
-				if(isTokenInTopic(topic, "/panman")){
+				esp_log_level_set("_MODULE_", ESP_LOG_DEBUG);
+				DEBUG_TRACE_I("_EXPR_", "_MODULE_", "ERR_MSG. getObjFromDataTopic en sensor");
+				if(isTokenInTopic(topic, "/panman/")){
+					obj = (Blob::SetRequest_t<element_panel>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<element_panel>));
+					
+					MBED_ASSERT(obj);
+					
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<element_panel>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<element_panel>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				} else if (isTokenInTopic(topic, "/panman")){
 					obj = (Blob::SetRequest_t<panel_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<panel_manager>));
 					MBED_ASSERT(obj);
+					DEBUG_TRACE_I("_EXPR_", "_MODULE_", "ERR_MSG. getObjFromDataTopic en panman");
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<panel_manager>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<panel_manager>);
 					}
@@ -1585,6 +1608,7 @@ public:
 _gofdt_exit:
 		if(std::is_same<U,char>::value){
 			cJSON_Delete(json_obj);
+			DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: json_obj null");
 		}
 		return obj;
 	}
@@ -2221,7 +2245,8 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_PanelManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/panman")){
-			if((size == sizeof(Blob::Response_t<panel_manager>) || true) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value"))){
+			if((size == sizeof(Blob::Response_t<panel_manager>)) && (isTokenInTopic(topic, "cfg") || isTokenInTopic(topic, "value"))){
+				DEBUG_TRACE_I(true, "[JsonParser]....", "getResponseFromObjTopic: %s", topic);
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<panel_manager>*)data, ObjSelectCfg);
 				}
@@ -2236,6 +2261,28 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
+			else if(size == sizeof(Blob::Response_t<element_panel>)){
+				DEBUG_TRACE_I(true, "[JsonParser]....", "element_panel: %s", topic);
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<element_panel>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<element_panel>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<element_panel_commutation>)){
+				if(isTokenInTopic(topic, "comm")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<element_panel_commutation>*)data, ObjSelectComm);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: PanelManager");
+					json_obj = cJSON_CreateObject();
+				}
+			}
 			else if(size == sizeof(Blob::NotificationData_t<panel_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<panel_manager>*)data, ObjSelectCfg);
@@ -2246,16 +2293,13 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "all")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<panel_manager>*)data, ObjSelectAll);
 				}
+				else if(isTokenInTopic(topic, "sensors")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<panel_manager>*)data, ObjSelectAll);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: PanelManager");
 					json_obj = cJSON_CreateObject();
 				}
-			}
-			else if(size == sizeof(Blob::NotificationData_t<sys_boot>)){
-				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_boot>*)data, ObjSelectAll);
-			}
-			else if(size == sizeof(Blob::Response_t<sys_boot>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: PanelManager, tipo mensaje no controlado");

@@ -33,7 +33,8 @@ enum ObjDataSelection {
 	ObjSelectCfgMan, 	//!< ObjSelectCfgMan 	�nicamente la configuraci�n del objeto sin submodulos ni elementos
 	ObjSelectAllSub, // !< ObjSelectAllSub 	Todo el contenido únicamente de los submodulos y/o elementos
 	ObjSelectStateSub, // !< ObjSelectStateSub 	�nicamente la configuración de los submodulos y/o elementos
-	ObjSelectCfgSub // !< ObjSelectCfgSub 	�nicamente la configuración de los submodulos y/o elementos
+	ObjSelectCfgSub, // !< ObjSelectCfgSub 	�nicamente la configuración de los submodulos y/o elementos
+	ObjSelectComm // !< ObjSelectCfgSub 	�nicamente la configuración de los submodulos y/o elementos
 };
 
 
