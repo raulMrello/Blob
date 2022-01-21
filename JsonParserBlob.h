@@ -1511,6 +1511,24 @@ public:
 				}
 				#endif
 
+				#if defined(JsonParser_HMIManager_Enabled)
+				if(isTokenInTopic(topic, "/hmi")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<hmi_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<hmi_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<hmi_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<hmi_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
 			}
