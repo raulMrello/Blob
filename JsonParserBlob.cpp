@@ -136,6 +136,7 @@ const char * JsonParser::p_mqttUrl		= "mqttUrl";
 const char * JsonParser::p_mqttUser		= "mqttUser";
 const char * JsonParser::p_mqttPass		= "mqttPass";
 const char * JsonParser::p_mqttData		= "mqttData";
+const char * JsonParser::p_mqttClientId	= "mqttClientId";
 const char * JsonParser::p_msPow		= "msPow";
 const char * JsonParser::p_netCfg		= "netCfg";
 const char * JsonParser::p_netReady		= "netReady";
