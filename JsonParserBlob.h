@@ -236,6 +236,7 @@ public:
 	static const char * p_mqttUser;
 	static const char * p_mqttPass;
 	static const char*	p_mqttData;
+	static const char*  p_mqttClientId;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
