@@ -376,6 +376,7 @@ public:
 	static const char*	p_conn;
 	static const char*	p_listAPs;
 	static const char*	p_midAnalyzers;
+	static const char*	p_timezoneCode;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
