@@ -279,3 +279,6 @@ const char * JsonParser::p_conn					= "connectors";
 const char * JsonParser::p_listAPs					= "listAPs";
 const char * JsonParser::p_midAnalyzers				= "midAnalyzers";
 const char * JsonParser::p_timezoneCode		= "timezoneCode";
+const char * JsonParser::p_wsConnected		= "wsConnected";
+const char * JsonParser::p_wifiConnected		= "wifiConnected";
+const char * JsonParser::p_ethConnected		= "ethConnected";

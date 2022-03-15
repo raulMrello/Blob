@@ -377,6 +377,9 @@ public:
 	static const char*	p_listAPs;
 	static const char*	p_midAnalyzers;
 	static const char*	p_timezoneCode;
+	static const char*	p_wsConnected;
+	static const char*	p_wifiConnected;
+	static const char*	p_ethConnected;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -2180,6 +2183,9 @@ _gofdt_exit:
 				}
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "all")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager>*)data, ObjSelectAll);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: OCPPManager");
