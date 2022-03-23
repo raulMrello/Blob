@@ -236,6 +236,7 @@ public:
 	static const char * p_mqttUser;
 	static const char * p_mqttPass;
 	static const char*	p_mqttData;
+	static const char*  p_mqttClientId;
 	static const char*	p_msPow;
 	static const char*	p_netCfg;
 	static const char*	p_netReady;
@@ -356,13 +357,13 @@ public:
 	static const char* 	p_model;
 	static const char*	p_localOperations;
 	static const char*	p_remoteOperations;
-	static const char * JsonParser::p_count;
-	static const char * JsonParser::p_body;
-	static const char * JsonParser::p_inverse;
-	static const char * JsonParser::p_erased;
-	static const char * JsonParser::p_remaining;
-	static const char * JsonParser::p_restore;
-	static const char * JsonParser::p_totalCurrent;
+	static const char * p_count;
+	static const char * p_body;
+	static const char * p_inverse;
+	static const char * p_erased;
+	static const char * p_remaining;
+	static const char * p_restore;
+	static const char * p_totalCurrent;
 	static const char*	p_serverUrl;
 	static const char*	p_pingInterval;
 	static const char*	p_bootInterval;
@@ -375,6 +376,10 @@ public:
 	static const char*	p_conn;
 	static const char*	p_listAPs;
 	static const char*	p_midAnalyzers;
+	static const char*	p_timezoneCode;
+	static const char*	p_wsConnected;
+	static const char*	p_wifiConnected;
+	static const char*	p_ethConnected;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1511,6 +1516,24 @@ public:
 				}
 				#endif
 
+				#if defined(JsonParser_HMIManager_Enabled)
+				if(isTokenInTopic(topic, "/hmi")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<hmi_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<hmi_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<hmi_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<hmi_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
 			}
@@ -2161,6 +2184,9 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "all")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager>*)data, ObjSelectAll);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: OCPPManager");
 				}
@@ -2262,6 +2288,39 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wscli | wslog");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_HMIManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/hmi")){
+			if(size == sizeof(Blob::Response_t<hmi_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: HMI");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: HMI, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
