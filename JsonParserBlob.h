@@ -1586,6 +1586,9 @@ _gofdt_exit:
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "analyzers")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<metering_manager>*)data, ObjSelectStateSub);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-response");
 					json_obj = cJSON_CreateObject();
@@ -1597,6 +1600,9 @@ _gofdt_exit:
 				}
 				else if(isTokenInTopic(topic, "value")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "analyzers")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<metering_manager>*)data, ObjSelectStateSub);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: metering-notification");
