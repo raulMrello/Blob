@@ -2177,6 +2177,15 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
+			else if(size == sizeof(Blob::NotificationData_t<mennekes_manager>)){
+				if(isTokenInTopic(topic, "connector")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<mennekes_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: Mennekes");
+					json_obj = cJSON_CreateObject();
+				}
+			}
 			return json_obj;
 		}
 		#endif
