@@ -2052,6 +2052,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::NotificationData_t<sys_fwUpdate_data>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_fwUpdate_data>*)data, ObjSelectAll);
+			}
 			else if(size == sizeof(Blob::Response_t<sys_simulator>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_simulator>*)data, ObjSelectAll);
 			}
