@@ -380,6 +380,11 @@ public:
 	static const char*	p_wsConnected;
 	static const char*	p_wifiConnected;
 	static const char*	p_ethConnected;
+	static const char*	p_phases;
+	static const char*	p_idTask;
+	static const char*	p_idTaskPower;
+	static const char*	p_validFrom;
+	static const char*	p_validTo;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);

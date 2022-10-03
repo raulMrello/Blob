@@ -282,3 +282,9 @@ const char * JsonParser::p_timezoneCode		= "timezoneCode";
 const char * JsonParser::p_wsConnected		= "wsConnected";
 const char * JsonParser::p_wifiConnected		= "wifiConnected";
 const char * JsonParser::p_ethConnected		= "ethConnected";
+
+const char * JsonParser::p_phases		= "phases";
+const char * JsonParser::p_idTask		= "idTask";
+const char * JsonParser::p_idTaskPower		= "idTaskPower";
+const char * JsonParser::p_validFrom		= "validFrom";
+const char * JsonParser::p_validTo		= "validTo";
