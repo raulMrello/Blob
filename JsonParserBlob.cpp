@@ -288,3 +288,8 @@ const char * JsonParser::p_idTask		= "idTask";
 const char * JsonParser::p_idTaskPower		= "idTaskPower";
 const char * JsonParser::p_validFrom		= "validFrom";
 const char * JsonParser::p_validTo		= "validTo";
+const char * JsonParser::p_chargeRelated		= "chargeRelated";
+
+const char * JsonParser::p_initLocaltime		= "_initLocaltime";
+const char * JsonParser::p_endLocaltime		= "_endLocaltime";
+const char * JsonParser::p_priorityPower		= "priorityPower";

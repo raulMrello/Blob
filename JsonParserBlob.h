@@ -385,6 +385,10 @@ public:
 	static const char*	p_idTaskPower;
 	static const char*	p_validFrom;
 	static const char*	p_validTo;
+	static const char*	p_chargeRelated;
+	static const char*	p_initLocaltime;
+	static const char*	p_endLocaltime;
+	static const char* 	p_priorityPower;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
