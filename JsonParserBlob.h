@@ -1357,15 +1357,28 @@ public:
 					goto _gofdt_exit;
 				}
 				else if(isTokenInTopic(topic, "/schedman")){
-					obj = (Blob::SetRequest_t<scheduler_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_manager>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_manager>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<scheduler_manager>);
-					}
-					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
+					if(isTokenInTopic(topic, "/filter_task")){
+						obj = (Blob::SetRequest_t<scheduler_filter_task>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_filter_task>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_filter_task>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<scheduler_filter_task>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}else{
+						obj = (Blob::SetRequest_t<scheduler_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<scheduler_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					goto _gofdt_exit;
 				}
@@ -1999,8 +2012,11 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
+			else if(size == sizeof(Blob::Response_t<scheduler_element_cfg>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<scheduler_element_cfg>*)data);
+			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: scheduler_element_cfg");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
