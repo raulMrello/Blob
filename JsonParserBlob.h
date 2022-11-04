@@ -1232,6 +1232,32 @@ public:
 					}
 					goto _gofdt_exit;
 				}
+				else if(isTokenInTopic(topic, "/del_tagsfile")){
+					obj = (Blob::SetRequest_t<request_update_tag_file>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<request_update_tag_file>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<request_update_tag_file>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<request_update_tag_file>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/tagsfile")){
+					obj = (Blob::SetRequest_t<request_update_tag_file>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<request_update_tag_file>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<request_update_tag_file>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<request_update_tag_file>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
 				else if(isTokenInTopic(topic, "/reqman")){
 					obj = (Blob::SetRequest_t<requests_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<requests_manager>));
 					MBED_ASSERT(obj);
@@ -1641,6 +1667,9 @@ _gofdt_exit:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: RequestsManager");
 					json_obj = cJSON_CreateObject();
 				}
+			}
+			else if(size == sizeof(Blob::Response_t<request_update_tag_file>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<request_update_tag_file>*)data);
 			}
 			else if(size == sizeof(Blob::NotificationData_t<requests_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
