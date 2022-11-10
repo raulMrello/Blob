@@ -1122,7 +1122,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
