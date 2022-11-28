@@ -1122,7 +1122,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
@@ -1224,6 +1224,32 @@ public:
 					MBED_ASSERT(obj);
 					if(getNotificationFromJson(*(Blob::NotificationData_t<requests_element_stat>*) (obj), json_obj)){
 						*size = sizeof(Blob::NotificationData_t<requests_element_stat>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/del_tagsfile")){
+					obj = (Blob::SetRequest_t<request_update_tag_file>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<request_update_tag_file>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<request_update_tag_file>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<request_update_tag_file>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				else if(isTokenInTopic(topic, "/tagsfile")){
+					obj = (Blob::SetRequest_t<request_update_tag_file>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<request_update_tag_file>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<request_update_tag_file>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<request_update_tag_file>);
 					}
 					else{
 						*size = 0;
@@ -1654,6 +1680,9 @@ _gofdt_exit:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: RequestsManager");
 					json_obj = cJSON_CreateObject();
 				}
+			}
+			else if(size == sizeof(Blob::Response_t<request_update_tag_file>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<request_update_tag_file>*)data);
 			}
 			else if(size == sizeof(Blob::NotificationData_t<requests_manager>)){
 				if(isTokenInTopic(topic, "cfg")){

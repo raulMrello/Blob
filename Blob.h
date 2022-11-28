@@ -37,8 +37,9 @@ enum ErrorCode{
 	ErrElementInvalid,	//!< Element invalido
 	ErrElementMaxTasks,	//!< Element invalido
 	MaxNumErrorCodes,
-	ErrorOTAFile,
+	ErrFile,
 	ErrorOTACar,
+	ErrConection
 };
 
 
@@ -55,8 +56,9 @@ static const char* errList[] = {
 	"element invalid",
 	"elem num max data",
 	"max num error",
-	"OTA error: file",
-	"OTA error: car connected"
+	"error: file",
+	"OTA error: car connected",
+	"connection error"
 };
 
 
