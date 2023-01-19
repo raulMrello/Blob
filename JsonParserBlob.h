@@ -958,6 +958,11 @@ public:
 	static uint32_t getObjFromJson(T &obj, U* json){
 		uint32_t result = 0;
 
+		if constexpr (std::is_same<T,int>::value){
+			obj = json->valueint;
+			return (1 << 0);
+		}
+
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
@@ -1190,15 +1195,29 @@ public:
 					goto _gofdt_exit;
 				}
 				else if(isTokenInTopic(topic, "/sys")){
-					obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_manager>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<sys_manager>);
+					if(isTokenInTopic(topic, "/boost")){
+						obj = (Blob::SetRequest_t<int>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<int>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<int>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<int>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
+						obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<sys_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					goto _gofdt_exit;
 				}
@@ -1401,9 +1420,16 @@ public:
 							*size = sizeof(Blob::SetRequest_t<scheduler_manager>);
 						}
 						else{
-							*size = 0;
-							Heap::memFree(obj);
-							obj = NULL;
+							obj = (Blob::SetRequest_t<scheduler_element>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<scheduler_element>));
+							MBED_ASSERT(obj);
+							if(getSetRequestFromJson(*(Blob::SetRequest_t<scheduler_element>*) (obj), json_obj)){
+								*size = sizeof(Blob::SetRequest_t<scheduler_element>);
+							}
+							else{
+								*size = 0;
+								Heap::memFree(obj);
+								obj = NULL;
+							}
 						}
 					}
 					goto _gofdt_exit;
