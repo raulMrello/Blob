@@ -1113,7 +1113,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
@@ -2052,6 +2052,9 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
 			}
+			else if(size == sizeof(Blob::NotificationData_t<sys_fwUpdate_data>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_fwUpdate_data>*)data, ObjSelectAll);
+			}
 			else if(size == sizeof(Blob::Response_t<sys_simulator>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_simulator>*)data, ObjSelectAll);
 			}
@@ -2169,7 +2172,7 @@ _gofdt_exit:
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectCfg);
 				}
-				else if(isTokenInTopic(topic, "value")){
+				else if(isTokenInTopic(topic, "value") || isTokenInTopic(topic, "connector")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<mennekes_manager>*)data, ObjSelectState);
 				}
 				else{
