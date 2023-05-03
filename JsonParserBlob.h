@@ -509,6 +509,11 @@ public:
 		}
 
 		// key: object
+		if constexpr (std::is_same<T,int>::value){
+			cJSON_AddNumberToObject(root, p_data, (int)resp.data);
+			return root;
+		}
+
 		cJSON* obj = getJsonFromObj(resp.data, type);
 		if(!obj){
 			cJSON_Delete(root);
@@ -1127,7 +1132,7 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/") || isTokenInTopic(topic, "/boost/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
@@ -1200,6 +1205,18 @@ public:
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<int>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<int>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/stop_boost")){
+						obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+						MBED_ASSERT(obj);
+						if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
+							*size = sizeof(Blob::GetRequest_t);
 						}
 						else{
 							*size = 0;
@@ -2143,6 +2160,9 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::Response_t<sys_reset_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_reset_data>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<int>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<int>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
