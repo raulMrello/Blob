@@ -1985,6 +1985,9 @@ _gofdt_exit:
 				   isTokenInTopic(topic, "start_power") || isTokenInTopic(topic, "stop_power")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_element>*)data, ObjSelectState);
 				}
+				else if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_element>*)data, ObjSelectCfg);
+				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: scheduler");
 					json_obj = cJSON_CreateObject();
