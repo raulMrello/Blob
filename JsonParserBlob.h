@@ -120,6 +120,11 @@
 #if defined(JsonParser_WSClient_Enabled)
 #include "wsclient_objects.h"
 #endif
+
+#if defined(JsonParser_EmbWeb_Enabled)
+#include "embweb_objects.h"
+#endif
+
 #include <type_traits>
 
 #define JSONPARSER_ENABLE_PrintBinaryObject		false
