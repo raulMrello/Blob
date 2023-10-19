@@ -85,6 +85,10 @@
 #include "Stm32UpdaterBlob.h"
 #include "stm32updater_objects.h"
 #endif
+#if defined(JsonParser_CANBridge_Enabled)
+#include "CANBridgeBlob.h"
+#include "CANBridge_objects.h"
+#endif
 
 
 #if defined(JsonParser_AstCalendar_Enabled)
@@ -119,6 +123,10 @@
 
 #if defined(JsonParser_WSClient_Enabled)
 #include "wsclient_objects.h"
+#endif
+
+#if defined(JsonParser_CANBridge_Enabled)
+#include "CANBridge_objects.h"
 #endif
 #include <type_traits>
 
@@ -1116,7 +1124,7 @@ public:
 
 
 	template <typename U>
-	static void* getObjFromDataTopic(char* topic, U* json, uint16_t *size){
+	static void* getObjFromDataTopic(char* topic, U* json, uint16_t *size, bool stat = false){
 		void* obj = NULL;
 
 		// obtengo objeto json en funci�n del tipo
@@ -1645,6 +1653,54 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+				if(stat)
+				{
+					#if defined(JsonParser_EVStateMachine_Enabled)
+					if(isTokenInTopic(topic, "/evsm/")){
+						obj = (Blob::NotificationData_t<connector_manager>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<connector_manager>));
+						MBED_ASSERT(obj);
+						if(getNotificationFromJson(*(Blob::NotificationData_t<connector_manager>*)(obj), json_obj)){
+							*size = sizeof(Blob::NotificationData_t<connector_manager>);				
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+						goto _gofdt_exit;
+					}
+					else if(isTokenInTopic(topic, "/evsm")){
+						obj = (Blob::Response_t<evsm_connector_list>*)Heap::memAlloc(sizeof(Blob::Response_t<evsm_connector_list>));
+						MBED_ASSERT(obj);
+						if(getResponseFromJson(*(Blob::Response_t<evsm_connector_list>*)(obj), json_obj)){
+							*size = sizeof(Blob::Response_t<evsm_connector_list>);				
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+						goto _gofdt_exit;
+					}
+					#endif
+					#if defined(JsonParser_SysManager_Enabled)
+					if(isTokenInTopic(topic, "/sys")){
+						if(isTokenInTopic(topic, "/boot")){
+							obj = (Blob::Response_t<sys_boot>*)Heap::memAlloc(sizeof(Blob::Response_t<sys_boot>));
+							MBED_ASSERT(obj);
+							if(getResponseFromJson(*(Blob::Response_t<sys_boot>*)(obj), json_obj)){
+								*size = sizeof(Blob::Response_t<sys_boot>);				
+							}
+							else{
+								*size = 0;
+								Heap::memFree(obj);
+								obj = NULL;
+							}
+							goto _gofdt_exit;
+						}
+					}
+					#endif
+				}
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic stat no controlado");
 
 			}
