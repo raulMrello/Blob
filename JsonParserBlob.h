@@ -398,6 +398,8 @@ public:
 	static const char*	p_endLocaltime;
 	static const char* 	p_priorityPower;
 	static const char* 	p_shelly;
+	static const char*  p_lightingDayTime;
+	static const char*  p_lightingNightTime;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1919,6 +1921,9 @@ _gofdt_exit:
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "orto") || isTokenInTopic(topic, "ocaso")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<calendar_manager>*)data, ObjSelectState);
 				}
 				else{

@@ -294,3 +294,5 @@ const char * JsonParser::p_initLocaltime		= "_initLocaltime";
 const char * JsonParser::p_endLocaltime		= "_endLocaltime";
 const char * JsonParser::p_priorityPower		= "priorityPower";
 const char * JsonParser::p_shelly				= "shelly";
+const char * JsonParser::p_lightingDayTime		= "lightingDayTime";
+const char * JsonParser::p_lightingNightTime	= "lightingNightTime";
