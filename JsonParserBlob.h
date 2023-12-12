@@ -1179,6 +1179,7 @@ public:
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_reset_data>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<sys_reset_data>);
+						SaveResetReasonKey("HardReset");
 					}
 					else{
 						*size = 0;
