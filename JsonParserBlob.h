@@ -1143,7 +1143,13 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/") || isTokenInTopic(topic, "/boost/")){
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || 
+				   isTokenInTopic(topic, "/list_aps/") || 
+				   isTokenInTopic(topic, "/analyzers/") || 
+				   isTokenInTopic(topic, "/connector/") || 
+				   isTokenInTopic(topic, "/tagsfile/") || 
+				   isTokenInTopic(topic, "/boost/")|| 
+				   isTokenInTopic(topic, "/orto/")|| isTokenInTopic(topic, "/ocaso/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
@@ -1910,6 +1916,9 @@ _gofdt_exit:
 					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectState);
+				}
+				else if(isTokenInTopic(topic, "orto") || isTokenInTopic(topic, "ocaso")){
 					json_obj = getJsonFromResponse(*(Blob::Response_t<calendar_manager>*)data, ObjSelectState);
 				}
 				else{
