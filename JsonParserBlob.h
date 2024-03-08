@@ -14,6 +14,7 @@
 #include "mbed.h"
 #include "Blob.h"
 #include "cJSON.h"
+//#include "TopicParser.h"
 
 /**
  * Este archivo de cabecera es externo al proyecto y debe definir las diferentes claves que habilitan o deshabilitan
@@ -34,7 +35,7 @@
  * JsonParser_ServerSocket_Enabled
  *
  */
-#include "JsonParserBlob_UserConfig.h"
+#include "JsonParserBlob_UserConfig_Chargers.h"
 
 /** Definiciones de los Modelos de datos */
 #include "common_objects.h"
@@ -435,8 +436,7 @@ public:
 	 * 	@param name Nombre del objeto json a insertar en el SetRequest
 	 * 	@return Objeto JSON generado
 	 */
-	template <typename T>
-	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t<T> &req, const char* name = p_data, ObjDataSelection type = ObjSelectAll){
+	static cJSON* getJsonFromSetRequest(const Blob::SetRequest_t &req, const char* name = p_data, ObjDataSelection type = ObjSelectAll){
 		cJSON *root = cJSON_CreateObject();
 
 		if(!root){
@@ -448,7 +448,7 @@ public:
 		cJSON_AddNumberToObject(root, p_keys, req.keys);
 
 		// key: object
-		cJSON* obj = getJsonFromObj(req.data, type);
+		cJSON* obj = req.data->getJson(type);
 		if(!obj){
 			cJSON_Delete(root);
 			return NULL;
@@ -462,8 +462,7 @@ public:
 	 *  @param resp Respuresta a convertir a json
 	 * 	@return Objeto JSON generado
 	 */
-	template <typename T>
-	static cJSON* getJsonFromResponse(const Blob::Response_t<T> &resp, ObjDataSelection type = ObjSelectAll){
+	static cJSON* getJsonFromResponse(const Blob::Response_t &resp, ObjDataSelection type = ObjSelectAll){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *error = NULL;
@@ -510,12 +509,13 @@ public:
 		}
 
 		// key: object
-		if constexpr (std::is_same<T,int>::value){
+		/*if constexpr (std::is_same<T,int>::value){
 			cJSON_AddNumberToObject(root, p_data, (int)resp.data);
 			return root;
-		}
+		}*/
 
-		cJSON* obj = getJsonFromObj(resp.data, type);
+		//cJSON* obj = getJsonFromObj(resp.data, type);
+		cJSON* obj = resp.data->getJson(type);
 		if(!obj){
 			cJSON_Delete(root);
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: data=NULL");
@@ -530,8 +530,7 @@ public:
 	 *  @param resp Respuresta a convertir a json
 	 * 	@return Objeto JSON generado
 	 */
-	template <typename T>
-	static cJSON* getJsonFromNotification(const Blob::NotificationData_t<T> &notif, ObjDataSelection type = ObjSelectAll){
+	static cJSON* getJsonFromNotification(const Blob::NotificationData_t &notif, ObjDataSelection type = ObjSelectAll){
 		// keys: root, idtrans, header, error
 		cJSON *header = NULL;
 		cJSON *root = cJSON_CreateObject();
@@ -755,8 +754,8 @@ public:
 	 * @param json Objeto JSON a decodificar (cJSON* o char*)
 	 * @return keys Par�metros decodificados o 0 en caso de error
 	 */
-	template <typename T, typename U>
-	static bool getNotificationFromJson(Blob::NotificationData_t<T> &notif, U* json){
+	template <typename U>
+	static bool getNotificationFromJson(Blob::NotificationData_t &notif, U* json){
 		cJSON *obj = NULL;
 		cJSON *value = NULL;
 		cJSON *root = NULL;
@@ -818,10 +817,10 @@ public:
 	 * @param json Objeto JSON a decodificar (cJSON* o char*)
 	 * @return keys Par�metros decodificados o 0 en caso de error
 	 */
-	template <typename T, typename U>
-	static bool getSetRequestFromJson(Blob::SetRequest_t<T> &req, U* json){
+	template <typename U>
+	static bool getSetRequestFromJson(Blob::SetRequest_t &req, U* json){
 		cJSON *obj = NULL;
-		req.keys = 0;
+		bool success = false;
 		req._error.code = Blob::ErrOK;
 		strcpy(req._error.descr, Blob::errList[req._error.code]);
 
@@ -854,13 +853,13 @@ public:
 			strcpy(req._error.descr, Blob::errList[req._error.code]);
 			goto _getSetRequestFromJson_Exit;
 		}
-		req.keys = getObjFromJson(req.data, obj);
+		success = req.data->parse(obj);
 
 	_getSetRequestFromJson_Exit:
 		if(std::is_same<U,char>::value){
 			cJSON_Delete(json_obj);
 		}
-		return (req.keys)? true : false;
+		return success;
 	}
 
 
@@ -870,8 +869,8 @@ public:
 	 * @param json Objeto JSON a decodificar
 	 * @return keys Par�metros decodificados o 0 en caso de error
 	 */
-	template <typename T, typename U>
-	static bool getResponseFromJson(Blob::Response_t<T> &resp, U* json){
+	template <typename U>
+	static bool getResponseFromJson(Blob::Response_t &resp, U* json){
 		cJSON *obj = NULL;
 		cJSON *value = NULL;
 		bool result = false;
@@ -1117,8 +1116,8 @@ public:
 
 
 	template <typename U>
-	static void* getObjFromDataTopic(char* topic, U* json, uint16_t *size){
-		void* obj = NULL;
+	static Blob::GlobalMessage_t* getObjFromDataTopic(char* topic, U* json, uint16_t *size, MessageInterface* message = NULL){
+		Blob::GlobalMessage_t* obj = NULL;
 
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
@@ -1133,8 +1132,8 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/") || isTokenInTopic(topic, "/boost/")){
-					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+				//if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || isTokenInTopic(topic, "/list_aps/") || isTokenInTopic(topic, "/analyzers/") || isTokenInTopic(topic, "/connector/") || isTokenInTopic(topic, "/tagsfile/") || isTokenInTopic(topic, "/boost/")){
+					obj = new Blob::GetRequest_t();
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
 						*size = sizeof(Blob::GetRequest_t);				
@@ -1143,10 +1142,26 @@ public:
 						*size = 0;
 						obj = NULL;
 					}
-				}
+				//}
 				goto _gofdt_exit;
 			}
 			else if(isTokenInTopic(topic, "set/")){
+				if(message){
+					obj = new Blob::SetRequest_t(message);
+					//MBED_ASSERT(obj);
+					//((Blob::SetRequest_t*)obj)->data = message;
+					if(getSetRequestFromJson(*(Blob::SetRequest_t*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t);
+					}
+					else{
+						*size = 0;
+						delete(message);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+
+
 				#if defined(JsonParser_SysManager_Enabled)
 				if(isTokenInTopic(topic, "/fwupdate")){
 					obj = (Blob::SetRequest_t<sys_fwUpdate_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_fwUpdate_data>));
@@ -1665,9 +1680,22 @@ _gofdt_exit:
 
 	static cJSON* getDataFromObjTopic(char* topic, void* data, uint16_t size){
 		// obtengo objeto json en funci�n del tipo
+		DEBUG_TRACE_E(true, "[JsonParser]....", "size: %d - SizeOfResponse: %d", size, sizeof(Blob::Response_t));
 		cJSON *json_obj = NULL;
 		if(size == sizeof(Blob::GetRequest_t)){
 			json_obj = getJsonFromGetRequest(*(Blob::GetRequest_t*)data);
+			return json_obj;
+		}
+		else if(size == sizeof(Blob::Response_t)){
+			if(isTokenInTopic(topic, "cfg")){
+				json_obj = getJsonFromResponse(*(Blob::Response_t*)data, ObjSelectCfg);
+			}
+			else if(isTokenInTopic(topic, "value")){
+				json_obj = getJsonFromResponse(*(Blob::Response_t*)data, ObjSelectState);
+			}
+			else{
+				json_obj = getJsonFromResponse(*(Blob::Response_t*)data, ObjSelectAll);
+			}
 			return json_obj;
 		}
 		#if defined(JsonParser_AMManager_Enabled)

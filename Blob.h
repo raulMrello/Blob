@@ -14,6 +14,7 @@
 #define BLOB_H
 
 #include "mbed.h"
+#include "MessageInterface.h"
   
 
 
@@ -59,6 +60,15 @@ static const char* errList[] = {
 	"error: file",
 	"OTA error: car connected",
 	"connection error"
+};
+
+enum GlobalMessageType{
+	None,
+	SetRequest,
+	GetRequest,
+	Response,
+	Notification,
+	BaseMsg
 };
 
 
@@ -108,30 +118,51 @@ struct ErrorData_t{
 
 /** Estructura de datos relativa a una operaci�n SetRequest
  */
-template <typename T>
-struct SetRequest_t{
+
+struct GlobalMessage_t{
+	virtual GlobalMessage_t(){
+		DEBUG_TRACE_E(true, "[JsonParser]....", "constructor GlobalMessage_t");
+	}
+	virtual ~GlobalMessage_t(){
+		DEBUG_TRACE_E(true, "[JsonParser]....", "destructor GlobalMessage_t");
+	}
+};
+
+struct SetRequest_t : public GlobalMessage_t{
 	uint32_t idTrans;
 	uint32_t keys;
-	T data;
+	MessageInterface* data;
 	Blob::ErrorData_t _error;
-	SetRequest_t(T& dat, uint32_t x_id=0){
+	SetRequest_t(MessageInterface* dat, uint32_t x_id=0){
+		DEBUG_TRACE_E(true, "[JsonParser]....", "constructor SetRequest_t");
 		idTrans = x_id;
 		data = dat;
 		_error.code = ErrOK;
 		_error.descr[0] = 0;
 	}
+	~SetRequest_t() {
+		DEBUG_TRACE_E(true, "[JsonParser]....", "destructor SetRequest_t");
+		if(data && !data->isPersistent())
+    		delete(data);
+  	}
+	void clone(const SetRequest_t& req){
+		DEBUG_TRACE_E(true, "[JsonParser]....", "clone SetRequest_t");
+		idTrans = req.idTrans;
+		keys = req.keys;
+		data = req.data->clone();
+		_error = req._error;
+	}
 };
 
-template <typename T>
-struct SetRequestElement_t {
-    Blob::SetRequest_t<T>* setReq;
+struct SetRequestElement_t : public GlobalMessage_t{
+    Blob::SetRequest_t* setReq;
     char* element;
 };
 
 
 /** Estructura de datos relativa a una operaci�n GetRequest
  */
-struct GetRequest_t{
+struct GetRequest_t : public GlobalMessage_t{
 	uint32_t idTrans;
 	Blob::ErrorData_t _error;
 	GetRequest_t(uint32_t x_id=0){
@@ -141,7 +172,7 @@ struct GetRequest_t{
 	}
 };
 
-struct GetRequestElement_t {
+struct GetRequestElement_t : public GlobalMessage_t{
     Blob::GetRequest_t* getReq;
     char* element;
 };
@@ -149,30 +180,35 @@ struct GetRequestElement_t {
 
 /** Estructura de datos relativa a una operaci�n Response sin errores
  */
-template <typename T>
-struct Response_t{
+struct Response_t : public GlobalMessage_t{
 	uint32_t idTrans;
 	Blob::HeaderData_t header;
 	Blob::ErrorData_t error;
-	T data;
+	MessageInterface* data;
 	Response_t() : idTrans(0) { header.timestamp = time(NULL); }
-	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat) : idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	Response_t(uint32_t idt, const Blob::ErrorData_t& err, MessageInterface* dat) : idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	~Response_t() {
+		if(data && !data->isPersistent())
+			delete(data);
+  	}
 };
 
 
 /** Estructura de datos relativa a una operaci�n Notification
  */
-template <typename T>
-struct NotificationData_t{
+struct NotificationData_t : public GlobalMessage_t{
 	Blob::HeaderData_t header;
-	T data;
+	MessageInterface* data;
 	NotificationData_t() { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
-	NotificationData_t(const T& dat) : data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	NotificationData_t(MessageInterface* dat) : data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	~NotificationData_t() {
+		if(data && !data->isPersistent())
+			delete(data);
+  	}
 };
 
-template <typename T>
-struct NotificationDataElement_t {
-    Blob::NotificationData_t<T>* notif;
+struct NotificationDataElement_t : public GlobalMessage_t{
+    Blob::NotificationData_t* notif;
     char* element;
 };
 
@@ -206,7 +242,6 @@ static uint32_t getCRC32(void* data, uint32_t size){
     }
     return crc;
 }
-
 
 }
 
