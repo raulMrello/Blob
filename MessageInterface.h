@@ -19,6 +19,8 @@ namespace Msg {
     static const char* p_uid = "uid";
     static const char* p_cfg = "cfg";
     static const char* p_stat = "stat";
+    static const char* p_updFlags = "updFlags";
+    static const char* p_verbosity = "verbosity";
 }
 
 static int idMessage = 0;

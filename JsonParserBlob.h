@@ -551,7 +551,8 @@ public:
 		cJSON_AddItemToObject(root, p_header, header);
 
 		// key: object
-		cJSON* obj = getJsonFromObj(notif.data, type);
+		//cJSON* obj = getJsonFromObj(notif.data, type);
+		cJSON* obj = notif.data->getJson(type);
 		if(!obj){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando data");
 			cJSON_Delete(root);
@@ -568,7 +569,7 @@ public:
 	 * @param cfg Configuraci�n
 	 * @return Objeto JSON o NULL en caso de error
 	 */
-	template <typename T>
+	/*template <typename T>
 	static cJSON* getJsonFromObj(const T& obj, ObjDataSelection type = ObjSelectAll){
 		cJSON* result = NULL;
 		if (std::is_same<T, Blob::GetRequest_t>::value){
@@ -702,7 +703,7 @@ public:
 
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
-	}
+	}*/
 
 
 	/** Decodifica el mensaje JSON en un objeto Blob::GetRequest_t
@@ -1680,7 +1681,6 @@ _gofdt_exit:
 
 	static cJSON* getDataFromObjTopic(char* topic, void* data, uint16_t size){
 		// obtengo objeto json en funci�n del tipo
-		DEBUG_TRACE_E(true, "[JsonParser]....", "size: %d - SizeOfResponse: %d", size, sizeof(Blob::Response_t));
 		cJSON *json_obj = NULL;
 		if(size == sizeof(Blob::GetRequest_t)){
 			json_obj = getJsonFromGetRequest(*(Blob::GetRequest_t*)data);

@@ -10,10 +10,10 @@ namespace Msg {
 
 		bool json_decoded = false;
 		if(_json_supported){
-			resp = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+			resp = new Blob::GetRequest_t();
 			MBED_ASSERT(resp);
 			if(!(json_decoded = JsonParser::getGetRequestFromJson(*resp, *(cJSON**)msg))){
-				Heap::memFree(resp);
+				delete(resp);
 				DEBUG_TRACE_W(true, "[Message]....", "ERR_JSON. Decodificando el mensaje");
 			}
 		}
@@ -26,9 +26,8 @@ namespace Msg {
 
 		if(!json_decoded){
 			// el mensaje es un blob tipo metering_manager
-			resp = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+			resp = new Blob::GetRequest_t(*(Blob::GetRequest_t*)msg);
 			MBED_ASSERT(resp);
-			*resp = *((Blob::GetRequest_t*)msg);
 		}
 
 		return resp;
@@ -39,7 +38,7 @@ namespace Msg {
 
 		bool json_decoded = false;
 		if(_json_supported){
-			resp = (Blob::SetRequest_t*)Heap::memAlloc(sizeof(Blob::SetRequest_t));
+			resp = new Blob::SetRequest_t();
 			MBED_ASSERT(resp);
 			if(!(json_decoded = JsonParser::getSetRequestFromJson(*resp, *(cJSON**)msg))){
 				Heap::memFree(resp);
@@ -55,9 +54,8 @@ namespace Msg {
 
 		if(!json_decoded){
 			// el mensaje es un blob tipo metering_manager
-			resp = (Blob::SetRequest_t*)Heap::memAlloc(sizeof(Blob::SetRequest_t));
+			resp = new Blob::SetRequest_t(*(Blob::SetRequest_t*)msg);
 			MBED_ASSERT(resp);
-			*resp = *((Blob::SetRequest_t*)msg);
 		}
 
 		return resp;
@@ -65,14 +63,15 @@ namespace Msg {
 
 	//SUBSCRIPTIONS
 	static void subcriptionToEvent_GetReq(uint64_t event, const char* topic, void* msg, uint16_t msg_len, GlobalActiveModule* obj){
+		DEBUG_TRACE_D(obj->getLogActive(), obj->getLogName(), "[subcriptionToEvent_GetReq] %s", topic);
         Blob::GetRequest_t* req = NULL;
         bool json_decoded = false;
         if(obj->isJSONSupported()){
-			req = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+			req = new Blob::GetRequest_t();
 			MBED_ASSERT(req);
 			cJSON* msgDup = *(cJSON**)msg;
 			if(!(json_decoded = JsonParser::getObjFromJson(*req, msgDup))){
-				Heap::memFree(req);
+				delete(req);
 			}
         }
 
@@ -88,19 +87,19 @@ namespace Msg {
 
         // el mensaje es un blob tipo Blob::GetRequest_t
         if(!json_decoded){
-        	req = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
+        	req = new Blob::GetRequest_t((Blob::GetRequest_t*)msg);
         	MBED_ASSERT(req);
-        	*req = *((Blob::GetRequest_t*)msg);
         }
 		op->sig = event;
 		// apunta a los datos
 		op->msg = req;
+		op->size = sizeof(Blob::GetRequest_t);
 
 		// postea en la cola de la m�quina de estados
 		if(obj->putMessage(op) != osOK){
 			DEBUG_TRACE_E(obj->getLogActive(), obj->getLogName(), "ERR_PUT. al procesar el topic[%s]", topic);
 			if(op->msg){
-				Heap::memFree(op->msg);
+				delete(op->msg);
 			}
 			Heap::memFree(op);
 		}
@@ -108,14 +107,15 @@ namespace Msg {
     }
 
 	static void subcriptionToEvent_SetReq(uint64_t event, const char* topic, void* msg, uint16_t msg_len, GlobalActiveModule* obj){
+		DEBUG_TRACE_D(obj->getLogActive(), obj->getLogName(), "[subcriptionToEvent_SetReq] %s", topic);
         Blob::SetRequest_t* req = NULL;
         bool json_decoded = false;
 		if(obj->isJSONSupported()){
-			req = (Blob::SetRequest_t*)Heap::memAlloc(sizeof(Blob::SetRequest_t));
+			req = new Blob::SetRequest_t();
 			MBED_ASSERT(req);
 			cJSON* msgDup = *(cJSON**)msg;
 			if(!(json_decoded = JsonParser::getSetRequestFromJson(*req, msgDup))){
-				Heap::memFree(req);
+				delete(req);
 			}
 		}
 
@@ -132,19 +132,19 @@ namespace Msg {
         // el mensaje es un blob tipo mqtt_manager
         if(!json_decoded){
 			DEBUG_TRACE_W(obj->getLogActive(), obj->getLogName(), "Construyo otro SetRequest?");
-        	req = (Blob::SetRequest_t*)Heap::memAlloc(sizeof(Blob::SetRequest_t));
+        	req = new Blob::SetRequest_t((Blob::SetRequest_t*)msg);
         	MBED_ASSERT(req);
-			req->clone(*(Blob::SetRequest_t*)msg);
         }
         op->sig = event;
 		// apunta a los datos
 		op->msg = req;
+		op->size = sizeof(Blob::SetRequest_t);
 
 		// postea en la cola de la m�quina de estados
 		if(obj->putMessage(op) != osOK){
 			DEBUG_TRACE_E(obj->getLogActive(), obj->getLogName(), "ERR_PUT. al procesar el topic[%s]", topic);
 			if(op->msg){
-				Heap::memFree(op->msg);
+				delete(op->msg);
 			}
 			Heap::memFree(op);
 		}
@@ -152,6 +152,7 @@ namespace Msg {
 	}
 
 	static void subcriptionToEvent_None(uint64_t event, const char* topic, void* msg, uint16_t msg_len, GlobalActiveModule* obj){
+		DEBUG_TRACE_D(obj->getLogActive(), obj->getLogName(), "[subcriptionToEvent_None] %s", topic);
 		// crea el mensaje para publicar en la m�quina de estados
 		State::Msg* op = (State::Msg*)Heap::memAlloc(sizeof(State::Msg));
 		MBED_ASSERT(op);
@@ -159,22 +160,22 @@ namespace Msg {
 		op->sig = event;
 		// apunta a los datos
 		op->msg = NULL;
+		op->size = 0;
 
 		// postea en la cola de la m�quina de estados
 		if(obj->putMessage(op) != osOK){
-			if(op->msg){
-				Heap::memFree(op->msg);
-			}
 			Heap::memFree(op);
 		}
 	}
 
 	static void subcriptionToEvent_BaseMsg(uint64_t event, const char* topic, void* msg, uint16_t msg_len, GlobalActiveModule* obj){
+		DEBUG_TRACE_D(obj->getLogActive(), obj->getLogName(), "[subcriptionToEvent_BaseMsg] %s", topic);
+		DEBUG_TRACE_W(obj->getLogActive(), obj->getLogName(), "Topic [%s] size: %d ERR_PUT", topic, msg_len);
 		// crea el mensaje para publicar en la m�quina de estados
 		State::Msg* op = (State::Msg*)Heap::memAlloc(sizeof(State::Msg));
 		MBED_ASSERT(op);
 
-		Blob::BaseMsg_t * mq_msg = (Blob::BaseMsg_t *)Heap::memAlloc(sizeof(Blob::BaseMsg_t));
+		Blob::BaseMsg_t* mq_msg = new Blob::BaseMsg_t();
 		MBED_ASSERT(mq_msg);
 		mq_msg->topic = (char*)Heap::memAlloc(strlen(topic)+1);
 		MBED_ASSERT(mq_msg->topic);
@@ -187,29 +188,54 @@ namespace Msg {
 			cJSON *jData = cJSON_Duplicate(*(cJSON**)msg, true);
 
 			mq_msg->data = jData;
-			mq_msg->data_len = sizeof(cJSON*);
+			// size para determinar que es un cJSON*
+			mq_msg->data_len = -5;
 		}
 		else{
-			mq_msg->data = (void*)Heap::memAlloc(msg_len);
-			MBED_ASSERT(mq_msg->data);
-			memcpy(mq_msg->data, msg, msg_len);
+			DEBUG_TRACE_W(obj->getLogActive(), obj->getLogName(), "size: %d", msg_len);
+
+			switch (Blob::checkType(msg_len))
+			{
+			case Blob::GlobalMessageType::SetRequest:
+				mq_msg->data = new Blob::SetRequest_t((Blob::SetRequest_t*)msg);
+				MBED_ASSERT(mq_msg->data);
+				break;
+
+			case Blob::GlobalMessageType::GetRequest:
+				mq_msg->data = new Blob::GetRequest_t((Blob::GetRequest_t*)msg);
+				MBED_ASSERT(mq_msg->data);
+				break;
+
+			case Blob::GlobalMessageType::Response:
+				mq_msg->data = new Blob::Response_t((Blob::Response_t*)msg);
+				MBED_ASSERT(mq_msg->data);
+				break;
+
+			case Blob::GlobalMessageType::Notification:
+				mq_msg->data = new Blob::NotificationData_t((Blob::NotificationData_t*)msg);
+				MBED_ASSERT(mq_msg->data);
+				break;
+
+			case Blob::GlobalMessageType::None:	
+			default:
+				mq_msg->data = (void*)Heap::memAlloc(msg_len);
+				MBED_ASSERT(mq_msg->data);
+				memcpy(mq_msg->data, msg, msg_len);
+				break;
+			}
 			mq_msg->data_len = msg_len;
 		}
 		
 		op->sig = event;
 		op->msg = mq_msg;
+		op->size = sizeof(Blob::BaseMsg_t);
 		
 		// postea en la cola de la m�quina de estados
 		if(obj->putMessage(op) != osOK)
 		{
 			DEBUG_TRACE_E(obj->getLogActive(), obj->getLogName(), "[%s:%d] ERR_PUT", __FUNCTION__, __LINE__);
-			Heap::memFree(mq_msg->topic);
-			if(obj->isJSONSupported())
-				cJSON_Delete((cJSON*)mq_msg->data);
-			else
-				Heap::memFree(mq_msg->data);
 			if(op->msg)
-				Heap::memFree(op->msg);
+				delete(op->msg);
 			Heap::memFree(op);
 		}
 	}
