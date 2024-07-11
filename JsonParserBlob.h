@@ -170,11 +170,13 @@ public:
 	static const char*	p_data;
 	static const char*	p_date;
 	static const char*	p_dawn;
+	static const char*  p_dawnCorr;
 	static const char*	p_delay;
 	static const char*	p_descr;
 	static const char*	p_devCount;
 	static const char*	p_devList;
 	static const char*	p_dusk;
+	static const char*  p_duskCorr;
 	static const char*	p_enabled;
 	static const char*	p_energy;
 	static const char*	p_energyValues;
