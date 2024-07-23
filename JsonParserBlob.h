@@ -1147,6 +1147,7 @@ public:
 				   isTokenInTopic(topic, "/list_aps/") || 
 				   isTokenInTopic(topic, "/analyzers/") || 
 				   isTokenInTopic(topic, "/connector/") || 
+				   isTokenInTopic(topic, "/availability/") || 
 				   isTokenInTopic(topic, "/tagsfile/") || 
 				   isTokenInTopic(topic, "/boost/")|| 
 				   isTokenInTopic(topic, "/orto/")|| isTokenInTopic(topic, "/ocaso/")){
@@ -1559,6 +1560,19 @@ public:
 				#endif
 				#if defined(JsonParser_EVStateMachine_Enabled)
 				else if(isTokenInTopic(topic, "/evsm")){
+					if(isTokenInTopic(topic, "/availability")){
+						obj = (Blob::SetRequest_t<evsm_availability>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<evsm_availability>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<evsm_availability>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<evsm_availability>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+						goto _gofdt_exit;
+					}
 					obj = (Blob::SetRequest_t<evsm_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<evsm_manager>));
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<evsm_manager>*) (obj), json_obj)){
@@ -1896,6 +1910,15 @@ _gofdt_exit:
 				}
 				else if(size == sizeof(Blob::NotificationData_t<evsm_manager>)){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<evsm_manager>*)data);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if (isTokenInTopic(topic, "availability")){
+				if(size == sizeof(Blob::Response_t<evsm_availability>)){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<evsm_availability>*)data);
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: evsm");
