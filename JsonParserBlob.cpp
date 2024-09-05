@@ -87,6 +87,7 @@ const char * JsonParser::p_fwSize		= "fwSize";
 const char * JsonParser::p_fwUrl		= "fwUrl";
 const char * JsonParser::p_fwv			= "fwv";
 const char * JsonParser::p_fwvPot		= "fwv_pot";
+const char * JsonParser::p_fwvPotAux	= "fwv_potAux";
 const char * JsonParser::p_fwvCortex	= "fwv_cortex";
 const char * JsonParser::p_geoloc		= "geoloc";
 const char * JsonParser::p_groupMask	= "groupMask";

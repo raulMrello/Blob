@@ -186,6 +186,7 @@ public:
 	static const char*	p_fwUrl;
 	static const char*	p_fwv;
 	static const char*  p_fwvPot;
+	static const char*  p_fwvPotAux;
 	static const char*  p_fwvCortex;
 	static const char*	p_geoloc;
 	static const char*	p_groupMask;
