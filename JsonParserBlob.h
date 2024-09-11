@@ -391,6 +391,7 @@ public:
 	static const char*	p_endLocaltime;
 	static const char* 	p_priorityPower;
 	static const char* 	p_shelly;
+	static const char * p_eMushroom;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1154,6 +1155,19 @@ public:
 					MBED_ASSERT(obj);
 					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_fwUpdate_data>*) (obj), json_obj)){
 						*size = sizeof(Blob::SetRequest_t<sys_fwUpdate_data>);
+					}
+					else{
+						*size = 0;
+						Heap::memFree(obj);
+						obj = NULL;
+					}
+					goto _gofdt_exit;
+				}
+				if(isTokenInTopic(topic, "/diagnostics")){
+					obj = (Blob::SetRequest_t<sys_diagnostics_data>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_diagnostics_data>));
+					MBED_ASSERT(obj);
+					if(getSetRequestFromJson(*(Blob::SetRequest_t<sys_diagnostics_data>*) (obj), json_obj)){
+						*size = sizeof(Blob::SetRequest_t<sys_diagnostics_data>);
 					}
 					else{
 						*size = 0;
@@ -2167,6 +2181,12 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<int>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<int>*)data);
 			}
+			else if(size == sizeof(Blob::NotificationData_t<sys_diagnostics_data>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<sys_diagnostics_data>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<sys_diagnostics_data>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_diagnostics_data>*)data, ObjSelectAll);
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
@@ -2188,6 +2208,9 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::SetRequest_t<rfid_manager>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<rfid_manager>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<sys_diagnostics_data>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_diagnostics_data>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
