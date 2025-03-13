@@ -7,7 +7,7 @@
  *	JsonParserBlob es el modulo encargado de traducir las estructuras de datos utilizadas en MQLib a mensajes JSON entendidos
  *	por el enlace MQTT y viceversa.
  */
- 
+
 #ifndef JSONPARSERBLOB_H
 #define JSONPARSERBLOB_H
 
@@ -404,6 +404,7 @@ public:
 	static const char*  p_lightingDayTime;
 	static const char*  p_lightingNightTime;
 	static const char * p_eMushroom;
+    static const char*  p_usbResetTime;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -775,7 +776,7 @@ public:
 		cJSON *value = NULL;
 		cJSON *root = NULL;
 		bool result = false;
-		
+
 		// obtengo objeto json en funci�n del tipo
 		cJSON *json_obj = NULL;
 		if(std::is_same<U,cJSON>::value){
@@ -1147,17 +1148,17 @@ public:
 		{
 			if(isTokenInTopic(topic, "get/"))
 			{
-				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") || 
-				   isTokenInTopic(topic, "/list_aps/") || 
-				   isTokenInTopic(topic, "/analyzers/") || 
-				   isTokenInTopic(topic, "/connector/") || 
-				   isTokenInTopic(topic, "/tagsfile/") || 
-				   isTokenInTopic(topic, "/boost/")|| 
+				if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/") || isTokenInTopic(topic, "/modules/")  || isTokenInTopic(topic, "/boot/") ||
+				   isTokenInTopic(topic, "/list_aps/") ||
+				   isTokenInTopic(topic, "/analyzers/") ||
+				   isTokenInTopic(topic, "/connector/") ||
+				   isTokenInTopic(topic, "/tagsfile/") ||
+				   isTokenInTopic(topic, "/boost/")||
 				   isTokenInTopic(topic, "/orto/")|| isTokenInTopic(topic, "/ocaso/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj)){
-						*size = sizeof(Blob::GetRequest_t);				
+						*size = sizeof(Blob::GetRequest_t);
 					}
 					else{
 						*size = 0;
@@ -1670,7 +1671,7 @@ public:
 					obj = (Blob::MqttStatusFlags*)Heap::memAlloc(sizeof(Blob::MqttStatusFlags));
 					MBED_ASSERT(obj);
 					if(getObjFromJson(*(Blob::MqttStatusFlags*)(obj), json_obj)){
-						*size = sizeof(Blob::MqttStatusFlags);				
+						*size = sizeof(Blob::MqttStatusFlags);
 					}
 					else{
 						*size = 0;
@@ -1687,7 +1688,7 @@ public:
 						obj = (Blob::NotificationData_t<connector_manager>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<connector_manager>));
 						MBED_ASSERT(obj);
 						if(getNotificationFromJson(*(Blob::NotificationData_t<connector_manager>*)(obj), json_obj)){
-							*size = sizeof(Blob::NotificationData_t<connector_manager>);				
+							*size = sizeof(Blob::NotificationData_t<connector_manager>);
 						}
 						else{
 							*size = 0;
@@ -1700,7 +1701,7 @@ public:
 						obj = (Blob::Response_t<evsm_connector_list>*)Heap::memAlloc(sizeof(Blob::Response_t<evsm_connector_list>));
 						MBED_ASSERT(obj);
 						if(getResponseFromJson(*(Blob::Response_t<evsm_connector_list>*)(obj), json_obj)){
-							*size = sizeof(Blob::Response_t<evsm_connector_list>);				
+							*size = sizeof(Blob::Response_t<evsm_connector_list>);
 						}
 						else{
 							*size = 0;
@@ -1716,7 +1717,7 @@ public:
 							obj = (Blob::Response_t<sys_boot>*)Heap::memAlloc(sizeof(Blob::Response_t<sys_boot>));
 							MBED_ASSERT(obj);
 							if(getResponseFromJson(*(Blob::Response_t<sys_boot>*)(obj), json_obj)){
-								*size = sizeof(Blob::Response_t<sys_boot>);				
+								*size = sizeof(Blob::Response_t<sys_boot>);
 							}
 							else{
 								*size = 0;
@@ -2164,7 +2165,7 @@ _gofdt_exit:
 				}
 			}
 			else if(size == sizeof(Blob::NotificationData_t<scheduler_element>)){
-				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop") || isTokenInTopic(topic, "enable") || isTokenInTopic(topic, "disable") || 
+				if(isTokenInTopic(topic, "start") || isTokenInTopic(topic, "stop") || isTokenInTopic(topic, "enable") || isTokenInTopic(topic, "disable") ||
 				   isTokenInTopic(topic, "start_power") || isTokenInTopic(topic, "stop_power")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<scheduler_element>*)data, ObjSelectState);
 				}
@@ -2564,7 +2565,7 @@ _gofdt_exit:
 		else
 			jsonMsg = cJSON_PrintUnformatted(json_obj);
 		cJSON_Delete(json_obj);
-		
+
 		if(json_obj != NULL){
 			DEBUG_TRACE_D(true, "[JsonParser]....", "Topic: %s, Msg: %s", topic, jsonMsg);
 		}

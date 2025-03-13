@@ -7,9 +7,9 @@
  *	JsonParserBlob es el módulo encargado de traducir las estructuras de datos utilizadas en MQLib a mensajes JSON entendidos
  *	por el enlace MQTT y viceversa.
  */
- 
+
 #include "JsonParserBlob.h"
-  
+
 
 
 //------------------------------------------------------------------------------------
@@ -300,3 +300,4 @@ const char * JsonParser::p_shelly				= "shelly";
 const char * JsonParser::p_lightingDayTime		= "lightingDayTime";
 const char * JsonParser::p_lightingNightTime	= "lightingNightTime";
 const char * JsonParser::p_eMushroom            = "emergencyMushroom";
+const char * JsonParser::p_usbResetTime         = "usbResetTime";
