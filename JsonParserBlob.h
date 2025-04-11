@@ -425,21 +425,34 @@ public:
 			return NULL;
 		}
 
-		cJSON_AddNumberToObject(root, p_idTrans, req.idTrans);
+		if(cJSON_AddNumberToObject(root, p_idTrans, req.idTrans) == NULL){
+			cJSON_Delete(root);
+			return NULL;
+		}
 		if((error=cJSON_CreateObject()) == NULL){
 			goto __parseGetRequest_Err;
 		}
-		cJSON_AddNumberToObject(error, p_code, req._error.code);
+		if(cJSON_AddNumberToObject(error, p_code, req._error.code) == NULL){
+			cJSON_Delete(error);
+			cJSON_Delete(root);
+			return NULL;
+		}
 		if((item=cJSON_CreateString(req._error.descr)) == NULL){
 			cJSON_Delete(error);
 			goto __parseGetRequest_Err;
 		}
-		cJSON_AddItemToObject(error, p_descr, item);
+		if(cJSON_AddItemToObject(error, p_descr, item)==NULL){
+			cJSON_Delete(error);
+			cJSON_Delete(root);
+			return NULL;
+		}
 		cJSON_AddItemToObject(root, p_error, error);
 		return root;
 
 	__parseGetRequest_Err:
-		cJSON_Delete(root);
+		if (item) cJSON_Delete(item);    // Liberar el objeto item si fue creado
+    	if (error) cJSON_Delete(error);  // Liberar el objeto error si fue creado
+    	if (root) cJSON_Delete(root);    // Liberar el objeto raíz si fue creado
 		return NULL;
 	}
 
@@ -561,8 +574,18 @@ public:
 			cJSON_Delete(root);
 			return NULL;
 		}
-		cJSON_AddNumberToObject(header, p_timestamp, notif.header.timestamp);
-		cJSON_AddNumberToObject(header, p_heapFree, notif.header.heapFree);
+		if (cJSON_AddNumberToObject(header, p_timestamp, notif.header.timestamp)==NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "Error al agregar timestamp al header");
+        	cJSON_Delete(header);
+        	cJSON_Delete(root);
+        	return NULL;
+		}
+		if (cJSON_AddNumberToObject(header, p_heapFree, notif.header.heapFree)==NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "Error al agregar timestamp al header");
+        	cJSON_Delete(header);
+        	cJSON_Delete(root);
+        	return NULL;
+		}
 		cJSON_AddItemToObject(root, p_header, header);
 
 		// key: object
