@@ -130,6 +130,10 @@
 #endif
 #include <type_traits>
 
+#if defined(JsonParser_EmbWeb_Enabled)
+#include "embweb_objects.h"
+#endif
+
 #define JSONPARSER_ENABLE_PrintBinaryObject		false
 
 class JsonParser {
@@ -739,6 +743,13 @@ public:
 		}
 		#endif
 
+		//----- Objetos EmbWeb
+		#if defined(JsonParser_EmbWeb_Enabled)
+		if((result = JSON::getJsonFromEmbeddedWebObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -1136,6 +1147,12 @@ public:
 		//---- Decodifica Objetos Solar
 		#if defined(JsonParser_SolarManager_Enabled)
 		if((result = JSON::getSolarManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos Embweb
+		#if defined(JsonParser_EmbWeb_Enabled)
+		if((result = JSON::getEmbeddedWebObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1673,6 +1690,24 @@ public:
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<hmi_manager>*) (obj), json_obj)){
 							*size = sizeof(Blob::SetRequest_t<hmi_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+
+				#if defined(JsonParser_EmbWeb_Enabled)
+				if(isTokenInTopic(topic, "/embweb")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<embweb>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<embweb>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<embweb>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<embweb>);
 						}
 						else{
 							*size = 0;
@@ -2564,6 +2599,39 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: HMI, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_EmbWeb_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/embweb")){
+			if(size == sizeof(Blob::Response_t<embweb>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<embweb>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<embweb>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: EmbWeb");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<embweb>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<embweb>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<embweb>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: EmbWeb");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: EmbWeb, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
