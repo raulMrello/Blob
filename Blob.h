@@ -9,12 +9,12 @@
  *	datos es sencilla mediante la importaci�n de la librer�a <blob.h>, en lugar de ir incluyendo todos los m�dulos
  *	que definen cada uno de los datos.
  */
- 
+
 #ifndef BLOB_H
 #define BLOB_H
 
 #include "mbed.h"
-  
+
 
 
 namespace Blob {
@@ -184,6 +184,19 @@ struct BaseMsg_t
     void *data;
     uint16_t topic_len;
     uint16_t data_len;
+
+    ~BaseMsg_t() {
+        if(topic) {
+            Heap::memFree(topic);
+            topic = NULL;
+        }
+        if(data) {
+            Heap::memFree(data);
+            data = NULL;
+        }
+        topic_len = 0;
+        data_len = 0;
+    }
 };
 
 
