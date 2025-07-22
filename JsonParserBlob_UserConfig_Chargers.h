@@ -64,6 +64,7 @@
 #define JsonParser_SolarManager_Enabled
 #define JsonParser_WSClient_Enabled
 #define JsonParser_CANBridge_Enabled
+#define JsonParser_EmbWeb_Enabled
 
 
 #endif
