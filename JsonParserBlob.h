@@ -1283,6 +1283,18 @@ public:
 							obj = NULL;
 						}
 					}
+                    else if (isTokenInTopic(topic, "/enlog/")) {
+                        obj = (Blob::SetRequest_t<enlog_request_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<enlog_request_t>));
+                        MBED_ASSERT(obj);
+                        if (getSetRequestFromJson(*(Blob::SetRequest_t<enlog_request_t>*) (obj), json_obj)){
+                            *size = sizeof(Blob::SetRequest_t<enlog_request_t>);
+                        }
+                        else{
+                            *size = 0;
+                            Heap::memFree(obj);
+                            obj = NULL;
+                        }
+                    }
 					else{
 						obj = (Blob::SetRequest_t<sys_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<sys_manager>));
 						MBED_ASSERT(obj);
@@ -2283,6 +2295,10 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_diagnostics_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_diagnostics_data>*)data, ObjSelectAll);
 			}
+            else if (size == sizeof(Blob::Response_t<enlog_data_t>)){
+                DEBUG_TRACE_W(true, "[JsonParser]....", "getResponseFromObjTopic: SysManager - enlog");
+                json_obj = getJsonFromResponse(*(Blob::Response_t<enlog_data_t>*)data, ObjSelectAll);
+            }
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: SysManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
