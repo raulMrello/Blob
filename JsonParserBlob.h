@@ -34,7 +34,23 @@
  * JsonParser_ServerSocket_Enabled
  *
  */
-#include "JsonParserBlob_UserConfig.h"
+#ifdef CONFIG_JSONPARSER_CHARGER
+#include "JsonParserBlob_UserConfig_Chargers.h"
+#endif
+
+#ifdef CONFIG_JSONPARSER_LOG_LEVEL_ERROR
+#define JSONPARSER_LOG_LEVEL		ESP_LOG_ERROR
+#elif CONFIG_JSONPARSER_LOG_LEVEL_WARN
+#define JSONPARSER_LOG_LEVEL		ESP_LOG_WARN
+#elif CONFIG_JSONPARSER_LOG_LEVEL_INFO
+#define JSONPARSER_LOG_LEVEL		ESP_LOG_INFO
+#elif CONFIG_JSONPARSER_LOG_LEVEL_DEBUG
+#define JSONPARSER_LOG_LEVEL		ESP_LOG_DEBUG
+#elif CONFIG_JSONPARSER_LOG_LEVEL_VERBOSE
+#define JSONPARSER_LOG_LEVEL		ESP_LOG_VERBOSE
+#else
+#define JSONPARSER_LOG_LEVEL		ESP_LOG_NONE
+#endif
 
 /** Definiciones de los Modelos de datos */
 #include "common_objects.h"
