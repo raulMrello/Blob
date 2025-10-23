@@ -1,0 +1,31 @@
+menu "Blob Configuration"
+
+    config JSONPARSER_CHARGER
+        bool "JsonParser Charger Enabled"
+        default y
+    
+    choice JSONPARSER_LOG_LEVEL
+        depends on JSONPARSER_CHARGER
+        prompt "Log level for JSONPARSER"
+        default JSONPARSER_LOG_LEVEL_INFO
+
+        config JSONPARSER_LOG_LEVEL_NONE
+            bool "NONE"
+
+        config JSONPARSER_LOG_LEVEL_ERROR
+            bool "ERROR"
+
+        config JSONPARSER_LOG_LEVEL_WARN
+            bool "WARN"
+
+        config JSONPARSER_LOG_LEVEL_INFO
+            bool "INFO"
+
+        config JSONPARSER_LOG_LEVEL_DEBUG
+            bool "DEBUG"
+
+        config JSONPARSER_LOG_LEVEL_VERBOSE
+            bool "VERBOSE"
+    endchoice
+
+endmenu
