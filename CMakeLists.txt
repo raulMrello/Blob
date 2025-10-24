@@ -18,4 +18,6 @@ idf_component_register(	SRCS "common_objects.cpp"
 						ModbusMap
 						SolarManager
 						WSClient
-						CANBridge)
+						CANBridge
+						EmbeddedWeb
+						)
