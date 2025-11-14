@@ -1714,10 +1714,10 @@ public:
 			{
 				#if defined(JsonParser_MQTTClient_Enabled)
 				if(isTokenInTopic(topic, "/conn/mqtt")){
-					obj = (Blob::MqttStatusFlags*)Heap::memAlloc(sizeof(Blob::MqttStatusFlags));
+					obj = 	(Blob::NotificationData_t<Blob::MqttStatusFlags>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>));
 					MBED_ASSERT(obj);
-					if(getObjFromJson(*(Blob::MqttStatusFlags*)(obj), json_obj)){
-						*size = sizeof(Blob::MqttStatusFlags);
+					if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::MqttStatusFlags>*)(obj), json_obj)){
+						*size = sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>);
 					}
 					else{
 						*size = 0;
@@ -2105,8 +2105,8 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::MqttStatusFlags)){
-				json_obj = JsonParser::getJsonFromObj(*(Blob::MqttStatusFlags*)data);
+			else if(size == sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::MqttStatusFlags>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
