@@ -128,6 +128,15 @@
 #if defined(JsonParser_CANBridge_Enabled)
 #include "CANBridge_objects.h"
 #endif
+
+#if defined(JsonParser_wifi_interface_Enabled)
+#include "wifi_interface_objects.h"
+#endif
+
+#if defined(JsonParser_ethernet_interface_Enabled)
+#include "ethernet_interface_objects.h"
+#endif
+
 #include <type_traits>
 
 #define JSONPARSER_ENABLE_PrintBinaryObject		false
@@ -735,6 +744,20 @@ public:
 		//----- Objetos SolarManager
 		#if defined(JsonParser_SolarManager_Enabled)
 		if((result = JSON::getJsonFromSolarManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos wifi
+		#if defined(JsonParser_wifi_interface_Enabled)
+		if((result = JSON::getJsonFromWifiInterfaceObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos ethernet
+		#if defined(JsonParser_ethernet_interface_Enabled)
+		if((result = JSON::getJsonFromEthernetInterfaceObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -2538,19 +2561,19 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_HMIManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/hmi")){
-			if(size == sizeof(Blob::Response_t<hmi_manager>)){
+			if(size == sizeof(Blob::NotificationData_t<WifiApStaConnected>)){
 				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectState);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: HMI");
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
+			else if(size == sizeof(Blob::NotificationData_t<WifiApStaClients>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
 				}
@@ -2564,6 +2587,64 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: HMI, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_wifi_interface_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/wifi")){
+			if(size == sizeof(Blob::NotificationData_t<WifiApStaConnected>)){
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WifiApStaConnected>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: wifi");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<WifiApStaClients>)){
+				if(isTokenInTopic(topic, "clients")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WifiApStaClients>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: wifi");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wifi, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_ethernet_interface_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/eth")){
+			// Migrated ethernet notification: EthConnState replacing legacy EthernetStatus
+			if(size == sizeof(Blob::NotificationData_t<EthConnState>)){
+				// Topic uses 'conn' (stat/conn/eth) not 'status'
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<EthConnState>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: eth token mismatch");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(uint8_t)){
+				// Legacy publication (raw uint8_t state)
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = cJSON_CreateObject();
+					cJSON_AddNumberToObject(json_obj, "state", *((uint8_t*)data));
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: eth legacy token mismatch");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: eth, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
