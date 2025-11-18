@@ -2561,7 +2561,8 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_HMIManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/hmi")){
-			if(size == sizeof(Blob::NotificationData_t<WifiApStaConnected>)){
+			// HMI notifications / responses should be of hmi_manager types
+			if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
 				}
@@ -2573,15 +2574,15 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::NotificationData_t<WifiApStaClients>)){
+			else if(size == sizeof(Blob::Response_t<hmi_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
 				}
 				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectState);
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
 				}
 				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: HMI");
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
 					json_obj = cJSON_CreateObject();
 				}
 			}
