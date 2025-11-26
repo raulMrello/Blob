@@ -414,6 +414,7 @@ public:
 	static const char*  p_lightingNightTime;
 	static const char * p_eMushroom;
     static const char*  p_usbResetTime;
+	static const char*  p_language;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
