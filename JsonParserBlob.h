@@ -403,6 +403,7 @@ public:
 	static const char*	p_phases;
 	static const char*	p_idTask;
 	static const char*	p_idTaskPower;
+	static const char*	p_idTaskReset;
 	static const char*	p_validFrom;
 	static const char*	p_validTo;
 	static const char*	p_chargeRelated;

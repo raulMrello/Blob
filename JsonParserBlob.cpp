@@ -289,6 +289,7 @@ const char * JsonParser::p_ethConnected		= "ethConnected";
 const char * JsonParser::p_phases		= "phases";
 const char * JsonParser::p_idTask		= "idTask";
 const char * JsonParser::p_idTaskPower		= "idTaskPower";
+const char * JsonParser::p_idTaskReset		= "idTaskReset";
 const char * JsonParser::p_validFrom		= "validFrom";
 const char * JsonParser::p_validTo		= "validTo";
 const char * JsonParser::p_chargeRelated		= "chargeRelated";
