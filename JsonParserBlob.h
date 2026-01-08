@@ -1610,15 +1610,29 @@ public:
 				#endif
 				#if defined(JsonParser_OCPPManager_Enabled)
 				else if(isTokenInTopic(topic, "/ocpp")){
-					obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+					if(isTokenInTopic(topic, "/qr/")){
+						obj = (Blob::SetRequest_t<ocpp_manager_qr>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager_qr>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager_qr>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ocpp_manager_qr>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
+						obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					goto _gofdt_exit;
 				}
@@ -2468,6 +2482,14 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: OCPPManager");
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<ocpp_manager_qr>)){
+				if(isTokenInTopic(topic, "qr")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager_qr>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: OCPPManager");
 				}
 			}
 			else{
