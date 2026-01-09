@@ -128,6 +128,15 @@
 #if defined(JsonParser_CANBridge_Enabled)
 #include "CANBridge_objects.h"
 #endif
+
+#if defined(JsonParser_wifi_interface_Enabled)
+#include "wifi_interface_objects.h"
+#endif
+
+#if defined(JsonParser_ethernet_interface_Enabled)
+#include "ethernet_interface_objects.h"
+#endif
+
 #include <type_traits>
 
 #if defined(JsonParser_EmbWeb_Enabled)
@@ -398,6 +407,7 @@ public:
 	static const char*	p_phases;
 	static const char*	p_idTask;
 	static const char*	p_idTaskPower;
+	static const char*	p_idTaskReset;
 	static const char*	p_validFrom;
 	static const char*	p_validTo;
 	static const char*	p_chargeRelated;
@@ -409,6 +419,7 @@ public:
 	static const char*  p_lightingNightTime;
 	static const char * p_eMushroom;
     static const char*  p_usbResetTime;
+	static const char*  p_language;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -746,6 +757,20 @@ public:
 		//----- Objetos EmbWeb
 		#if defined(JsonParser_EmbWeb_Enabled)
 		if((result = JSON::getJsonFromEmbeddedWebObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos wifi
+		#if defined(JsonParser_wifi_interface_Enabled)
+		if((result = JSON::getJsonFromWifiInterfaceObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos ethernet
+		#if defined(JsonParser_ethernet_interface_Enabled)
+		if((result = JSON::getJsonFromEthernetInterfaceObj((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -1602,15 +1627,29 @@ public:
 				#endif
 				#if defined(JsonParser_OCPPManager_Enabled)
 				else if(isTokenInTopic(topic, "/ocpp")){
-					obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+					if(isTokenInTopic(topic, "/qr/")){
+						obj = (Blob::SetRequest_t<ocpp_manager_qr>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager_qr>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager_qr>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ocpp_manager_qr>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
+						obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					goto _gofdt_exit;
 				}
@@ -1726,10 +1765,10 @@ public:
 			{
 				#if defined(JsonParser_MQTTClient_Enabled)
 				if(isTokenInTopic(topic, "/conn/mqtt")){
-					obj = (Blob::MqttStatusFlags*)Heap::memAlloc(sizeof(Blob::MqttStatusFlags));
+					obj = 	(Blob::NotificationData_t<Blob::MqttStatusFlags>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>));
 					MBED_ASSERT(obj);
-					if(getObjFromJson(*(Blob::MqttStatusFlags*)(obj), json_obj)){
-						*size = sizeof(Blob::MqttStatusFlags);
+					if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::MqttStatusFlags>*)(obj), json_obj)){
+						*size = sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>);
 					}
 					else{
 						*size = 0;
@@ -2117,8 +2156,8 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::MqttStatusFlags)){
-				json_obj = JsonParser::getJsonFromObj(*(Blob::MqttStatusFlags*)data);
+			else if(size == sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::MqttStatusFlags>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
@@ -2480,6 +2519,14 @@ _gofdt_exit:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: OCPPManager");
 				}
 			}
+			else if(size == sizeof(Blob::Response_t<ocpp_manager_qr>)){
+				if(isTokenInTopic(topic, "qr")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager_qr>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: OCPPManager");
+				}
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: OCPPManager, tipo mensaje no controlado");
 			}
@@ -2573,19 +2620,8 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_HMIManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/hmi")){
-			if(size == sizeof(Blob::Response_t<hmi_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
-				}
-				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
-				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
-					json_obj = cJSON_CreateObject();
-				}
-			}
-			else if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
+			// HMI notifications / responses should be of hmi_manager types
+			if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
 				}
@@ -2594,6 +2630,18 @@ _gofdt_exit:
 				}
 				else{
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: HMI");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<hmi_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
 					json_obj = cJSON_CreateObject();
 				}
 			}
@@ -2632,6 +2680,64 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: EmbWeb, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_wifi_interface_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/wifi")){
+			if(size == sizeof(Blob::NotificationData_t<WifiApStaConnected>)){
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WifiApStaConnected>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: wifi");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<WifiApStaClients>)){
+				if(isTokenInTopic(topic, "clients")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WifiApStaClients>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: wifi");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wifi, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_ethernet_interface_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/eth")){
+			// Migrated ethernet notification: EthConnState replacing legacy EthernetStatus
+			if(size == sizeof(Blob::NotificationData_t<EthConnState>)){
+				// Topic uses 'conn' (stat/conn/eth) not 'status'
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<EthConnState>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: eth token mismatch");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(uint8_t)){
+				// Legacy publication (raw uint8_t state)
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = cJSON_CreateObject();
+					cJSON_AddNumberToObject(json_obj, "state", *((uint8_t*)data));
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: eth legacy token mismatch");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: eth, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
