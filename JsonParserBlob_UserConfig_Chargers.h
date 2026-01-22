@@ -66,6 +66,7 @@
 #define JsonParser_CANBridge_Enabled
 #define JsonParser_wifi_interface_Enabled
 #define JsonParser_ethernet_interface_Enabled
+#define JsonParser_CityPlusDisplay_Enabled
 
 
 #endif
