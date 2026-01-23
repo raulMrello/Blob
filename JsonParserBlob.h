@@ -137,6 +137,10 @@
 #include "ethernet_interface_objects.h"
 #endif
 
+#if defined(JsonParser_CityPlusDisplay_Enabled)
+#include "CityPlusDisplay_objects.h"
+#endif
+
 #include <type_traits>
 
 #if defined(JsonParser_EmbWeb_Enabled)
@@ -775,6 +779,13 @@ public:
 		}
 		#endif
 
+		//----- Objetos CityPlusDisplay
+		#if defined(JsonParser_CityPlusDisplay_Enabled)
+		if((result = JSON::getJsonFromCityPlusDisplay((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
 		DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromObj: Objeto no manejado, result NULL");
 		return NULL;
 	}
@@ -1178,6 +1189,13 @@ public:
 		//---- Decodifica Objetos Embweb
 		#if defined(JsonParser_EmbWeb_Enabled)
 		if((result = JSON::getEmbeddedWebObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+
+		//---- Decodifica Objetos CityPlusDisplay
+		#if defined(JsonParser_CityPlusDisplay_Enabled)
+		if((result = JSON::getCityPlusDisplayObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1739,6 +1757,23 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+				#if defined(JsonParser_CityPlusDisplay_Enabled)
+				if(isTokenInTopic(topic, "/cityplusDsp")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<CityPlusDisplayData>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<CityPlusDisplayData>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<CityPlusDisplayData>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<CityPlusDisplayData>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
 
 				#if defined(JsonParser_EmbWeb_Enabled)
 				if(isTokenInTopic(topic, "/embweb")){
@@ -1826,7 +1861,7 @@ public:
 					}
 					#endif
 				}
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic stat no controlado");
+				DEBUG_TRACE_D(true, "[JsonParser]....", "getObjectFromDataTopic: topic %s no controlado", topic);
 
 			}
 			else{
@@ -2738,6 +2773,58 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: eth, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_CityPlusDisplay_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/cityplusDsp")){
+			if(size == sizeof(Blob::NotificationData_t<CityPlusDisplayData>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<CityPlusDisplayData>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<CityPlusDisplayData>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: cityplusDsp");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<CityPlusDisplayData>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<CityPlusDisplayData>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<CityPlusDisplayData>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: cityplusDsp");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			// else if(size == sizeof(Blob::SetRequest_t<CityPlusDisplayData>)){
+			// 	if(isTokenInTopic(topic, "cfg")){
+			// 		json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<CityPlusDisplayData>*)data);
+			// 	}
+			// 	else{
+			// 		DEBUG_TRACE_E(true, "[JsonParser]....", "getSetRequestFromObjTopic: cityplusDsp");
+			// 		json_obj = cJSON_CreateObject();
+			// 	}
+			// }
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: cityplusDsp, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/cityplusDsp")){
+			if(size == sizeof(Blob::SetRequest_t<CityPlusDisplayData>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<CityPlusDisplayData>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: cityplusDsp, tipo mensaje no controlado, topic: %s", topic);
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
