@@ -1793,6 +1793,19 @@ public:
 							obj = NULL;
 						}
 					}
+					//qr
+					if(isTokenInTopic(topic, "/qr/")){
+						obj = (Blob::SetRequest_t<cityplusdisplay_stat::qr_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
 					goto _gofdt_exit;
 				}
 				#endif
@@ -2855,6 +2868,10 @@ _gofdt_exit:
 			}
 			else if(size == sizeof(Blob::SetRequest_t<url>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<url>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>*)data);
+
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: cityplusDsp, tipo mensaje no controlado, topic: %s", topic);
