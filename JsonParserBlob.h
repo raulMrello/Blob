@@ -141,9 +141,18 @@
 #include "wsclient_objects.h"
 #endif
 
-#if defined(JsonParser_CANBridge_Enabled)
-#include "CANBridge_objects.h"
+#if defined(JsonParser_wifi_interface_Enabled)
+#include "wifi_interface_objects.h"
 #endif
+
+#if defined(JsonParser_ethernet_interface_Enabled)
+#include "ethernet_interface_objects.h"
+#endif
+
+#if defined(JsonParser_CityPlusDisplay_Enabled)
+#include "CityPlusDisplay_objects.h"
+#endif
+
 #include <type_traits>
 
 #if defined(JsonParser_EmbWeb_Enabled)
@@ -414,6 +423,7 @@ public:
 	static const char*	p_phases;
 	static const char*	p_idTask;
 	static const char*	p_idTaskPower;
+	static const char*	p_idTaskReset;
 	static const char*	p_validFrom;
 	static const char*	p_validTo;
 	static const char*	p_chargeRelated;
@@ -425,6 +435,7 @@ public:
 	static const char*  p_lightingNightTime;
 	static const char * p_eMushroom;
     static const char*  p_usbResetTime;
+	static const char*  p_language;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -762,6 +773,34 @@ public:
 		//----- Objetos EmbWeb
 		#if defined(JsonParser_EmbWeb_Enabled)
 		if((result = JSON::getJsonFromEmbeddedWebObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos wifi
+		#if defined(JsonParser_wifi_interface_Enabled)
+		if((result = JSON::getJsonFromWifiInterfaceObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos ethernet
+		#if defined(JsonParser_ethernet_interface_Enabled)
+		if((result = JSON::getJsonFromEthernetInterfaceObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos CityPlusDisplay
+		#if defined(JsonParser_CityPlusDisplay_Enabled)
+		if((result = JSON::getJsonFromCityPlusDisplay((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
+		//----- Objetos CANBridge
+		#if defined(JsonParser_CANBridge_Enabled)
+		if((result = JSON::getJsonFromCANBridge((const T&)obj, type)) != NULL){
 			return result;
 		}
 		#endif
@@ -1169,6 +1208,20 @@ public:
 		//---- Decodifica Objetos Embweb
 		#if defined(JsonParser_EmbWeb_Enabled)
 		if((result = JSON::getEmbeddedWebObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+
+		//---- Decodifica Objetos CityPlusDisplay
+		#if defined(JsonParser_CityPlusDisplay_Enabled)
+		if((result = JSON::getCityPlusDisplayObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+
+		//---- Decodifica Objetos CANBridge
+		#if defined(JsonParser_CANBridge_Enabled)
+		if((result = JSON::getCANBridgeObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1618,15 +1671,29 @@ public:
 				#endif
 				#if defined(JsonParser_OCPPManager_Enabled)
 				else if(isTokenInTopic(topic, "/ocpp")){
-					obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
-					MBED_ASSERT(obj);
-					if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
-						*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+					if(isTokenInTopic(topic, "/qr/")){
+						obj = (Blob::SetRequest_t<ocpp_manager_qr>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager_qr>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager_qr>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ocpp_manager_qr>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					else{
-						*size = 0;
-						Heap::memFree(obj);
-						obj = NULL;
+						obj = (Blob::SetRequest_t<ocpp_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
 					}
 					goto _gofdt_exit;
 				}
@@ -1716,6 +1783,65 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+				#if defined(JsonParser_CityPlusDisplay_Enabled)
+				if(isTokenInTopic(topic, "/cityplusDsp")){
+					if(isTokenInTopic(topic, "/cfg/") || isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<CityPlusDisplayData>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<CityPlusDisplayData>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<CityPlusDisplayData>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<CityPlusDisplayData>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					if(isTokenInTopic(topic, "/update/") || isTokenInTopic(topic, "/csv/")){
+						obj = (Blob::SetRequest_t<url>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<url>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<url>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<url>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					//qr
+					if(isTokenInTopic(topic, "/qr/")){
+						obj = (Blob::SetRequest_t<cityplusdisplay_stat::qr_t>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_CANBridge_Enabled)
+				if(isTokenInTopic(topic, "/can")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<CANBridge_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<CANBridge_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<CANBridge_manager>*) (obj), json_obj)){
+							*size = sizeof(Blob::SetRequest_t<CANBridge_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
 
 				#if defined(JsonParser_EmbWeb_Enabled)
 				if(isTokenInTopic(topic, "/embweb")){
@@ -1742,10 +1868,10 @@ public:
 			{
 				#if defined(JsonParser_MQTTClient_Enabled)
 				if(isTokenInTopic(topic, "/conn/mqtt")){
-					obj = (Blob::MqttStatusFlags*)Heap::memAlloc(sizeof(Blob::MqttStatusFlags));
+					obj = 	(Blob::NotificationData_t<Blob::MqttStatusFlags>*)Heap::memAlloc(sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>));
 					MBED_ASSERT(obj);
-					if(getObjFromJson(*(Blob::MqttStatusFlags*)(obj), json_obj)){
-						*size = sizeof(Blob::MqttStatusFlags);
+					if(getNotificationFromJson(*(Blob::NotificationData_t<Blob::MqttStatusFlags>*)(obj), json_obj)){
+						*size = sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>);
 					}
 					else{
 						*size = 0;
@@ -1803,7 +1929,7 @@ public:
 					}
 					#endif
 				}
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getObjectFromDataTopic: topic stat no controlado");
+				DEBUG_TRACE_D(true, "[JsonParser]....", "getObjectFromDataTopic: topic %s no controlado", topic);
 
 			}
 			else{
@@ -2133,8 +2259,8 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
-			else if(size == sizeof(Blob::MqttStatusFlags)){
-				json_obj = JsonParser::getJsonFromObj(*(Blob::MqttStatusFlags*)data);
+			else if(size == sizeof(Blob::NotificationData_t<Blob::MqttStatusFlags>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<Blob::MqttStatusFlags>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: mqtt");
@@ -2496,6 +2622,14 @@ _gofdt_exit:
 					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: OCPPManager");
 				}
 			}
+			else if(size == sizeof(Blob::Response_t<ocpp_manager_qr>)){
+				if(isTokenInTopic(topic, "qr")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<ocpp_manager_qr>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: OCPPManager");
+				}
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: OCPPManager, tipo mensaje no controlado");
 			}
@@ -2589,19 +2723,8 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_HMIManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/hmi")){
-			if(size == sizeof(Blob::Response_t<hmi_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
-				}
-				else if(isTokenInTopic(topic, "value")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
-				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
-					json_obj = cJSON_CreateObject();
-				}
-			}
-			else if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
+			// HMI notifications / responses should be of hmi_manager types
+			if(size == sizeof(Blob::NotificationData_t<hmi_manager>)){
 				if(isTokenInTopic(topic, "cfg")){
 					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<hmi_manager>*)data, ObjSelectCfg);
 				}
@@ -2613,8 +2736,128 @@ _gofdt_exit:
 					json_obj = cJSON_CreateObject();
 				}
 			}
+			else if(size == sizeof(Blob::Response_t<hmi_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<hmi_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: HMI");
+					json_obj = cJSON_CreateObject();
+				}
+			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: HMI, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_wifi_interface_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/wifi")){
+			if(size == sizeof(Blob::NotificationData_t<WifiApStaConnected>)){
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WifiApStaConnected>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: wifi");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<WifiApStaClients>)){
+				if(isTokenInTopic(topic, "clients")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<WifiApStaClients>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: wifi");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: wifi, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_ethernet_interface_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/eth")){
+			// Migrated ethernet notification: EthConnState replacing legacy EthernetStatus
+			if(size == sizeof(Blob::NotificationData_t<EthConnState>)){
+				// Topic uses 'conn' (stat/conn/eth) not 'status'
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<EthConnState>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: eth token mismatch");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(uint8_t)){
+				// Legacy publication (raw uint8_t state)
+				if(isTokenInTopic(topic, "conn")){
+					json_obj = cJSON_CreateObject();
+					cJSON_AddNumberToObject(json_obj, "state", *((uint8_t*)data));
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: eth legacy token mismatch");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: eth, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_CityPlusDisplay_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/cityplusDsp")){
+			if(size == sizeof(Blob::NotificationData_t<CityPlusDisplayData>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<CityPlusDisplayData>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<CityPlusDisplayData>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: cityplusDsp");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<CityPlusDisplayData>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<CityPlusDisplayData>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<CityPlusDisplayData>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: cityplusDsp");
+					json_obj = cJSON_CreateObject();
+				}
+			}			
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: cityplusDsp, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/cityplusDsp")){
+			if(size == sizeof(Blob::SetRequest_t<CityPlusDisplayData>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<CityPlusDisplayData>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<url>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<url>*)data);
+			}
+			else if(size == sizeof(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<cityplusdisplay_stat::qr_t>*)data);
+
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: cityplusDsp, tipo mensaje no controlado, topic: %s", topic);
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
@@ -2648,6 +2891,33 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: EmbWeb, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_CANBridge_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/can")){
+			if(size == sizeof(Blob::NotificationData_t<CANBridge_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<CANBridge_manager>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromObjTopic: can");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::Response_t<CANBridge_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<CANBridge_manager>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: can");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: can, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
