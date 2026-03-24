@@ -43,7 +43,7 @@ enum ErrorCode{
 };
 
 
-static const char* errList[] = {
+inline const char* errList[] = {
 	"", 					//ErrOk
 	"json malformed",		//ErrJsonMalformed
 	"idTrans missing", 		//ErrIdTransInvalid
@@ -200,7 +200,7 @@ struct BaseMsg_t
 };
 
 
-uint32_t getCRC32(void* data, uint32_t size){
+inline uint32_t getCRC32(void* data, uint32_t size){
     uint32_t crc = 0;
     uint8_t* udata = (uint8_t*)data;
     for(int i=0;i<size;i++){
