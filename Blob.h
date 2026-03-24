@@ -200,7 +200,7 @@ struct BaseMsg_t
 };
 
 
-static uint32_t getCRC32(void* data, uint32_t size){
+uint32_t getCRC32(void* data, uint32_t size){
     uint32_t crc = 0;
     uint8_t* udata = (uint8_t*)data;
     for(int i=0;i<size;i++){
