@@ -797,7 +797,7 @@ public:
 	 * @return keys Par�metros decodificados o 0 en caso de error
 	 */
 	template <typename U>
-	static bool getGetRequestFromJson(Blob::GetRequest_t &req, U* json, uint32_t source = Blob::MsgIfaceUnknown){
+	static bool getGetRequestFromJson(Blob::GetRequest_t &req, U* json, uint32_t source = Blob::MsgIfaceLocal | Blob::MsgIfaceAll){
 		bool result = false;
 
 		// obtengo objeto json en funci�n del tipo
@@ -822,7 +822,8 @@ public:
 			goto _getGetRequestFromJson_Exit;
 		}
 		req.idTrans = idtrans->valueint;
-		Blob::setGetRequestRouting(req, source);
+
+		req.routing.iface = source;
 		if((idtrans = cJSON_GetObjectItem(json_obj, p_routing)) != NULL){
 			req.routing.iface = idtrans->valueint;
 		}
@@ -912,7 +913,7 @@ public:
 	 * @return keys Par�metros decodificados o 0 en caso de error
 	 */
 	template <typename T, typename U>
-	static bool getSetRequestFromJson(Blob::SetRequest_t<T> &req, U* json, uint32_t source = Blob::MsgIfaceUnknown){
+	static bool getSetRequestFromJson(Blob::SetRequest_t<T> &req, U* json, uint32_t source = Blob::MsgIfaceLocal | Blob::MsgIfaceAll){
 		cJSON *obj = NULL;
 		req.keys = 0;
 		req._error.code = Blob::ErrOK;
@@ -940,7 +941,8 @@ public:
 			goto _getSetRequestFromJson_Exit;
 		}
 		req.idTrans = obj->valueint;
-		Blob::setSetRequestRouting(req, source);
+		
+		req.routing.iface = source;
 		if((obj = cJSON_GetObjectItem(json_obj, p_routing)) != NULL){
 			req.routing.iface = obj->valueint;
 		}
@@ -1231,7 +1233,7 @@ public:
 
 
 	template <typename U>
-	static void* getObjFromDataTopic(char* topic, U* json, uint16_t *size, bool stat = false, uint32_t source = Blob::MsgIfaceUnknown){
+	static void* getObjFromDataTopic(char* topic, U* json, uint16_t *size, bool stat = false, uint32_t source = Blob::MsgIfaceLocal | Blob::MsgIfaceAll){
 		void* obj = NULL;
 
 		// obtengo objeto json en funci�n del tipo
