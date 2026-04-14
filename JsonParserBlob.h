@@ -207,6 +207,7 @@ public:
 	static const char*  p_fwvPot;
 	static const char*  p_fwvPotAux;
 	static const char*  p_fwvCortex;
+	static const char*  p_pcbPwrSerial;
 	static const char*	p_geoloc;
 	static const char*	p_groupMask;
 	static const char*	p_guiMode;

@@ -91,6 +91,7 @@ const char * JsonParser::p_fwv			= "fwv";
 const char * JsonParser::p_fwvPot		= "fwv_pot";
 const char * JsonParser::p_fwvPotAux	= "fwv_potAux";
 const char * JsonParser::p_fwvCortex	= "fwv_cortex";
+const char * JsonParser::p_pcbPwrSerial	= "serial_pot";
 const char * JsonParser::p_geoloc		= "geoloc";
 const char * JsonParser::p_groupMask	= "groupMask";
 const char * JsonParser::p_guiMode		= "guiMode";
