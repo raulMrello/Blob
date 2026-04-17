@@ -153,7 +153,8 @@ struct GetRequest_t{
 	Blob::RoutingData_t routing;
 	uint32_t idTrans;
 	Blob::ErrorData_t _error;
-	GetRequest_t(uint32_t x_id=0, uint32_t iface=(MsgIfaceLocal | MsgIfaceAll))
+	// Por defecto los stat de respuesto a los get no se env�an a todos los interfaces, sino solo al local, para evitar que se reenv�en por la red de forma innecesaria
+	GetRequest_t(uint32_t x_id=0, uint32_t iface=(MsgIfaceLocal))
 		: routing(iface), idTrans(x_id) {
 		_error.code = ErrOK;
 		_error.descr[0] = 0;

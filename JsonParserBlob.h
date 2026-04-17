@@ -942,7 +942,7 @@ public:
 		}
 		req.idTrans = obj->valueint;
 		
-		req.routing.iface = source;
+		req.routing.iface = source | Blob::MsgIfaceAll;
 		if((obj = cJSON_GetObjectItem(json_obj, p_routing)) != NULL){
 			req.routing.iface = obj->valueint;
 		}
@@ -2867,6 +2867,29 @@ _gofdt_exit:
 
 		DEBUG_TRACE_W(true, "[JsonParser]....", "getDataFromObjTopic: topic no controlado");
 		json_obj = cJSON_CreateObject();
+		return json_obj;
+	}
+
+
+	static cJSON* getDataFromObjTopic(char* topic, void* data, uint16_t size, uint32_t iface){
+		cJSON* json_obj = getDataFromObjTopic(topic, data, size);
+		if(json_obj == NULL || iface == Blob::MsgIfaceUnknown){
+			return json_obj;
+		}
+
+		cJSON* routing = cJSON_GetObjectItem(json_obj, p_routing);
+		if(!cJSON_IsNumber(routing)){
+			cJSON_Delete(json_obj);
+			return NULL;
+		}
+
+		uint32_t routing_iface = (uint32_t)routing->valuedouble;
+		if((routing_iface & Blob::MsgIfaceAll) == 0 &&
+		   (routing_iface & iface) == 0){
+			cJSON_Delete(json_obj);
+			return NULL;
+		}
+
 		return json_obj;
 	}
 
