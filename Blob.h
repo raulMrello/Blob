@@ -86,14 +86,6 @@ static const uint32_t TimestampSecondsYearLimit = (366 * 24 * 3600);
  */
 static const uint16_t TimestampMinutesDayLimit = (24 * 60);
 
-/** Estructura de datos para env�o de cabecera incluyendo el tiemstamp, etc...
- */
-struct HeaderData_t{
-	time_t timestamp;
-	uint32_t heapFree;
-};
-
-
 enum MsgInterface : uint32_t {
 	MsgIfaceUnknown = 0,
 	MsgIfaceMqtt = (1u << 0),
@@ -109,6 +101,16 @@ struct RoutingData_t{
 	uint32_t iface;
 	RoutingData_t(uint32_t msg_iface = (MsgIfaceLocal | MsgIfaceAll))
 		: iface(msg_iface) {}
+};
+
+/** Estructura de datos para env�o de cabecera incluyendo routing, timestamp, etc...
+ */
+struct HeaderData_t{
+	Blob::RoutingData_t routing;
+	time_t timestamp;
+	uint32_t heapFree;
+	HeaderData_t(uint32_t msg_iface = (MsgIfaceLocal | MsgIfaceAll))
+		: routing(msg_iface), timestamp(time(NULL)), heapFree(Heap::getFreeHeap()) {}
 };
 
 
@@ -171,14 +173,13 @@ struct GetRequestElement_t {
  */
 template <typename T>
 struct Response_t{
-	Blob::RoutingData_t routing;
 	uint32_t idTrans;
 	Blob::HeaderData_t header;
 	Blob::ErrorData_t error;
 	T data;
-	Response_t() : routing(Blob::MsgIfaceAll), idTrans(0) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	Response_t() : idTrans(0), header(Blob::MsgIfaceAll) {}
 	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat, uint32_t routing_iface = Blob::MsgIfaceAll)
-		: routing(routing_iface), idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+		: idTrans(idt), header(routing_iface), error(err), data(dat) {}
 };
 
 
@@ -186,11 +187,10 @@ struct Response_t{
  */
 template <typename T>
 struct NotificationData_t{
-	Blob::RoutingData_t routing;
 	Blob::HeaderData_t header;
 	T data;
-	NotificationData_t() : routing(Blob::MsgIfaceLocal | Blob::MsgIfaceAll) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
-	NotificationData_t(const T& dat) : routing(Blob::MsgIfaceLocal | Blob::MsgIfaceAll), data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	NotificationData_t() : header(Blob::MsgIfaceLocal | Blob::MsgIfaceAll) {}
+	NotificationData_t(const T& dat) : header(Blob::MsgIfaceLocal | Blob::MsgIfaceAll), data(dat) {}
 };
 
 template <typename T>

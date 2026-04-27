@@ -524,7 +524,6 @@ public:
 		if(resp.idTrans != Blob::UnusedIdTrans){
 			cJSON_AddNumberToObject(root, p_idTrans, resp.idTrans);
 		}
-		cJSON_AddNumberToObject(root, p_routing, resp.routing.iface);
 
 		// key: header
 		if((header=cJSON_CreateObject()) == NULL){
@@ -532,6 +531,7 @@ public:
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromResponse: creando header");
 			return NULL;
 		}
+		cJSON_AddNumberToObject(header, p_routing, resp.header.routing.iface);
 		cJSON_AddNumberToObject(header, p_timestamp, resp.header.timestamp);
 		cJSON_AddNumberToObject(header, p_heapFree, resp.header.heapFree);
 		cJSON_AddItemToObject(root, p_header, header);
@@ -586,11 +586,16 @@ public:
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando root");
 			return NULL;
 		}
-		cJSON_AddNumberToObject(root, p_routing, notif.routing.iface);
 
 		// key: header
 		if((header=cJSON_CreateObject()) == NULL){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getJsonFromNotification: creando header");
+			cJSON_Delete(root);
+			return NULL;
+		}
+		if (cJSON_AddNumberToObject(header, p_routing, notif.header.routing.iface)==NULL){
+			DEBUG_TRACE_E(true, "[JsonParser]....", "Error al agregar routing al header");
+			cJSON_Delete(header);
 			cJSON_Delete(root);
 			return NULL;
 		}
@@ -866,14 +871,14 @@ public:
 			return false;
 		}
 
-		if((obj = cJSON_GetObjectItem(json_obj, p_routing)) != NULL){
-			notif.routing.iface = obj->valueint;
-		}
-
 		// key: header
 		if((obj = cJSON_GetObjectItem(json_obj, p_header)) == NULL){
 			DEBUG_TRACE_E(true, "[JsonParser]....", "getNotificationFromJson: header is NULL");
 			goto _getNotificationFromJson_Exit;
+		}
+
+		if((value = cJSON_GetObjectItem(obj, p_routing)) != NULL){
+			notif.header.routing.iface = value->valueint;
 		}
 
 		// key: timestamp
@@ -996,15 +1001,15 @@ public:
 		if((obj = cJSON_GetObjectItem(json_obj, p_idTrans)) != NULL){
 			resp.idTrans = obj->valueint;
 		}
-		if((obj = cJSON_GetObjectItem(json_obj, p_routing)) != NULL){
-			resp.routing.iface = obj->valueint;
-		}
 
 		// key: header
 		if((obj = cJSON_GetObjectItem(json_obj, p_header)) == NULL){
 			resp.error.code = Blob::ErrEmptyContent;
 			strcpy(resp.error.descr, Blob::errList[resp.error.code]);
 			goto _getResponseFromJson_Exit;
+		}
+		if((value = cJSON_GetObjectItem(obj, p_routing)) != NULL){
+			resp.header.routing.iface = value->valueint;
 		}
 		// key: timestamp
 		if((value = cJSON_GetObjectItem(obj, p_timestamp)) == NULL){
@@ -2878,6 +2883,12 @@ _gofdt_exit:
 		}
 
 		cJSON* routing = cJSON_GetObjectItem(json_obj, p_routing);
+		if(!cJSON_IsNumber(routing)){
+			cJSON* header = cJSON_GetObjectItem(json_obj, p_header);
+			if(cJSON_IsObject(header)){
+				routing = cJSON_GetObjectItem(header, p_routing);
+			}
+		}
 		if(!cJSON_IsNumber(routing)){
 			cJSON_Delete(json_obj);
 			return NULL;
