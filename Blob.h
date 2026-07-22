@@ -86,11 +86,31 @@ static const uint32_t TimestampSecondsYearLimit = (366 * 24 * 3600);
  */
 static const uint16_t TimestampMinutesDayLimit = (24 * 60);
 
-/** Estructura de datos para env�o de cabecera incluyendo el tiemstamp, etc...
+enum MsgInterface : uint32_t {
+	MsgIfaceUnknown = 0,
+	MsgIfaceMqtt = (1u << 0),
+	MsgIfaceMqttUser = (1u << 1),
+	MsgIfaceEmbeddedWeb = (1u << 2),
+	MsgIfaceNetworkManager = (1u << 3),
+	MsgIfaceLocal = (1u << 4),
+	MsgIfaceAll = (1u << 31)
+};
+
+
+struct RoutingData_t{
+	uint32_t iface;
+	RoutingData_t(uint32_t msg_iface = (MsgIfaceLocal | MsgIfaceAll))
+		: iface(msg_iface) {}
+};
+
+/** Estructura de datos para env�o de cabecera incluyendo routing, timestamp, etc...
  */
 struct HeaderData_t{
+	Blob::RoutingData_t routing;
 	time_t timestamp;
 	uint32_t heapFree;
+	HeaderData_t(uint32_t msg_iface = (MsgIfaceLocal | MsgIfaceAll))
+		: routing(msg_iface), timestamp(time(NULL)), heapFree(Heap::getFreeHeap()) {}
 };
 
 
@@ -110,13 +130,13 @@ struct ErrorData_t{
  */
 template <typename T>
 struct SetRequest_t{
+	Blob::RoutingData_t routing;
 	uint32_t idTrans;
 	uint32_t keys;
 	T data;
 	Blob::ErrorData_t _error;
-	SetRequest_t(T& dat, uint32_t x_id=0){
-		idTrans = x_id;
-		data = dat;
+	SetRequest_t(const T& dat, uint32_t x_id=0, uint32_t iface=(MsgIfaceLocal | MsgIfaceAll))
+		: routing(iface), idTrans(x_id), keys(0), data(dat) {
 		_error.code = ErrOK;
 		_error.descr[0] = 0;
 	}
@@ -132,10 +152,12 @@ struct SetRequestElement_t {
 /** Estructura de datos relativa a una operaci�n GetRequest
  */
 struct GetRequest_t{
+	Blob::RoutingData_t routing;
 	uint32_t idTrans;
 	Blob::ErrorData_t _error;
-	GetRequest_t(uint32_t x_id=0){
-		idTrans = x_id;
+	// Por defecto los stat de respuesto a los get no se env�an a todos los interfaces, sino solo al local, para evitar que se reenv�en por la red de forma innecesaria
+	GetRequest_t(uint32_t x_id=0, uint32_t iface=(MsgIfaceLocal))
+		: routing(iface), idTrans(x_id) {
 		_error.code = ErrOK;
 		_error.descr[0] = 0;
 	}
@@ -155,8 +177,9 @@ struct Response_t{
 	Blob::HeaderData_t header;
 	Blob::ErrorData_t error;
 	T data;
-	Response_t() : idTrans(0) { header.timestamp = time(NULL); }
-	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat) : idTrans(idt), error(err), data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	Response_t() : idTrans(0), header(Blob::MsgIfaceAll) {}
+	Response_t(uint32_t idt, const Blob::ErrorData_t& err, const T& dat, uint32_t routing_iface = Blob::MsgIfaceAll)
+		: idTrans(idt), header(routing_iface), error(err), data(dat) {}
 };
 
 
@@ -166,8 +189,8 @@ template <typename T>
 struct NotificationData_t{
 	Blob::HeaderData_t header;
 	T data;
-	NotificationData_t() { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
-	NotificationData_t(const T& dat) : data(dat) { header.timestamp = time(NULL); header.heapFree = Heap::getFreeHeap(); }
+	NotificationData_t() : header(Blob::MsgIfaceLocal | Blob::MsgIfaceAll) {}
+	NotificationData_t(const T& dat) : header(Blob::MsgIfaceLocal | Blob::MsgIfaceAll), data(dat) {}
 };
 
 template <typename T>
@@ -219,6 +242,98 @@ inline uint32_t getCRC32(void* data, uint32_t size){
     }
     return crc;
 }
+
+
+// template<typename T>
+// static inline void setMessageOrigin(T& msg, uint32_t origin){
+// 	msg.routing.iface = origin;
+// }
+
+
+// template<typename T>
+// static inline void setMessageDestination(T& msg, uint32_t destination){
+// 	msg.routing.iface = destination;
+// }
+
+
+// template<typename T>
+// static inline void setMessageRouting(T& msg, uint32_t iface){
+// 	msg.routing.iface = iface;
+// }
+
+
+// template<typename T>
+// static inline void setGetRequestRouting(T& msg, uint32_t iface){
+// 	msg.routing.iface = iface;
+// }
+
+
+// template<typename T>
+// static inline void setSetRequestRouting(T& msg, uint32_t iface){
+// 	msg.routing.iface = iface;
+// 	if(iface != MsgIfaceUnknown){
+// 		msg.routing.iface |= MsgIfaceAll;
+// 	}
+// }
+
+
+// template<typename T>
+// static inline const Blob::RoutingData_t& getMessageRouting(const T& msg){
+// 	return msg.routing;
+// }
+
+
+// static inline bool isDestinationMatch(uint32_t routing_iface, uint32_t iface){
+// 	return (routing_iface == MsgIfaceUnknown || (routing_iface & MsgIfaceAll) != 0 || ((routing_iface & iface) != 0));
+// }
+
+
+// static inline bool shouldForwardMessage(const Blob::RoutingData_t& routing, uint32_t iface){
+// 	return isDestinationMatch(routing.iface, iface);
+// }
+
+
+// static inline bool getRoutingFromBinary(const void* data, uint16_t data_len, Blob::RoutingData_t& routing){
+// 	if(data == NULL || data_len < sizeof(Blob::RoutingData_t)){
+// 		routing = Blob::RoutingData_t();
+// 		return false;
+// 	}
+// 	memcpy(&routing, data, sizeof(Blob::RoutingData_t));
+// 	return true;
+// }
+
+
+// static inline bool shouldForwardBinaryMessage(const void* data, uint16_t data_len, uint32_t iface){
+// 	Blob::RoutingData_t routing;
+// 	if(!getRoutingFromBinary(data, data_len, routing)){
+// 		return true;
+// 	}
+// 	return shouldForwardMessage(routing, iface);
+// }
+
+
+// template <typename T>
+// static inline Blob::SetRequest_t<T>* makeSetRequest(const T& dat, uint32_t x_id = 0, uint32_t iface = (MsgIfaceLocal | MsgIfaceAll)){
+// 	Blob::SetRequest_t<T>* req = new Blob::SetRequest_t<T>(dat, x_id, iface);
+// 	MBED_ASSERT(req);
+// 	setSetRequestRouting(*req, iface);
+// 	return req;
+// }
+
+
+// static inline Blob::GetRequest_t makeGetRequest(uint32_t x_id = 0, uint32_t iface = (MsgIfaceLocal | MsgIfaceAll)){
+// 	Blob::GetRequest_t req(x_id, iface);
+// 	return req;
+// }
+
+
+// template <typename T>
+// static inline Blob::NotificationData_t<T>* makeNotification(const T& dat, uint32_t iface = (MsgIfaceLocal | MsgIfaceAll)){
+// 	Blob::NotificationData_t<T>* notif = new Blob::NotificationData_t<T>(dat);
+// 	MBED_ASSERT(notif);
+// 	setMessageRouting(*notif, iface);
+// 	return notif;
+// }
 
 
 }
