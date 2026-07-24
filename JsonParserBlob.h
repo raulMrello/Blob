@@ -2467,9 +2467,6 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_boot>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_boot>*)data, ObjSelectAll);
 			}
-			else if(size == sizeof(Blob::Response_t<rfid_manager>)){
-				json_obj = getJsonFromResponse(*(Blob::Response_t<rfid_manager>*)data, ObjSelectAll);
-			}
 			else if(size == sizeof(Blob::Response_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_fwUpdate_data>*)data, ObjSelectAll);
 			}
@@ -2479,8 +2476,11 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::Response_t<sys_simulator>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_simulator>*)data, ObjSelectAll);
 			}
-			else if(size == sizeof(Blob::Response_t<sys_reset_data>)){
+			else if(size == sizeof(Blob::Response_t<sys_reset_data>) && isTokenInTopic(topic, "reset")){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<sys_reset_data>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<rfid_manager>) && isTokenInTopic(topic, "rfid")){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<rfid_manager>*)data, ObjSelectAll);
 			}
 			else if(size == sizeof(Blob::Response_t<int>)){
 				json_obj = getJsonFromResponse(*(Blob::Response_t<int>*)data);
@@ -2507,10 +2507,10 @@ _gofdt_exit:
 			else if(size == sizeof(Blob::SetRequest_t<sys_fwUpdate_data>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_fwUpdate_data>*)data);
 			}
-			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>)){
+			else if(size == sizeof(Blob::SetRequest_t<sys_reset_data>) && isTokenInTopic(topic, "reset")){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<sys_reset_data>*)data);
 			}
-			else if(size == sizeof(Blob::SetRequest_t<rfid_manager>)){
+			else if(size == sizeof(Blob::SetRequest_t<rfid_manager>) && isTokenInTopic(topic, "rfid")){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<rfid_manager>*)data);
 			}
 			else if(size == sizeof(Blob::SetRequest_t<sys_diagnostics_data>)){
