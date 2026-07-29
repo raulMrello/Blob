@@ -143,6 +143,14 @@
 #include "embweb_objects.h"
 #endif
 
+#if defined(JsonParser_TPV_Enabled)
+#include "ocpp_manager_objects.h"
+#endif
+
+#if defined(JsonParser_TPVManager_Enabled)
+#include "tpv_objects.h"
+#endif
+
 #define JSONPARSER_ENABLE_PrintBinaryObject		false
 
 class JsonParser {
@@ -747,6 +755,13 @@ public:
 		}
 		#endif
 
+		//----- Objetos TPVManager
+		#if defined(JsonParser_TPVManager_Enabled)
+		if((result = JSON::getJsonFromTPVManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
+
 		//----- Objetos ModbusMap
 		#if defined(JsonParser_ModbusMap_Enabled)
 		if((result = JSON::getJsonFromModbusMapObj((const T&)obj, type)) != NULL){
@@ -1193,6 +1208,12 @@ public:
 		//---- Decodifica Objetos ocpp
 		#if defined(JsonParser_OCPPManager_Enabled)
 		if((result = JSON::getOCPPManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos TPVManager
+		#if defined(JsonParser_TPVManager_Enabled)
+		if((result = JSON::getTPVManagerObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1875,6 +1896,36 @@ public:
 					goto _gofdt_exit;
 				}
 				#endif
+
+                // #if defined(JsonParser_TPV_Enabled)
+                // if(isTokenInTopic(topic, "/tpv")){
+				// 	if(isTokenInTopic(topic, "/paymentstate")){
+				// 		obj = (Blob::SetRequest_t<ocpp_tpv_paymentstate>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_tpv_paymentstate>));
+				// 		MBED_ASSERT(obj);
+				// 		if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_tpv_paymentstate>*) (obj), json_obj)){
+				// 			*size = sizeof(Blob::SetRequest_t<ocpp_tpv_paymentstate>);
+				// 		}
+				// 		else{
+				// 			*size = 0;
+				// 			Heap::memFree(obj);
+				// 			obj = NULL;
+				// 		}
+				// 	}
+                //     else if(isTokenInTopic(topic, "/receipt")){
+                //         obj = (Blob::SetRequest_t<ocpp_tpv_receipt>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_tpv_receipt>));
+				// 		MBED_ASSERT(obj);
+				// 		if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_tpv_receipt>*) (obj), json_obj)){
+				// 			*size = sizeof(Blob::SetRequest_t<ocpp_tpv_receipt>);
+				// 		}
+				// 		else{
+				// 			*size = 0;
+				// 			Heap::memFree(obj);
+				// 			obj = NULL;
+				// 		}
+                //     }
+				// 	goto _gofdt_exit;
+				// }
+                // #endif
 
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
