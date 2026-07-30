@@ -1299,7 +1299,8 @@ public:
 				   isTokenInTopic(topic, "/connector/") ||
 				   isTokenInTopic(topic, "/tagsfile/") ||
 				   isTokenInTopic(topic, "/boost/")||
-				   isTokenInTopic(topic, "/orto/")|| isTokenInTopic(topic, "/ocaso/")){
+				   isTokenInTopic(topic, "/orto/")|| isTokenInTopic(topic, "/ocaso/")||
+				   isTokenInTopic(topic, "/rt/")){
 					obj = (Blob::GetRequest_t*)Heap::memAlloc(sizeof(Blob::GetRequest_t));
 					MBED_ASSERT(obj);
 					if(getGetRequestFromJson(*(Blob::GetRequest_t*) (obj), json_obj, source)){
@@ -1897,35 +1898,71 @@ public:
 				}
 				#endif
 
-                // #if defined(JsonParser_TPV_Enabled)
-                // if(isTokenInTopic(topic, "/tpv")){
-				// 	if(isTokenInTopic(topic, "/paymentstate")){
-				// 		obj = (Blob::SetRequest_t<ocpp_tpv_paymentstate>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_tpv_paymentstate>));
-				// 		MBED_ASSERT(obj);
-				// 		if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_tpv_paymentstate>*) (obj), json_obj)){
-				// 			*size = sizeof(Blob::SetRequest_t<ocpp_tpv_paymentstate>);
-				// 		}
-				// 		else{
-				// 			*size = 0;
-				// 			Heap::memFree(obj);
-				// 			obj = NULL;
-				// 		}
-				// 	}
-                //     else if(isTokenInTopic(topic, "/receipt")){
-                //         obj = (Blob::SetRequest_t<ocpp_tpv_receipt>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<ocpp_tpv_receipt>));
-				// 		MBED_ASSERT(obj);
-				// 		if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_tpv_receipt>*) (obj), json_obj)){
-				// 			*size = sizeof(Blob::SetRequest_t<ocpp_tpv_receipt>);
-				// 		}
-				// 		else{
-				// 			*size = 0;
-				// 			Heap::memFree(obj);
-				// 			obj = NULL;
-				// 		}
-                //     }
-				// 	goto _gofdt_exit;
-				// }
-                // #endif
+				#if defined(JsonParser_TPVManager_Enabled)
+				if(isTokenInTopic(topic, "/tpv")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<tpv_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<tpv_manager>*) (obj), json_obj, source)){
+							*size = sizeof(Blob::SetRequest_t<tpv_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/rt/")){
+						obj = (Blob::SetRequest_t<tpv_rt>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_rt>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<tpv_rt>*) (obj), json_obj, source)){
+							*size = sizeof(Blob::SetRequest_t<tpv_rt>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/hist-search/")){
+						obj = (Blob::SetRequest_t<tpv_hist_search_filter>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_hist_search_filter>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<tpv_hist_search_filter>*) (obj), json_obj, source)){
+							*size = sizeof(Blob::SetRequest_t<tpv_hist_search_filter>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<tpv_payment_action>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_payment_action>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<tpv_payment_action>*) (obj), json_obj, source)){
+							*size = sizeof(Blob::SetRequest_t<tpv_payment_action>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					else if(isTokenInTopic(topic, "/receipt/")){
+						obj = (Blob::SetRequest_t<tpv_receipt>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_receipt>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<tpv_receipt>*) (obj), json_obj, source)){
+							*size = sizeof(Blob::SetRequest_t<tpv_receipt>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
 
 				DEBUG_TRACE_E(true, "[JsonParser]....", "No se encuentra el modulo");
 				goto _gofdt_exit;
@@ -2608,6 +2645,57 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: Modulator, tipo mensaje no controlado");
+				json_obj = cJSON_CreateObject();
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_TPVManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/tpv")){
+			if(isTokenInTopic(topic, "/streamrt/") && size == sizeof(Blob::NotificationData_t<tpv_cost_report>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<tpv_cost_report>*)data, ObjSelectAll);
+			}
+			else if(isTokenInTopic(topic, "/historic/") && size == sizeof(Blob::NotificationData_t<tpv_cost_report>)){
+				json_obj = getJsonFromNotification(*(Blob::NotificationData_t<tpv_cost_report>*)data, ObjSelectAll);
+			}
+			else if(isTokenInTopic(topic, "/hist-search/") && size == sizeof(Blob::Response_t<tpv_hist_search_result>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_hist_search_result>*)data, ObjSelectAll);
+			}
+			else if(isTokenInTopic(topic, "/rt/") && size == sizeof(Blob::Response_t<tpv_rt>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_rt>*)data, ObjSelectAll);
+			}
+			else if(isTokenInTopic(topic, "/value/") && size == sizeof(Blob::Response_t<tpv_payment_action>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_payment_action>*)data, ObjSelectAll);
+			}
+			else if(isTokenInTopic(topic, "/receipt/") && size == sizeof(Blob::Response_t<tpv_receipt>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_receipt>*)data, ObjSelectAll);
+			}
+			else if(size == sizeof(Blob::Response_t<tpv_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager response");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else if(size == sizeof(Blob::NotificationData_t<tpv_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<tpv_manager>*)data, ObjSelectCfg);
+				}
+				else if(isTokenInTopic(topic, "value")){
+					json_obj = getJsonFromNotification(*(Blob::NotificationData_t<tpv_manager>*)data, ObjSelectState);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager notification");
+					json_obj = cJSON_CreateObject();
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager, tipo mensaje no controlado");
 				json_obj = cJSON_CreateObject();
 			}
 			return json_obj;
