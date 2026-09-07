@@ -52,7 +52,9 @@
 #define JsonParser_SysManager_Enabled
 #define JsonParser_MQTTClient_Enabled
 #define JsonParser_HMIManager_Enabled
+#if !defined(EXO)
 #define JsonParser_ShuckoManager_Enabled
+#endif
 #define JsonParser_MennekesManager_Enabled
 #define JsonParser_EVStateMachine_Enabled
 #define JsonParser_RequestsManager_Enabled
