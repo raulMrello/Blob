@@ -230,6 +230,10 @@ public:
 	static const char*	p_last;
 	static const char*	p_latitude;
 	static const char*	p_leakage;
+	static const char*	p_leakage2;
+	static const char*	p_leakageEnabled;
+	static const char*	p_leakTime;
+	static const char*	p_leakTime2;
 	static const char*	p_light;
 	static const char*	p_limited;
 	static const char*	p_loadPercent;
