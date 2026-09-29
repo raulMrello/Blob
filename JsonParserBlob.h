@@ -112,6 +112,10 @@
 #include "ocpp_manager_objects.h"
 #endif
 
+#if defined(JsonParser_TPVManager_Enabled)
+#include "tpv_manager_objects.h"
+#endif
+
 #if defined(JsonParser_ModbusMap_Enabled)
 #include "modbus_objects.h"
 #endif
@@ -746,6 +750,12 @@ public:
 			return result;
 		}
 		#endif
+		//----- Objetos TPVManager
+		#if defined(JsonParser_TPVManager_Enabled)
+		if((result = JSON::getJsonFromTPVManagerObj((const T&)obj, type)) != NULL){
+			return result;
+		}
+		#endif
 
 		//----- Objetos ModbusMap
 		#if defined(JsonParser_ModbusMap_Enabled)
@@ -1193,6 +1203,12 @@ public:
 		//---- Decodifica Objetos ocpp
 		#if defined(JsonParser_OCPPManager_Enabled)
 		if((result = JSON::getOCPPManagerObjFromJson(obj, json_obj)) != 0){
+			goto _getObjFromJson_Exit;
+		}
+		#endif
+		//---- Decodifica Objetos tpv
+		#if defined(JsonParser_TPVManager_Enabled)
+		if((result = JSON::getTPVManagerObjFromJson(obj, json_obj)) != 0){
 			goto _getObjFromJson_Exit;
 		}
 		#endif
@@ -1703,6 +1719,23 @@ public:
 						MBED_ASSERT(obj);
 						if(getSetRequestFromJson(*(Blob::SetRequest_t<ocpp_manager>*) (obj), json_obj, source)){
 							*size = sizeof(Blob::SetRequest_t<ocpp_manager>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
+					goto _gofdt_exit;
+				}
+				#endif
+				#if defined(JsonParser_TPVManager_Enabled)
+				else if(isTokenInTopic(topic, "/tpv")){
+					if(isTokenInTopic(topic, "/cfg/")){
+						obj = (Blob::SetRequest_t<tpv_manager>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_manager>));
+						MBED_ASSERT(obj);
+						if(getSetRequestFromJson(*(Blob::SetRequest_t<tpv_manager>*) (obj), json_obj, source)){
+							*size = sizeof(Blob::SetRequest_t<tpv_manager>);
 						}
 						else{
 							*size = 0;
@@ -2656,6 +2689,31 @@ _gofdt_exit:
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: scheduler, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		#endif
+		#if defined(JsonParser_TPVManager_Enabled)
+		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/tpv")){
+			if(size == sizeof(Blob::Response_t<tpv_manager>)){
+				if(isTokenInTopic(topic, "cfg")){
+					json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_manager>*)data, ObjSelectCfg);
+				}
+				else{
+					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: TPVManager");
+				}
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager, tipo mensaje no controlado");
+			}
+			return json_obj;
+		}
+		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/tpv")){
+			if(size == sizeof(Blob::SetRequest_t<tpv_manager>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<tpv_manager>*)data);
+			}
+			else{
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager set, tipo mensaje no controlado");
 			}
 			return json_obj;
 		}
