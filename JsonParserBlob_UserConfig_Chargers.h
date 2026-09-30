@@ -60,6 +60,7 @@
 #define JsonParser_ModulatorManager_Enabled
 #define JsonParser_Stm32Updater_Enabled
 #define JsonParser_OCPPManager_Enabled
+#define JsonParser_TPVManager_Enabled
 #define JsonParser_ModbusMap_Enabled
 #define JsonParser_SolarManager_Enabled
 #define JsonParser_WSClient_Enabled
