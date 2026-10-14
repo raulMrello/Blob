@@ -426,6 +426,8 @@ public:
 	static const char * p_eMushroom;
     static const char*  p_usbResetTime;
 	static const char*  p_language;
+    static const char*  p_result;
+    static const char*  p_reason;
 
 	static void setLoggingLevel(esp_log_level_t level){
 		esp_log_level_set("[JsonParser]....", level);
@@ -1743,6 +1745,20 @@ public:
 							obj = NULL;
 						}
 					}
+					else if(isTokenInTopic(topic, "/value/")){
+						obj = (Blob::SetRequest_t<tpv_manager_value>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_manager_value>));
+						MBED_ASSERT(obj);
+						/* data.action objeto {type, result, reason}. */
+						uint32_t valueKeys = JSON::getTPVManagerValueSetRequestFromJson(*(Blob::SetRequest_t<tpv_manager_value>*)(obj), json_obj, source);
+						if(valueKeys != 0){
+							*size = sizeof(Blob::SetRequest_t<tpv_manager_value>);
+						}
+						else{
+							*size = 0;
+							Heap::memFree(obj);
+							obj = NULL;
+						}
+					}
 					goto _gofdt_exit;
 				}
 				#endif
@@ -2695,22 +2711,23 @@ _gofdt_exit:
 		#endif
 		#if defined(JsonParser_TPVManager_Enabled)
 		if(isTokenInTopic(topic, "stat") && isTokenInTopic(topic, "/tpv")){
-			if(size == sizeof(Blob::Response_t<tpv_manager>)){
-				if(isTokenInTopic(topic, "cfg")){
-					json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_manager>*)data, ObjSelectCfg);
-				}
-				else{
-					DEBUG_TRACE_E(true, "[JsonParser]....", "getResponseFromObjTopic: TPVManager");
-				}
+			if(isTokenInTopic(topic, "cfg") && size == sizeof(Blob::Response_t<tpv_manager>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_manager>*)data, ObjSelectCfg);
+			}
+			else if(isTokenInTopic(topic, "value") && size == sizeof(Blob::Response_t<tpv_manager_value>)){
+				json_obj = getJsonFromResponse(*(Blob::Response_t<tpv_manager_value>*)data, ObjSelectAll);
 			}
 			else{
-				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager, tipo mensaje no controlado");
+				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager stat, tipo mensaje no controlado");
 			}
 			return json_obj;
 		}
 		if(isTokenInTopic(topic, "set") && isTokenInTopic(topic, "/tpv")){
-			if(size == sizeof(Blob::SetRequest_t<tpv_manager>)){
+			if(isTokenInTopic(topic, "cfg") && size == sizeof(Blob::SetRequest_t<tpv_manager>)){
 				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<tpv_manager>*)data);
+			}
+			else if(isTokenInTopic(topic, "value") && size == sizeof(Blob::SetRequest_t<tpv_manager_value>)){
+				json_obj = getJsonFromSetRequest(*(Blob::SetRequest_t<tpv_manager_value>*)data);
 			}
 			else{
 				DEBUG_TRACE_E(true, "[JsonParser]....", "getDataFromObjTopic: TPVManager set, tipo mensaje no controlado");

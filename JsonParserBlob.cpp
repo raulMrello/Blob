@@ -305,3 +305,5 @@ const char * JsonParser::p_lightingNightTime	= "lightingNightTime";
 const char * JsonParser::p_eMushroom            = "emergencyMushroom";
 const char * JsonParser::p_usbResetTime         = "usbResetTime";
 const char * JsonParser::p_language          = "language";
+const char * JsonParser::p_result               = "result";
+const char * JsonParser::p_reason               = "reason";
