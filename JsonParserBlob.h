@@ -1749,8 +1749,7 @@ public:
 						obj = (Blob::SetRequest_t<tpv_manager_value>*)Heap::memAlloc(sizeof(Blob::SetRequest_t<tpv_manager_value>));
 						MBED_ASSERT(obj);
 						/* data.action objeto {type, result, reason}. */
-						uint32_t valueKeys = JSON::getTPVManagerValueSetRequestFromJson(*(Blob::SetRequest_t<tpv_manager_value>*)(obj), json_obj, source);
-						if(valueKeys != 0){
+                        if (getSetRequestFromJson(*(Blob::SetRequest_t<tpv_manager_value>*)(obj), json_obj, source)) {
 							*size = sizeof(Blob::SetRequest_t<tpv_manager_value>);
 						}
 						else{
