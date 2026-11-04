@@ -39,7 +39,8 @@ enum ErrorCode{
 	MaxNumErrorCodes,
 	ErrFile,
 	ErrorOTACar,
-	ErrConection
+	ErrConection,
+	ErrNvs
 };
 
 
@@ -58,7 +59,8 @@ static const char* errList[] = {
 	"max num error",
 	"error: file",
 	"OTA error: car connected",
-	"connection error"
+	"connection error",
+	"nvs write failed"
 };
 
 
